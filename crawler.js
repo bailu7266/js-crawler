@@ -1,7 +1,9 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
-var getDomain = require('./getdomain');
+const { fork } = require('child_process');
+// var getDomain = require('./getdomain');
+var getDomain = fork("./getdomain.js");
 
 var START_URL = "http://www.zxxk.com";
 var SEARCH_WORD = "stemming";
@@ -12,15 +14,20 @@ var pagesVisited = {};
 var numPagesVisited = 0;
 
 var url = new URL(START_URL);
-var baseUrl = url.protocol + '//' + url.hostname;
+var hostname = url.hostname;
+var baseUrl = url.protocol + '//' + hostname;
 var topDomain;
 
-getDomain(url.hostname, function(name) {
+getDomain.on('message', function(name) {
     topDomain = name;
     console.log("域名：" + topDomain);
     pagesToVisit.push(START_URL);
     crawl();
 });
+
+getDomain.send({ hostname });
+
+process.stdin(); // 等待输入，挂起主进程
 
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {

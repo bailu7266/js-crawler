@@ -1,7 +1,9 @@
-module.exports = (function(hostname, callback) {
-    var parts = hostname.split('.');
+process.on('message', (hostname) => {
     // checking for TLDs, 需要完全异步!!
-    getTLDs(hostname, callback, getDomain);
+    getTLDs(hostname, function(domain) {
+        process.send({ domain });
+        // self.close();
+    }, getDomain);
 });
 
 function getDomain(hostname, callback, TLDs) {
