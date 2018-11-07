@@ -1,11 +1,18 @@
+if (process.argv.length < 3) {
+    console.log("请输入网站");
+    process.exit(0);
+}
+
 var request = require('request');
 var cheerio = require('cheerio');
 var URL = require('url-parse');
-const { fork } = require('child_process');
-// var getDomain = require('./getdomain');
-var getDomain = fork("./getdomain.js");
-
-var START_URL = "http://www.zxxk.com";
+/*
+const readline = require('readline');
+readline.emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
+*/
+// var START_URL = "http://www.qq.com";
+var START_URL = process.argv[2];
 var SEARCH_WORD = "stemming";
 var MAX_PAGE_TO_VISIT = 10;
 
@@ -14,21 +21,33 @@ var pagesVisited = {};
 var numPagesVisited = 0;
 
 var url = new URL(START_URL);
-var hostname = url.hostname;
-var baseUrl = url.protocol + '//' + hostname;
+var baseUrl = url.protocol + '//' + url.hostname;
 var topDomain;
 
-getDomain.on('message', function(name) {
-    topDomain = name;
+const { fork } = require('child_process');
+// var getDomain = require('./getdomain');
+var getDomain = fork('./getdomain.js', [url.hostname]);
+
+getDomain.on('message', function(msg) {
+    topDomain = msg['domain'];
     console.log("域名：" + topDomain);
     pagesToVisit.push(START_URL);
     crawl();
 });
 
-getDomain.send({ hostname });
-
-process.stdin(); // 等待输入，挂起主进程
-
+// getDomain.send({ hostname: url.hostname });
+/*
+process.stdin.on('keypress', (str, key) => {
+    if (key.ctrl && key.name === 'c')
+        process.exit();
+    else {
+        console.log('You pressed the "${str}" key');
+        console.log();
+        console.log(key);
+        console.log();
+    }
+});
+*/
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {
         console.log("到达访问页面数上限，见好就收");
@@ -55,22 +74,18 @@ function visitPage(url, cb) {
     console.log("Visiting page " + url);
     request(url, function(error, response, body) {
         // Check status code (200 is HTTP OK)
-        console.log("Status code: " + response.statusCode);
-        if (response.statusCode !== 200) {
-            cb(); //没有成功，继续前进
-            return;
-        }
-
-        // Parse the document body
-        var $ = cheerio.load(body);
-        if (searchForWord($, SEARCH_WORD)) {
-            console.log('WORD "' + SEARCH_WORD + '" found at page ' + page);
-            // 成功，适可而止？
-        } else {
+        // console.log("Status code: " + response.statusCode);
+        if (!error && (response.statusCode === 200)) {
+            var $ = cheerio.load(body);
             collectInternalLinks($);
             collectExternalLinks($);
-            cb();
+            // Parse the document body
+            if (searchForWord($, SEARCH_WORD)) {
+                console.log('WORD "' + SEARCH_WORD + '" found at page ' + page);
+                // 成功，适可而止？
+            }
         }
+        cb();
     });
 }
 
