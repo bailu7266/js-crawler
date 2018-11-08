@@ -11,32 +11,34 @@ var ccTLDs = []; // Country-code Top Level Domain
 /* Original generic and sponsored TLDs */
 const osTLDs = ['com', 'org', 'net', 'int', 'edu', 'gov', 'mil', 'arpa', 'aero', 'asia', 'cat', 'coop', 'jobs', 'museum', 'post', 'tel', 'travel', 'xxx'];
 
-module.exports = (hostname, callback) => {
-    // get TLDs from www.iana.org
-    const url4TLD = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
+module.exports = (hostname) => {
+    return new Promise((resolove, reject) => {
+        // get TLDs from www.iana.org
+        const url4TLD = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
 
-    if (TLDs) {
-        matchDomain(hostname, callback);
-    } else {
-        request(url4TLD, function(error, response, body) {
-            if (error) {
-                console.log(error);
-                callback({ msg: error });
-            }
+        if (TLDs) {
+            matchDomain(hostname, callback);
+        } else {
+            request(url4TLD, function(error, response, body) {
+                if (error) {
+                    console.log(error);
+                    reject({ msg: error });
+                }
 
-            if (response.statusCode === 200) {
-                TLDs = body.split('\n');
-                TLDs.shift(); // 移除启行的说明
-                for (var i = 0; i < TLDs.length; i++)
-                    TLDs[i] = TLDs[i].toLowerCase();
-                classifyDomain(TLDs);
-                matchDomain(hostname, callback)
-            } else {
-                console.log("返回码" + response.statusCode + ": 获取 " + url + " 没有成功。");
-                callback({ msg: '无法打开网页' });
-            }
-        });
-    }
+                if (response.statusCode === 200) {
+                    TLDs = body.split('\n');
+                    TLDs.shift(); // 移除启行的说明
+                    for (var i = 0; i < TLDs.length; i++)
+                        TLDs[i] = TLDs[i].toLowerCase();
+                    classifyDomain(TLDs);
+                    resolove(matchDomain(hostname));
+                } else {
+                    console.log("返回码" + response.statusCode + ": 获取 " + url + " 没有成功。");
+                    reject({ msg: '无法打开网页' });
+                }
+            });
+        }
+    })
 }
 
 function classifyDomain(TLDs) {
@@ -51,7 +53,7 @@ function classifyDomain(TLDs) {
     }
 }
 
-function matchDomain(hostname, callback) {
+function matchDomain(hostname) {
     // var hostParts = process.argv[2].split('.'); // 第三个参数就是hostname
     var hostParts = hostname.split('.');
     var index = hostParts.length;
@@ -78,5 +80,5 @@ function matchDomain(hostname, callback) {
         index--;
     console.log('顶级域名是： ' + hostParts.slice(index).join('.'));
     // process.send({ domain: hostParts.slice(index).join('.') });
-    callback(null, hostParts.slice(index).join('.'));
+    return hostParts.slice(index).join('.');
 }

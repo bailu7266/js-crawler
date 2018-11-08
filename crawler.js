@@ -51,16 +51,17 @@ process.stdin.on('keypress', (str, key) => {
 
 var getDomain = require('./getdomain.js');
 
-getDomain(url.hostname, (err, name) => {
-    if (err) {
+getDomain(url.hostname)
+    .then(name => {
+        topDomain = name;
+        console.log("域名：" + topDomain);
+        pagesToVisit.push(START_URL);
+        crawl();
+    })
+    .catch(err => {
         console.log(err);
         topDomain = null;
-    } else
-        topDomain = name;
-    console.log("域名：" + topDomain);
-    pagesToVisit.push(START_URL);
-    crawl();
-});
+    });
 
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {
