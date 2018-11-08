@@ -50,7 +50,7 @@ process.stdin.on('keypress', (str, key) => {
 */
 
 var getDomain = require('./getdomain.js');
-
+/*
 getDomain(url.hostname)
     .then(name => {
         topDomain = name;
@@ -62,6 +62,16 @@ getDomain(url.hostname)
         console.log(err);
         topDomain = null;
     });
+*/
+
+const appMain = async() => {
+    topDomain = await getDomain(url.hostname)
+    console.log("匹配域名：" + topDomain);
+    pagesToVisit.push(START_URL);
+    crawl();
+}
+
+appMain();
 
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {
