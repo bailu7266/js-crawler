@@ -1,38 +1,46 @@
 var request = require('request');
 
-// get TLDs from www.iana.org
-var url = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
 // console.log('进程 ' + process.argv[1] + '的参数表: ' + process.argv[2]);
 
-request(url, function(error, response, body) {
-    if (error) {
-        console.log(error);
-        getDomain(null);
-    }
+/* They are all TLDs at the beginning,  but only the rest TLDs exclude ccTLDs
+   and osTLDs after classification
+*/
+var TLDs;
+var ccTLDs = []; // Country-code Top Level Domain
 
-    if (response.statusCode === 200) {
-        var TLDs;
-        TLDs = body.split('\n');
-        TLDs.shift(); // 移除启行的说明
-        for (var i = 0; i < TLDs.length; i++)
-            TLDs[i] = TLDs[i].toLowerCase();
-        getDomain(TLDs);
+/* Original generic and sponsored TLDs */
+const osTLDs = ['com', 'org', 'net', 'int', 'edu', 'gov', 'mil', 'arpa', 'aero', 'asia', 'cat', 'coop', 'jobs', 'museum', 'post', 'tel', 'travel', 'xxx'];
+
+module.exports = (hostname, callback) => {
+    // get TLDs from www.iana.org
+    const url4TLD = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
+
+    if (TLDs) {
+        matchDomain(hostname, callback);
     } else {
-        console.log("返回码" + response.statusCode + ": 获取 " + url + " 没有成功。");
-        getDomain(null);
-    }
-});
+        request(url4TLD, function(error, response, body) {
+            if (error) {
+                console.log(error);
+                callback({ msg: error });
+            }
 
-function getDomain(TLDs) {
-    if (!TLDs) {
-        // process.send(null);
-        console("没有找到匹配的域名！");
+            if (response.statusCode === 200) {
+                TLDs = body.split('\n');
+                TLDs.shift(); // 移除启行的说明
+                for (var i = 0; i < TLDs.length; i++)
+                    TLDs[i] = TLDs[i].toLowerCase();
+                classifyDomain(TLDs);
+                matchDomain(hostname, callback)
+            } else {
+                console.log("返回码" + response.statusCode + ": 获取 " + url + " 没有成功。");
+                callback({ msg: '无法打开网页' });
+            }
+        });
     }
+}
 
+function classifyDomain(TLDs) {
     // Get country-code TLDs (ccTLD) from TLDs and eliminate them. IDNs are not included
-    var ccTLDs = [];
-    var osTLDs = ['com', 'org', 'net', 'int', 'edu', 'gov', 'mil', 'arpa', 'aero', 'asia', 'cat', 'coop', 'jobs', 'museum', 'post', 'tel', 'travel', 'xxx'];
-
     for (var i = 0; i < TLDs.length;) {
         if (TLDs[i].length == 2) { // only ccTLD is 2 bytes long
             ccTLDs.push(TLDs[i]);
@@ -41,8 +49,11 @@ function getDomain(TLDs) {
             TLDs = TLDs.slice(0, i).concat(TLDs.slice(i + 1));
         } else i++;
     }
+}
 
-    var hostParts = process.argv[2].split('.'); // 第三个参数就是hostname
+function matchDomain(hostname, callback) {
+    // var hostParts = process.argv[2].split('.'); // 第三个参数就是hostname
+    var hostParts = hostname.split('.');
     var index = hostParts.length;
     var otherTLD = true; // Includes brand, city, geographic TLDs, etc.
 
@@ -66,5 +77,6 @@ function getDomain(TLDs) {
     if (index >= 1)
         index--;
     console.log('顶级域名是： ' + hostParts.slice(index).join('.'));
-    process.send({ domain: hostParts.slice(index).join('.') });
+    // process.send({ domain: hostParts.slice(index).join('.') });
+    callback(null, hostParts.slice(index).join('.'));
 }

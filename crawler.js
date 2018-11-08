@@ -23,7 +23,7 @@ var numPagesVisited = 0;
 var url = new URL(START_URL);
 var baseUrl = url.protocol + '//' + url.hostname;
 var topDomain;
-
+/*
 const { fork } = require('child_process');
 // var getDomain = require('./getdomain');
 var getDomain = fork('./getdomain.js', [url.hostname]);
@@ -34,7 +34,7 @@ getDomain.on('message', function(msg) {
     pagesToVisit.push(START_URL);
     crawl();
 });
-
+*/
 // getDomain.send({ hostname: url.hostname });
 /*
 process.stdin.on('keypress', (str, key) => {
@@ -48,6 +48,20 @@ process.stdin.on('keypress', (str, key) => {
     }
 });
 */
+
+var getDomain = require('./getdomain.js');
+
+getDomain(url.hostname, (err, name) => {
+    if (err) {
+        console.log(err);
+        topDomain = null;
+    } else
+        topDomain = name;
+    console.log("域名：" + topDomain);
+    pagesToVisit.push(START_URL);
+    crawl();
+});
+
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {
         console.log("到达访问页面数上限，见好就收");
