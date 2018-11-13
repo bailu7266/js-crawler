@@ -56,29 +56,29 @@ function classifyDomain(TLDs) {
 function matchDomain(hostname) {
     // var hostParts = process.argv[2].split('.'); // 第三个参数就是hostname
     var hostParts = hostname.split('.');
-    var index = hostParts.length;
+    var idx = hostParts.length;
     var otherTLD = true; // Includes brand, city, geographic TLDs, etc.
 
-    if (ccTLDs.indexOf(hostParts[index - 1]) >= 0) { // Eliminate ccTLD
-        index--;
+    if (ccTLDs.indexOf(hostParts[idx - 1]) >= 0) { // Eliminate ccTLD
+        idx--;
         otherTLD = false;
         // hostParts.pop();
     }
 
-    if (osTLDs.indexOf(hostParts[index - 1]) >= 0) {
-        index--;
+    if (osTLDs.indexOf(hostParts[idx - 1]) >= 0) {
+        idx--;
         otherTLD = false;
         // hostParts.pop();
     }
 
     if (otherTLD) {
-        if (TLDs.indexOf(hostParts[index - 1]) >= 0) {
-            index--;
+        if (TLDs.indexOf(hostParts[idx - 1]) >= 0) {
+            idx--;
         }
     }
-    if (index >= 1)
-        index--;
-    console.log('顶级域名是： ' + hostParts.slice(index).join('.'));
-    // process.send({ domain: hostParts.slice(index).join('.') });
-    return hostParts.slice(index).join('.');
+    if (idx >= 1)
+        idx--;
+    console.log('顶级域名是： ' + hostParts.slice(idx).join('.'));
+    // process.send({ domain: hostParts.slice idx).join('.') });
+    return hostParts.slice(idx).join('.');
 }

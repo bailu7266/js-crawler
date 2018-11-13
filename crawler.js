@@ -5,6 +5,13 @@ if (process.argv.length < 3) {
 
 var request = require('request');
 var cheerio = require('cheerio');
+var lunr = require('lunr');
+var index = lunr(function() {
+    this.field('title');
+    this.field('body');
+    this.ref('id');
+});
+
 var URL = require('url-parse');
 /*
 const readline = require('readline');
@@ -76,6 +83,9 @@ appMain();
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {
         console.log("到达访问页面数上限，见好就收");
+        var result = index.search('sina');
+        console.log('我们发现了 ' + result.length + ' 个文档');
+        console.log('第一个是：' + result[0]);
         return;
     }
     var nextPage = pagesToVisit.pop();
@@ -83,8 +93,7 @@ function crawl() {
         console.log("没有网页可访问了！")
         return;
     }
-    if (nextPage in pagesVisited) {
-        // 该页面已经访问过了，掠过
+    if (nextPage in pagesVisited) { // 该页面已经访问过了，掠过
         crawl();
     } else {
         // 访问该页面
@@ -104,11 +113,19 @@ function visitPage(url, cb) {
             var $ = cheerio.load(body);
             collectInternalLinks($);
             collectExternalLinks($);
-            // Parse the document body
-            if (searchForWord($, SEARCH_WORD)) {
+            // Index page
+            var doc = {
+                'id': url,
+                'body': $('html > body'),
+                'title': $('title').text()
+            };
+            index.add(doc);
+
+            /*if (searchForWord($, SEARCH_WORD)) {
                 console.log('WORD "' + SEARCH_WORD + '" found at page ' + page);
                 // 成功，适可而止？
-            }
+            }*/
+
         }
         cb();
     });
