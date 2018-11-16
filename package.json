@@ -8,7 +8,8 @@
     "dependencies": {
         "cheerio": "^0.22.0",
         "lunr": "1.x",
-        "request": "^2.65.0",
+        "request": "^2.6.5",
+        "request-promise": "^4.2.2",
         "url-parse": "^1.4.4"
     }
 }

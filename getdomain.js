@@ -1,4 +1,4 @@
-var request = require('request');
+var request = require('request-promise');
 
 // console.log('进程 ' + process.argv[1] + '的参数表: ' + process.argv[2]);
 
@@ -11,34 +11,31 @@ var ccTLDs = []; // Country-code Top Level Domain
 /* Original generic and sponsored TLDs */
 const osTLDs = ['com', 'org', 'net', 'int', 'edu', 'gov', 'mil', 'arpa', 'aero', 'asia', 'cat', 'coop', 'jobs', 'museum', 'post', 'tel', 'travel', 'xxx'];
 
-module.exports = (hostname) => {
-    return new Promise((resolove, reject) => {
-        // get TLDs from www.iana.org
-        const url4TLD = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
+module.exports = async(hostname) => {
+    // get TLDs from www.iana.org
+    const url4TLD = "https://data.iana.org/TLD/tlds-alpha-by-domain.txt";
 
-        if (TLDs) {
-            matchDomain(hostname, callback);
-        } else {
-            request(url4TLD, function(error, response, body) {
-                if (error) {
-                    console.log(error);
-                    reject({ msg: error });
-                }
-
-                if (response.statusCode === 200) {
-                    TLDs = body.split('\n');
-                    TLDs.shift(); // 移除启行的说明
-                    for (var i = 0; i < TLDs.length; i++)
-                        TLDs[i] = TLDs[i].toLowerCase();
-                    classifyDomain(TLDs);
-                    resolove(matchDomain(hostname));
-                } else {
-                    console.log("返回码" + response.statusCode + ": 获取 " + url + " 没有成功。");
-                    reject({ msg: '无法打开网页' });
-                }
-            });
+    if (TLDs) {
+        return matchDomain(hostname);
+    } else {
+        try {
+            var resp = await request({ uri: url4TLD, resolveWithFullResponse: true })
+            if (resp.statusCode === 200) {
+                TLDs = resp.body.split('\n');
+                TLDs.shift(); // 移除启行的说明
+                for (var i = 0; i < TLDs.length; i++)
+                    TLDs[i] = TLDs[i].toLowerCase();
+                classifyDomain(TLDs);
+                return matchDomain(hostname);
+            } else
+                return null;
+        } catch (error) {
+            console.log(error.message);
+            // reject({ msg: error });
+            //  throw error;
+            return null;
         }
-    })
+    }
 }
 
 function classifyDomain(TLDs) {
