@@ -3,19 +3,19 @@
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [
-    {
-        "type": "node",
-        "request": "launch",
-        "stopOnEntry": true,
-        "name": "Debug crawl-gb.js",
-        "program": "${workspaceFolder}/crawl-gb.js"
-    },
+    "configurations": [{
+            "type": "node",
+            "request": "launch",
+            "name": "Debug crawl-gb.js",
+            "args": ["https://cn.bing.com/search?q=%e4%b8%ad%e5%ad%a6%e8%af%95%e9%a2%98&qs=SC&pq=%e4%b8%ad%e5%ad%a6shi%27t&sk=SC1&sc=8-7&cvid=F53E486DAC344A41B8D3DC04146AB783&FORM=QBLH&sp=2"],
+            "stopOnEntry": true,
+            "program": "${workspaceFolder}/crawl-gb.js"
+        },
         {
             "type": "node",
             "request": "launch",
             "name": "Debug getdomain",
-            "args":[
+            "args": [
                 "www.sina.com.il"
             ],
             "program": "${workspaceFolder}/getdomain.js"
@@ -24,10 +24,8 @@
             "type": "node",
             "request": "launch",
             "name": "启动程序crawler.js",
-            "args": [
-                "http://www.msdn.com"
-            ],
-            "program": "${workspaceFolder}\\crawler.js"
+            "args": ["https://cn.bing.com/search?q=%e4%b8%ad%e5%ad%a6%e8%af%95%e9%a2%98&qs=SC&pq=%e4%b8%ad%e5%ad%a6shi%27t&sk=SC1&sc=8-7&cvid=F53E486DAC344A41B8D3DC04146AB783&FORM=QBLH&sp=2"],
+            "program": "${workspaceFolder}/crawler.js"
         }
     ]
 }

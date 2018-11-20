@@ -3,7 +3,7 @@ var cheerio = require('cheerio');
 var getDomain = require('./getdomain.js');
 // var puppeteer = require('puppeteer');   
 var lunr = require('lunr');
-var index = lunr(function() {
+var index = lunr(function () {
     this.field('title');
     this.field('body');
     this.ref('id');
@@ -12,8 +12,8 @@ var index = lunr(function() {
 var URL = require('url-parse');
 
 const readline = require('readline');
-readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+// readline.emitKeypressEvents(process.stdin);
+// process.stdin.setRawMode(true);
 
 var START_URL = process.argv[2];
 // var START_URL = "http://www.qq.com";
@@ -41,7 +41,7 @@ function promptUrl() {
     });
 }
 
-(async() => {
+(async () => {
     while (!START_URL) {
         START_URL = await promptUrl()
     }
@@ -125,7 +125,7 @@ async function visitPage(url, cb) {
     var opt = {
         uri: url,
         resolveWithFullResponse: true,
-        transform: function(body, response, resolveWithFullResponse) {
+        transform: function (body, response, resolveWithFullResponse) {
             if (response.statusCode === 200)
                 return cheerio.load(body);
             else {
@@ -136,9 +136,9 @@ async function visitPage(url, cb) {
 
     try {
         var $ = await request(opt)
-            // Check status code (200 is HTTP OK)
-            // console.log("Status code: " + response.statusCode);
-            // var $ = cheerio.load(body);
+        // Check status code (200 is HTTP OK)
+        // console.log("Status code: " + response.statusCode);
+        // var $ = cheerio.load(body);
         collectInternalLinks($);
         collectExternalLinks($);
         // Index page
@@ -170,7 +170,7 @@ function searchForWord($, word) {
 function collectInternalLinks($) {
     var relativeLinks = $("a[href^='/']:not(a[href^='//'])");
     console.log('Found ' + relativeLinks.length + ' relative links on page');
-    relativeLinks.each(function() {
+    relativeLinks.each(function () {
         // if (!(/^\/\//.test($(this).attr("href"))))
         pagesToVisit.push(baseUrl + $(this).attr('href'));
     });
@@ -181,7 +181,7 @@ function collectExternalLinks($) {
     console.log('Found ' + absoluteLinks.length + ' absolute links on page');
 
     var numSubDomainLinks = 0;
-    absoluteLinks.each(function(i) {
+    absoluteLinks.each(function (i) {
         var aUrl = $(this).attr('href');
         if ((new URL(aUrl)).hostname.indexOf(topDomain) >= 0) {
             // 查看以‘//’开头的外部链接

@@ -27,20 +27,20 @@ function promptUrl() {
 }
 
 // main
-(async() => {
+(async () => {
     while (!SEARCH_URL) {
         SEARCH_URL = await promptUrl()
     }
 
     rli.close();
 
-    url = new URL(SEARCH_URL);
-    baseUrl = url.protocol + '//' + url.hostname;
+    var url = new URL(SEARCH_URL);
+    var baseUrl = url.protocol + '//' + url.hostname;
 
     var opt = {
         uri: url,
         resolveWithFullResponse: true,
-        transform: function(body, response) {
+        transform: function (body, response) {
             if (response.statusCode === 200)
                 return cheerio.load(body);
             else {
@@ -55,7 +55,7 @@ function promptUrl() {
             var $ = await request(opt);
             var nextUrl = collectResultLinks($);
             if (nextUrl)
-                opt.uri = nextUrl;
+                opt.uri = baseUrl + nextUrl;
             else break;
         } catch (err) {
             console.log(err.message);
@@ -65,27 +65,33 @@ function promptUrl() {
 
     // console log collected links
     resultLinks.each((i, lnk) => {
-        console.log('No $i: ' + lnk);
+        console.log('No ' + i + ': ' + lnk);
     });
 })();
 
 function collectResultLinks($) {
     // Add the first adv link
-    adLinks.push($('#b_results > li:nth-child(1) > ul > li > div > h2 > a').attr('href'));
+    // adLinks.push($('ol#b_results > li:nth-child(1) > ul > li > div > h2 > a').attr('href'));
     // Add the last adv link
-    adLinks.push($('#b_results > li.b_ad.b_adBottom > ul > li > div > h2 > a').attr('href'));
+    // adLinks.push($('ol#b_results > li.b_ad.b_adBottom > ul > li > div > h2 > a').attr('href'));
 
-    var resultItem = $('#b_results > li.b_algo');
-    resultItem.each(($) => {
+    // console.log 一个selector试试看
+    var tmp = $("ol#b_results > li:nth-child(1) > h2 > a");
+    console.log(tmp);
+    tmp = $(".algo");
+    tmp = $("a[href^='/']:not(a[href^='//'])");
+
+    var resultItems = $("ol#b_results > li.b_algo");
+    resultItems.each(($) => {
         resultLinks.push($('li > h2 > a').attr('href'));
     });
 
     var pages = $('#b_results > li.b_pag > nav > ul');
     for (var i = 0; i < pages.length;) {
-        var $ = pages[i];
+        $ = pages[i];
         i++;
         if ($('li:has(.sb_pagS.sb_pagS_bg)')) {
-            $ = page[i];
+            $ = pages[i];
             return $('li > a').attr('href');
         }
     }
