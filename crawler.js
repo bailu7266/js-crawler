@@ -15,7 +15,7 @@ const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-var START_URL /* = process.argv[2]*/ ;
+var START_URL = process.argv[2];
 // var START_URL = "http://www.qq.com";
 var SEARCH_WORD = "stemming";
 var MAX_PAGE_TO_VISIT = 10;
@@ -42,16 +42,16 @@ function promptUrl() {
 }
 
 (async() => {
-    if (process.argv.length < 3) {
-        var answer = await promptUrl()
-        START_URL = answer;
-        appMain();
-        rli.close();
-        // });
-    } else {
-        START_URL = process.argv[2];
-        appMain();
+    while (!START_URL) {
+        START_URL = await promptUrl()
     }
+
+    url = new URL(START_URL);
+    baseUrl = url.protocol + '//' + url.hostname;
+    topDomain = await getDomain(url.hostname)
+    console.log("匹配域名：" + topDomain);
+    pagesToVisit.push(START_URL);
+    crawl();
 })();
 
 /*
@@ -93,17 +93,6 @@ getDomain(url.hostname)
         topDomain = null;
     });
 */
-
-async function appMain() {
-    url = new URL(START_URL);
-    baseUrl = url.protocol + '//' + url.hostname;
-    topDomain = await getDomain(url.hostname)
-    console.log("匹配域名：" + topDomain);
-    pagesToVisit.push(START_URL);
-    crawl();
-}
-
-// appMain();
 
 function crawl() {
     if (numPagesVisited >= MAX_PAGE_TO_VISIT) {
