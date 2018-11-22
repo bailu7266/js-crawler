@@ -10,6 +10,7 @@
         "lunr": "1.x",
         "request": "^2.6.5",
         "request-promise": "^4.2.2",
+        "qs": "^6.5.2",
         "url-parse": "^1.4.4"
     }
 }

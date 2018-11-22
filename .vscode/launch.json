@@ -7,7 +7,6 @@
             "type": "node",
             "request": "launch",
             "name": "Debug crawl-gb.js",
-            "args": ["三年中考", "五年模拟", "地理", "八年级"],
             "stopOnEntry": true,
             "program": "${workspaceFolder}/crawl-gb.js"
         },
