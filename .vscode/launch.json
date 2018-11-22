@@ -7,7 +7,7 @@
             "type": "node",
             "request": "launch",
             "name": "Debug crawl-gb.js",
-            "args": ["https://cn.bing.com/search?q=%e4%b8%ad%e5%ad%a6%e8%af%95%e9%a2%98&qs=SC&pq=%e4%b8%ad%e5%ad%a6shi%27t&sk=SC1&sc=8-7&cvid=F53E486DAC344A41B8D3DC04146AB783&FORM=QBLH&sp=2"],
+            "args": ["三年中考", "五年模拟", "地理", "八年级"],
             "stopOnEntry": true,
             "program": "${workspaceFolder}/crawl-gb.js"
         },
