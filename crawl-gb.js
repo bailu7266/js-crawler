@@ -1,4 +1,7 @@
-'use_strict';
+/*
+ */
+
+'use strict';
 
 const request = require('request-promise');
 const qs = require('qs');
@@ -10,11 +13,25 @@ const cookiejar = request.jar();
 const MAX_RESULT_PAGES = 10;
 var resultLinks = [];
 var adLinks = [];
+var se = {
+    protocol: 'https:',
+    host: 'www.bing.com',
+    searchPath: '/search',
+    auth: {
+        user: '',
+        pass: ''
+    },
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+    crawl: crawlBingSerp
+};
+
 var numResultPages = 0;
 
 const readline = require('readline');
-// readline.emitKeypressEvents(process.stdin);
-// process.stdin.setRawMode(true);
+if (process.stdin.isTTY) {
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
+}
 
 const rli = readline.createInterface({
     input: process.stdin,
@@ -22,7 +39,7 @@ const rli = readline.createInterface({
 });
 
 // main
-(async () => {
+(async() => {
     let keyWords = process.argv.slice(2);
 
     while (keyWords.length === 0) {
@@ -35,22 +52,22 @@ const rli = readline.createInterface({
     // let url = new URL(keyWords);
     // let baseUrl = url.protocol + '//' + url.hostname;
 
-    let nextUrl = 'https://cn.bing.com/search';
+    let nextUrl = se.protocol + '//' + se.host + se.searchPath;
 
     try {
         let $ = await request({
             uri: nextUrl,
             qs: {
                 q: keyWords.join('+')
-                /*,
-                               qs: 'n',
-                               form: 'QBLH'*/
+            },
+            headers: {
+                'User-Agent': se.userAgent,
             },
             jar: cookiejar, // store cookies
             resolveWithFullResponse: true,
-            transform: function (body, response) {
+            transform: function(body, response) {
                 if (response.statusCode === 200) {
-                    console.log('Visiting: ' + this.uri + '?' + qs.stringify(this.qs));
+                    console.log('Visiting: ' + decodeURI(this.uri + '?' + qs.stringify(this.qs)));
                     // console.log(cookiejar.getCookieString(this.uri));
                     return cheerio.load(body);
                 } else {
@@ -60,17 +77,20 @@ const rli = readline.createInterface({
                 }
             }
         });
-        // fs.writeFileSync('./tmp/page0.html', $.html());
+        fs.writeFileSync('./tmp/page0.html', $.html());
 
         // collect links from the first SERP
-        nextUrl = collectResultLinks($);
+        nextUrl = se.crawl($);
     } catch (err) {
         console.log(err.message);
         process.exit();
     }
 
     let myRequest = request.defaults({
-        baseUrl: 'https://cn.bing.com',
+        baseUrl: se.protocol + '//' + se.host,
+        headers: {
+            'User-Agent': se.userAgent
+        },
         jar: true, // store cookies
         transform: (body) => {
             return cheerio.load(body);
@@ -85,7 +105,7 @@ const rli = readline.createInterface({
             // 保持$中的内容，供调试用
             fs.writeFileSync(`./tmp/${numResultPages}.html`, $.html());
 
-            nextUrl = collectResultLinks($);
+            nextUrl = se.crawl($);
         } catch (err) {
             console.log(err.message);
             break;
@@ -94,7 +114,10 @@ const rli = readline.createInterface({
 
     // console log collected links
     resultLinks.forEach((lnk, i) => {
-        console.log(`No ${i}: ` + lnk);
+        console.log(`No ${i}: ` + lnk.name);
+        console.log(lnk.uri);
+        console.log(lnk.descr);
+        console.log('\n');
     });
 })();
 
@@ -106,29 +129,61 @@ function inputKeyWords() {
     });
 }
 
-function collectResultLinks($) {
+function crawlBingSerp($) {
     // Add the first adv link
     // adLinks.push($('ol#b_results > li:nth-child(1) > ul > li > div > h2 > a').attr('href'));
     // Add the last adv link
     // adLinks.push($('ol#b_results > li.b_ad.b_adBottom > ul > li > div > h2 > a').attr('href'));
 
-    var resultItems = $('#b_results > li.b_algo');
-    var pages = $('#b_results > li.b_pag > nav > ul > li');
+    let resultItems = $('#b_results > li.b_algo');
+    let navPages = $('#b_results > li.b_pag > nav > ul > li');
 
     resultItems.each((i, item) => {
         let $ = cheerio.load(item);
-        resultLinks.push($('li h2 > a[h*="ID=SERP"]').attr('href'));
+        resultLinks.push({
+            name: $('li h2 > a[h*="ID=SERP"]').text(),
+            uri: $('li h2 > a[h*="ID=SERP"]').attr('href'),
+            descr: $('li > div.b_caption >p').text()
+        });
     });
 
-    var pageKeys = Object.keys(pages);
+    let pageKeys = Object.keys(navPages);
     for (let i = 0; i < pageKeys.length; i++) {
-        let $ = cheerio.load(pages[pageKeys[i]]);
+        let $ = cheerio.load(navPages[pageKeys[i]]);
 
         if ($('a').is('a.sb_pagS.sb_pagS_bp')) {
-            let $ = cheerio.load(pages[pageKeys[i + 1]]);
+            let $ = cheerio.load(navPages[pageKeys[i + 1]]);
             return $('a[h*="ID=SERP"]').attr('href');
         }
     }
 
+    return null;
+}
+
+function crawlGoogleSerp($) {
+    let resultItems = $('#rso > div > div > div.g');
+    let navPages = $('#nav > tbody > tr > td');
+
+    resultItems.each((i, item) => {
+        let $ = cheerio.load(item);
+        resultLinks.push({
+            name: $('div.r > a > h3').text(),
+            uri: $('div.r > a').attr('href'),
+            descr: $('div.s > div > span.st').text()
+        });
+    });
+
+    let pageKeys = Object.keys(navPages);
+    for (let i = 0; i < pageKeys.length; i++) {
+        let $ = cheerio.load(navPages[pageKeys[i]]);
+        if ($('td').hasClass('cur')) {
+            let $ = cheerio.load(navPages[pageKeys[i + 1]]);
+            if ($('td').is('.b.navend')) {
+                return null; // Reach the end
+            } else {
+                return $('a.fl').attr('href');
+            }
+        }
+    }
     return null;
 }

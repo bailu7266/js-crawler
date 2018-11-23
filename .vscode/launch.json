@@ -8,6 +8,7 @@
             "request": "launch",
             "name": "Debug crawl-gb.js",
             "stopOnEntry": true,
+            "args": ["用友软件园", "亦启科技", "垦书"],
             "program": "${workspaceFolder}/crawl-gb.js"
         },
         {
