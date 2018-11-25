@@ -2,13 +2,17 @@
     // 使用 IntelliSense 了解相关属性。 
     // 悬停以查看现有属性的描述。
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    // "SERP_FILE": "./tmp/gl-serp-without-js.html",
+    // "HTTPS_PROXY": "http://127.0.0.1:49454"
+
     "version": "0.2.0",
     "configurations": [{
             "type": "node",
             "request": "launch",
             "name": "Debug crawl-gb.js",
             "stopOnEntry": true,
-            "args": ["用友软件园", "亦启科技", "垦书"],
+            "args": ["javascript", "中文支持", "app开发"],
+            "env": {},
             "program": "${workspaceFolder}/crawl-gb.js"
         },
         {
