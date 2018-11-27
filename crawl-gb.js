@@ -12,8 +12,13 @@ const fsPromises = fs.promises;
 const cookiejar = request.jar();
 const mongoClient = require('mongodb').MongoClient;
 
+// JSON文件拼接相关的两个常量
+const JSON_END_OFF = Buffer.byteLength('\n]', 'utf8');
+const JSON_START_OFF = Buffer.byteLength('[\n', 'utf8');
+
 const MAX_RESULT_PAGES = 10;
-const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36';
+const userAgent =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36';
 
 var resultLinks = [];
 // var adLinks = [];
@@ -32,35 +37,38 @@ var fhJson = null;
 // main entry
 (() => {
     // Initialize mongodb database
-    const dbUrl = "mongodb://localhost:27017/";
-    mongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, db) => {
-        if (err) {
-            console.log(err.message);
-        } else {
-            gDb = db;
-            let dbo = db.db('crawl_db');
-            dbo.createCollection('links', (err, collection) => {
-                if (err) {
-                    console.log(err.message);
-                } else {
-                    _main(collection)
-                        .catch((err) => {
+    const dbUrl = 'mongodb://localhost:27017/';
+    mongoClient.connect(
+        dbUrl, {
+            useNewUrlParser: true
+        },
+        (err, db) => {
+            if (err) {
+                console.log(err.message);
+            } else {
+                gDb = db;
+                let dbo = db.db('crawl_db');
+                dbo.createCollection('links', (err, collection) => {
+                    if (err) {
+                        console.log(err.message);
+                    } else {
+                        _main(collection).catch(err => {
                             console.log(err.message);
                             fhJson.close();
                             db.close();
-                        })
+                        });
 
-                    // db.close();
-                }
-            });
+                        // db.close();
+                    }
+                });
+            }
         }
-    });
+    );
 })();
 
 async function _main(collection) {
     let keyWords = process.argv.slice(2);
-    if (keyWords.length === 0)
-        keyWords = await inputKeyWords();
+    if (keyWords.length === 0) keyWords = await inputKeyWords();
 
     // let url = new URL(keyWords);
     // let baseUrl = url.protocol + '//' + url.hostname;
@@ -68,10 +76,9 @@ async function _main(collection) {
     let nextUrl = protocol + '//' + host + searchPath;
     let qStr = keyWords.join('+');
 
-    let $ = await firstPage(nextUrl, qStr)
-        .catch(err => {
-            console.log(err.message);
-        });
+    let $ = await firstPage(nextUrl, qStr).catch(err => {
+        console.log(err.message);
+    });
 
     // collect links from the first SERP
     nextUrl = crawl($, resultLinks);
@@ -94,17 +101,22 @@ async function _main(collection) {
         }
     });
 
-    while (nextUrl && numResultPages < MAX_RESULT_PAGES) {
+    while (nextUrl) {
         numResultPages++;
 
-        $ = await nextSerp(myRequest, nextUrl)
-            .catch(err => {
-                console.log(err.message);
-            });
+        $ = await nextSerp(myRequest, nextUrl).catch(err => {
+            console.log(err.message);
+        });
         nextUrl = crawl($, resultLinks);
 
-        appendJsonFile(resultLinks);
-        saveLinks(collection, resultLinks);
+        if (numResultPages < MAX_RESULT_PAGES) {
+            appendJsonFile(resultLinks);
+            saveLinks(collection, resultLinks);
+        } else {
+            appendJsonFile(resultLinks, true);
+            saveLinks(collection, resultLinks);
+            break;
+        }
     }
 
     await report(collection);
@@ -114,23 +126,30 @@ async function _main(collection) {
     console.log('Done!!!');
 }
 
-async function appendJsonFile(links) {
+async function appendJsonFile(links, last = false) {
     // 使用异步操作时，会由于优先执行后面的saveLinks，导致resultLinks被清空
     let strJson = JSON.stringify(links, null, 2);
-    try {
-        if (!fhJson)
-            fhJson = await fsPromises.open('./tmp/links.json', 'w+');
+    let length = Buffer.byteLength(strJson, 'utf8');
+    let buffJson = Buffer.from(strJson, 'utf8');
 
-        let offset = 0;
-        let stats = await fhJson.stat();
-        if (stats.size) {
-            // await fh.truncate(stats.size - 1);
-            // let newStats = await fh.stat();
-            // console.log('JSON 文件大小从：' + stats.size + '变成了：' + newStats.size);
-            // Eliminate the last ']'
-            offset = 2;
+    /* 两个常量，已经放到全局中了
+    const JSON_END_OFF = Buffer.byteLength('\n]', 'utf8');
+    const JSON_START_OFF = Buffer.byteLength('[\n', 'utf8');
+    */
+
+    if (!last) {
+        // 除最后一个外，用‘,\n’代替原Json中的‘\n]’
+        buffJson.write(',\n', length - JSON_END_OFF);
+    }
+
+    try {
+        if (!fhJson) {
+            fhJson = await fsPromises.open('./tmp/links.json', 'w+');
+            // 第一次写入的Json,带‘['
+            await fhJson.appendFile(buffJson);
+        } else {
+            await fhJson.appendFile(buffJson.slice(JSON_START_OFF));
         }
-        await fhJson.appendFile(strJson.slice(offset));
     } catch (err) {
         throw err;
     }
@@ -160,11 +179,11 @@ function inputKeyWords() {
         output: process.stdout
     });
 
-    return new Promise(async(resolve) => {
+    return new Promise(async resolve => {
         let line = [];
         while (line.length === 0) {
             let inkey = await (() => {
-                return new Promise((res) => {
+                return new Promise(res => {
                     rli.question('请输入关键词: ', answer => {
                         res(answer);
                     });
@@ -180,7 +199,7 @@ function inputKeyWords() {
 }
 
 function firstPage(url, qStr) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             if (process.env.SERP_FILE) {
                 resolve(cheerio.load(fs.readFileSync(process.env.SERP_FILE)));
@@ -197,7 +216,7 @@ function firstPage(url, qStr) {
                 proxy: proxy,
                 jar: cookiejar, // store cookies
                 resolveWithFullResponse: true,
-                transform: function(body, response) {
+                transform: function (body, response) {
                     if (response.statusCode === 200) {
                         console.log(
                             'Visiting: ' +
@@ -215,7 +234,7 @@ function firstPage(url, qStr) {
                         );
                     }
                 }
-            })
+            });
 
             resolve($);
         } catch (err) {
@@ -226,10 +245,10 @@ function firstPage(url, qStr) {
 }
 
 function nextSerp(myRequest, nextUrl) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             let $ = await myRequest(nextUrl);
-            // 保持$中的内容，供调试用
+            // 保存$中的内容，供调试用
             fs.writeFileSync(`./tmp/${numResultPages}.html`, $.html());
 
             resolve($);
@@ -241,7 +260,7 @@ function nextSerp(myRequest, nextUrl) {
 }
 
 function report(collection) {
-    return new Promise(async(resolve) => {
+    return new Promise(async resolve => {
         // console log collected links
         let cursor = collection.find();
         let bi = 0;
@@ -255,7 +274,7 @@ function report(collection) {
             });
             bi += 5;
             cursor = collection.find().skip(bi);
-        } while (resultLinks.length)
+        } while (resultLinks.length);
         resolve();
     });
 }
