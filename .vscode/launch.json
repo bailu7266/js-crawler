@@ -11,7 +11,7 @@
             "request": "launch",
             "name": "Debug crawl-gb.js",
             "stopOnEntry": true,
-            "args": ["javascript", "中文支持", "app开发"],
+            "args": ["海淀区中考录取分数线", "2018", "清华附中"],
             "env": {},
             "program": "${workspaceFolder}/crawl-gb.js"
         },

@@ -52,9 +52,10 @@ var fhJson = null;
                     if (err) {
                         console.log(err.message);
                     } else {
+                        collection.deleteMany(); // 初始完成后，立即清空全部记录
                         _main(collection).catch(err => {
                             console.log(err.message);
-                            fhJson.close();
+                            if (fhJson) fhJson.close();
                             db.close();
                         });
 
@@ -144,7 +145,8 @@ async function appendJsonFile(links, last = false) {
 
     try {
         if (!fhJson) {
-            fhJson = await fsPromises.open('./tmp/links.json', 'w+');
+            fhJson = await fsPromises.open('./tmp/links.json', 'w+')
+            await fhJson.truncate(); // 清空这个文件
             // 第一次写入的Json,带‘['
             await fhJson.appendFile(buffJson);
         } else {
@@ -179,16 +181,21 @@ function inputKeyWords() {
         output: process.stdout
     });
 
-    return new Promise(async resolve => {
+    return new Promise(async(resolve, reject) => {
         let line = [];
         while (line.length === 0) {
             let inkey = await (() => {
-                return new Promise(res => {
-                    rli.question('请输入关键词: ', answer => {
-                        res(answer);
+                    return new Promise(res => {
+                        rli.question('请输入关键词: ', answer => {
+                            res(answer);
+                        });
                     });
-                })();
-            });
+                })()
+                .catch(err => {
+                    console.log(err.message);
+                    reject(err);
+                });
+
             line = inkey.split(' ');
         }
 
@@ -199,44 +206,53 @@ function inputKeyWords() {
 }
 
 function firstPage(url, qStr) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         try {
             if (process.env.SERP_FILE) {
-                resolve(cheerio.load(fs.readFileSync(process.env.SERP_FILE)));
+                let body = await fsPromises.readFile(process.env.SERP_FILE);
+                resolve(cheerio.load(body));
+            } else {
+                let $ = await request({
+                        uri: url,
+                        qs: {
+                            q: qStr
+                        },
+                        headers: {
+                            'User-Agent': userAgent
+                        },
+                        proxy: proxy,
+                        jar: cookiejar, // store cookies
+                        resolveWithFullResponse: true,
+                        followRedirect: response => {
+                            console.log('Redirecting to: ' + decodeURIComponent(response.headers.location));
+                            return true;
+                        },
+                        transform: (body, response) => {
+                            if (response.statusCode === 200) {
+                                /* console.log(
+                                    'Visiting: ' +
+                                    decodeURI(
+                                        this.uri + '?' + qs.stringify(this.qs)
+                                    )
+                                ); */
+                                // console.log(cookiejar.getCookieString(this.uri));
+                                return cheerio.load(body);
+                            } else {
+                                throw new Error(
+                                    'Transform failed with ret code： ' +
+                                    response.statusCode
+                                );
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err.message);
+                        throw err;
+                    });
+
+                await fsPromises.writeFile('./tmp/page0.html', $.html);
+                resolve($);
             }
-
-            let $ = await request({
-                uri: url,
-                qs: {
-                    q: qStr
-                },
-                headers: {
-                    'User-Agent': userAgent
-                },
-                proxy: proxy,
-                jar: cookiejar, // store cookies
-                resolveWithFullResponse: true,
-                transform: function (body, response) {
-                    if (response.statusCode === 200) {
-                        console.log(
-                            'Visiting: ' +
-                            decodeURI(
-                                this.uri + '?' + qs.stringify(this.qs)
-                            )
-                        );
-                        // console.log(cookiejar.getCookieString(this.uri));
-                        fs.writeFileSync('./tmp/page0.html', body);
-                        return cheerio.load(body);
-                    } else {
-                        throw new Error(
-                            'Transform failed with ret code： ' +
-                            response.statusCode
-                        );
-                    }
-                }
-            });
-
-            resolve($);
         } catch (err) {
             console.log(err.message);
             reject(err);
@@ -245,11 +261,11 @@ function firstPage(url, qStr) {
 }
 
 function nextSerp(myRequest, nextUrl) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         try {
             let $ = await myRequest(nextUrl);
             // 保存$中的内容，供调试用
-            fs.writeFileSync(`./tmp/${numResultPages}.html`, $.html());
+            await fsPromises.writeFile(`./tmp/${numResultPages}.html`, $.html());
 
             resolve($);
         } catch (err) {
