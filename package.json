@@ -5,6 +5,7 @@
     "main": "crawler.js",
     "author": "Luke",
     "license": "",
+    "gypfile": true,
     "dependencies": {
         "cheerio": "^0.22.0",
         "lunr": "1.x",
