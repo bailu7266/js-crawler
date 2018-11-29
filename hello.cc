@@ -3,14 +3,8 @@
 #include <node.h>
 
 namespace learning {
-    using v8::FunctionCallbackInfo;
-    using v8::Isolate;
-    using v8::Local;
-    using v8::Object;
-    using v8::String;
-    using v8::Value;
-
     using namespace v8;
+
     /* 由于Addon可能被多次被不同的node载入，为了保护全局静态数据不被错误引用，需要创建一个类来应当 */
     class AddonData {
         public:
