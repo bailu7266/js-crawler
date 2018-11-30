@@ -6,7 +6,15 @@
     // "HTTPS_PROXY": "http://127.0.0.1:49454"
 
     "version": "0.2.0",
-    "configurations": [{
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch hello.js",
+            "stopOnEntry": true,
+            "program": "${workspaceFolder}/hello.js"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Debug crawl-gb.js",
