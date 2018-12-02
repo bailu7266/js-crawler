@@ -21,13 +21,14 @@ napi_value Method(napi_env env, napi_callback_info args)
 	void *data;
 
 	status = napi_get_cb_info(env, args, &argc, argv, &thisArg, &data);
+	strcpy(result, (char *)data);
 	if (status != napi_ok)
 	{
-		strcpy(result, "\n获取回调函数信息失败!");
+		strcat(result, "\n获取回调函数信息失败!");
 	}
 	else
 	{
-		strcpy(result, "\n Hello ");
+		strcat(result, "\n Hello ");
 
 		for (int i = 0;;)
 		{
@@ -111,18 +112,36 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	napi_value cb;
 	napi_value thisArg;
 	size_t argc = 1;
-	napi_value argv, result;
+	napi_value argv[4], result;
 
 	status = napi_get_cb_info(env, info, &argc, &cb, &thisArg, nullptr);
 	if (status != napi_ok)
 		return FailureCode(env, -1);
 
-	status = napi_create_string_utf8(env, "C Addon 调用 Javascript 函数一定很酷", NAPI_AUTO_LENGTH, &argv);
+	status = napi_create_string_utf8(env, "C Addon 调用 Javascript 函数一定很酷", NAPI_AUTO_LENGTH, &(argv[0]));
 	if (status != napi_ok)
 		return FailureCode(env, -2);
 
-	argc = 1;
-	status = napi_call_function(env, thisArg, cb, argc, &argv, &result);
+	// 测试分配一个buff, napi_create_buff(_copy),有点疑问，这个buff啥时候释放？
+	char testStr[] = "这是C-Addon分配的空间";
+	void *buff;
+
+	/*+------------------------------------------------------------------------
+	  | 理解：这个buff空间应该是Nodejs分配的，传递给addon，所以不用操心这个空间的管理，
+	  | nodejs会回收的。其lifespan是这样的：napi_create_* （其实就是nodejs)分配, 
+	  |	addon通过返回的指针(buff)可以访问，并传递给nodejs提供的callback函数，但
+	  |	addon的这个方法退出时，nodejs也就回收了这个空间。（??) 
+	  |	更合理的解释：napi_create_*分配的空间同其他对象一样，都是该模块有效，模块退出时，
+	  |	这些空间和对象就都自动回收了（nodejs）。所以如果要context-aware的话，需要在模块
+	  |	初始化时，为每个模块实例预留一个独立的空间，保存每个模块实例特有的数据，而这些数据
+	  |	就不能用模块内分配的空间了，需要使用其他机制，譬如external。
+	  +--------------------------------------------------------------------- */
+	status = napi_create_buffer_copy(env, sizeof(testStr), testStr, &buff, &(argv[1]));
+	if (status != napi_ok)
+		return FailureCode(env, -4);
+
+	argc = 2;
+	status = napi_call_function(env, thisArg, cb, argc, argv, &result);
 	if (status != napi_ok)
 		return FailureCode(env, -3);
 
@@ -132,33 +151,24 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 napi_value init(napi_env env, napi_value exports)
 {
 	napi_status status;
-	napi_value fn;
+	// napi_value fn;
+	/*
+		分配一块空间，使用napi_create_external_*生成一个external（不是js对象，而是napi_typeof()),
+		再把这个external传递给模块方法，可以认为这个空间就是模块实例特有的空间
+	*/
+	const char data[] = "就想看看定义函数中的 void* data 是个啥"; // 危险：局部变量指针传递出作用域了，好歹是常量字符串。
 
-	status = napi_create_function(env, nullptr, 0, Method, nullptr, &fn);
-	if (status != napi_ok)
+	napi_property_descriptor descr[] = {
+		// {"utf8name", name, method, getter, setter, value, attributes, data}
+		{"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)data},
+		{"testObj", NULL, TestObject, NULL, NULL, NULL, napi_default, NULL},
+		{"testCallback", NULL, TestCallback, NULL, NULL, NULL, napi_default, NULL}};
+
+	status = napi_define_properties(env, exports, sizeof(descr) / sizeof(descr[0]), descr);
+	if (status == napi_ok)
+		return exports;
+	else
 		return nullptr;
-
-	status = napi_set_named_property(env, exports, "hello", fn);
-	if (status != napi_ok)
-		return nullptr;
-
-	status = napi_create_function(env, nullptr, 0, TestObject, nullptr, &fn);
-	if (status != napi_ok)
-		return nullptr;
-
-	status = napi_set_named_property(env, exports, "testObj", fn);
-	if (status != napi_ok)
-		return nullptr;
-
-	status = napi_create_function(env, nullptr, 0, TestCallback, nullptr, &fn);
-	if (status != napi_ok)
-		return nullptr;
-
-	status = napi_set_named_property(env, exports, "testCallback", fn);
-	if (status != napi_ok)
-		return nullptr;
-
-	return exports;
 }
 
 NAPI_MODULE(NODE_GYP_MODULE_NAME, init)
