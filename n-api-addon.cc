@@ -5,6 +5,7 @@
 #include <node_api.h>
 #include <stdio.h>
 #include <string.h>
+#include "ln-addon.h"
 
 namespace learning
 {
@@ -132,9 +133,11 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	  |	addon通过返回的指针(buff)可以访问，并传递给nodejs提供的callback函数，但
 	  |	addon的这个方法退出时，nodejs也就回收了这个空间。（??) 
 	  |	更合理的解释：napi_create_*分配的空间同其他对象一样，都是该模块有效，模块退出时，
-	  |	这些空间和对象就都自动回收了（nodejs）。所以如果要context-aware的话，需要在模块
-	  |	初始化时，为每个模块实例预留一个独立的空间，保存每个模块实例特有的数据，而这些数据
-	  |	就不能用模块内分配的空间了，需要使用其他机制，譬如external。
+	  |	这些空间和对象就都自动回收了（nodejs）。
+	  | 由于Nodejs是单进程的，所以没有考虑多进程并发情况，而addon则可能被不同进程加载，也
+	  | 可能存在线程并发访问的情况，这对应全局变量来说是危险的，所以需要context-aware机制，
+	  | 需要在模块初始化时，为每个模块实例预留一个独立的空间，保存每个模块实例特有的数据，
+	  | 而这些数据被传递给addon的方法使用（exports 方法时的（void* data））
 	  +--------------------------------------------------------------------- */
 	status = napi_create_buffer_copy(env, sizeof(testStr), testStr, &buff, &(argv[1]));
 	if (status != napi_ok)
@@ -150,13 +153,33 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 
 napi_value init(napi_env env, napi_value exports)
 {
+	static int32_t mid = 0;
+
 	napi_status status;
+	napi_value global, ex_addon;
+
 	// napi_value fn;
 	/*
 		分配一块空间，使用napi_create_external_*生成一个external（不是js对象，而是napi_typeof()),
-		再把这个external传递给模块方法，可以认为这个空间就是模块实例特有的空间
+		再把这个external传递给模块方法，可以认为这个空间就是模块实例特有的空间。
+		为什么需要external：JS Object的生存期（lifespan）仅在于其被调用执行期间，但有些时候，需要在
+		JS Object的生存期之外对其进行访问（其实不是对该Object进行访问，而是访问该‘数据’（void*），就
+		需要在Object外，生成一个空间供native code(C/C++实现的函数)访问，external就是这样一种存在，
+		尤其是一些Object的constructor和异步调用的函数。
+		为了保证这些external能被正常访问，又不会造成memory leak，还需要引入另外一个机制，weak 
+		reference，weak是这样理解的：在没有实例访问之前，保证这些方法可以被访问，也就是weak ref，
+		而一旦实例化，就变成了strong reference。
 	*/
-	const char data[] = "就想看看定义函数中的 void* data 是个啥"; // 危险：局部变量指针传递出作用域了，好歹是常量字符串。
+
+	MODULE_SPECIFIC* data = malloc(sizeof(MODULE_SPECIFIC));
+
+	data->id = mid ++;
+	strcpy(data->descr, "就想看看定义函数中的 void* data 是个啥");
+	
+	status = napi_get_global(env, &global);
+	if (status != napi_ok) return nullptr;
+
+	napi_create_external_
 
 	napi_property_descriptor descr[] = {
 		// {"utf8name", name, method, getter, setter, value, attributes, data}
