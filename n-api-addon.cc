@@ -151,6 +151,19 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	return result;
 }
 
+TestClass::TestClass()
+{
+}
+
+TestClass::~TestClass()
+{
+}
+
+napi_value New()
+{
+	TestClass::TestClass();
+}
+
 napi_value init(napi_env env, napi_value exports)
 {
 	static int32_t mid = 0;
@@ -171,21 +184,29 @@ napi_value init(napi_env env, napi_value exports)
 		而一旦实例化，就变成了strong reference。
 	*/
 
-	MODULE_SPECIFIC* data = malloc(sizeof(MODULE_SPECIFIC));
+	/* external 还没有完全搞清楚，先撂下
+	MODULE_SPECIFIC *data = malloc(sizeof(MODULE_SPECIFIC));
 
-	data->id = mid ++;
+	data->id = mid++;
 	strcpy(data->descr, "就想看看定义函数中的 void* data 是个啥");
-	
-	status = napi_get_global(env, &global);
-	if (status != napi_ok) return nullptr;
 
-	napi_create_external_
+	status = napi_get_global(env, &global);
+	if (status != napi_ok)
+		return nullptr;
+
+	napi_create_external_ */
 
 	napi_property_descriptor descr[] = {
 		// {"utf8name", name, method, getter, setter, value, attributes, data}
-		{"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)data},
-		{"testObj", NULL, TestObject, NULL, NULL, NULL, napi_default, NULL},
-		{"testCallback", NULL, TestCallback, NULL, NULL, NULL, napi_default, NULL}};
+		{"testClass", NULL, NULL, TestClass::Set, TestClass::Get, napi_default, NULL},
+		DECLARE_NAPI_METHOD("", )};
+
+	status = napi_define_class(env, "testClass", NAPI_AUTO_LENGTH, New, NULL, sizeof(descr) / sizeof(descr[0]), descr, &result);
+
+	descr = {// {"utf8name", name, method, getter, setter, value, attributes, data}
+			 {"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)data},
+			 {"testObj", NULL, TestObject, NULL, NULL, NULL, napi_default, NULL},
+			 {"testCallback", NULL, TestCallback, NULL, NULL, NULL, napi_default, NULL}};
 
 	status = napi_define_properties(env, exports, sizeof(descr) / sizeof(descr[0]), descr);
 	if (status == napi_ok)
