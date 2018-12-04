@@ -1,20 +1,38 @@
 #ifndef LEARNING_CADDON
 #define LEARNING_CADDON
 
-typedef struct {
-    int32_t id;
-    char descr[64];
-} MODULE_SPECIFIC;
+#include <math.h>
 
-class TestClass {
-    public:
-        TestClass();
-        ~TestClass();
+class MyPoint {
+public:
+	MyPoint() : x(0), y(0) {};
+	MyPoint(double x0, double y0) {
+		x = x0, y = y0;
+	};
 
-        static void napi_Test_Class();
+	~MyPoint() {};
 
-        uint32_t id;
-        char name[32];
+	MyPoint Move(double x1, double y1) {
+		x += x1;
+        x += y1;
+        return *this;
+	}
+
+    double Distance(MyPoint p) {
+		double dx = x - p.x;
+        double dy = y - p.y;
+        return sqrt(dx * dx + dy * dy);
+	}
+
+    double Distance(double x1, double y1) {
+		double dx = x - x1;
+        double dy = y - y1;
+        return sqrt(dx * dx + dy * dy);
+	}
+
+private:
+    double x;
+    double y;
 };
 
-#endif
+#endif	// LEARNING_CADDON

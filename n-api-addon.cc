@@ -4,11 +4,61 @@
 
 #include <node_api.h>
 #include <stdio.h>
+#include <assert.h>
 #include <string.h>
+#include <map>
 #include "ln-addon.h"
 
 namespace learning
 {
+
+class AddonData {
+public:
+	AddonData() { mid = seq; };
+	~AddonData();
+
+	int Clear(napi_env);
+
+	// 尝试关联weak reference
+	void SetWeak(napi_env env, napi_value obj) {
+		napi_ref ref;
+		std::map<napi_value, napi_ref>::iterator it = weakRef.find(obj);
+		if (it == weakRef.end()) {
+			napi_create_reference(env, obj, 1, &ref);
+			weakRef.insert(std::pair<napi_value, napi_ref>(obj, ref));
+		}
+		else {
+			uint32_t refCount;
+			napi_reference_ref(env, it->second, &refCount);
+		}
+	};
+
+	int32_t mid;
+	char descr[64];
+
+private:
+	static int32_t seq;
+
+	// pair<key, T> = <object, ref>
+	std::map<napi_value, napi_ref> weakRef;
+};
+
+int32_t AddonData::seq = 0;
+
+int AddonData::Clear(napi_env env) {
+	if (!weakRef.empty()) {
+		for (std::map<napi_value, napi_ref>::iterator it = weakRef.begin(); weakRef.end() != it; it++) {
+			uint32_t refCount;
+			napi_ref ref = it->second;
+			napi_reference_unref(env, ref, &refCount);
+			if (0 == refCount) {
+				napi_delete_reference(env, ref);
+				// weakRef.erase(it);
+			}
+		}
+		weakRef.clear();
+	}
+}
 
 napi_value Method(napi_env env, napi_callback_info args)
 {
@@ -151,17 +201,48 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	return result;
 }
 
-TestClass::TestClass()
-{
+static napi_value New(napi_env env, napi_callback_info info) {
+    napi_status status;
+    napi_value argv[2];
+	napi_value exdata, ret;
+    size_t argc = sizeof(argv) /sizeof(argv[0]);
+	void* data;
+	MyPoint* point;
+
+    status = napi_get_cb_info(env, info, &argc, argv, NULL, (void**) &exdata);
+    assert(napi_ok == status);
+	assert(napi_ok == napi_typeof(env, exdata, NULL));
+
+	napi_get_value_external(env, exdata, &data);
+
+	if (0 == argc) {
+		point = new MyPoint();
+	}
+	else if (2 == argc) {
+		double x, y;
+		napi_get_value_double(env, argv[0], &x);
+		napi_get_value_double(env, argv[1], &y);
+		point = new MyPoint(x, y);
+	}
+	else {
+		return NULL;
+	}
+
+	status = napi_create_object(env, )
 }
 
-TestClass::~TestClass()
-{
+static napi_value Set(napi_env env, napi_callback_info info) {
+	MyPoint();
 }
 
-napi_value New()
-{
-	TestClass::TestClass();
+static napi_value Get(napi_env env, napi_callback_info info) {
+	MyPoint();
+}
+
+void Finalizer(napi_env env, void* data, void* hint) {
+	AddonData* ad = (AddonData*)data;
+	ad->Clear(env);
+	delete ad;
 }
 
 napi_value init(napi_env env, napi_value exports)
@@ -169,9 +250,11 @@ napi_value init(napi_env env, napi_value exports)
 	static int32_t mid = 0;
 
 	napi_status status;
-	napi_value global, ex_addon;
+	napi_value global;
+	napi_value exAddon;
+	napi_value cons;		// constructor for myPoint
+	napi_ref ref;
 
-	// napi_value fn;
 	/*
 		分配一块空间，使用napi_create_external_*生成一个external（不是js对象，而是napi_typeof()),
 		再把这个external传递给模块方法，可以认为这个空间就是模块实例特有的空间。
@@ -184,27 +267,49 @@ napi_value init(napi_env env, napi_value exports)
 		而一旦实例化，就变成了strong reference。
 	*/
 
-	/* external 还没有完全搞清楚，先撂下
-	MODULE_SPECIFIC *data = malloc(sizeof(MODULE_SPECIFIC));
+	AddonData *data = new AddonData();
 
-	data->id = mid++;
+	data->mid = mid ++;
 	strcpy(data->descr, "就想看看定义函数中的 void* data 是个啥");
 
 	status = napi_get_global(env, &global);
 	if (status != napi_ok)
 		return nullptr;
 
-	napi_create_external_ */
+	/* external 还没有完全搞清楚，先撂下 */
+	status = napi_create_external(env, data, Finalizer, NULL, &exAddon);
+	assert(napi_ok == status);
+	
+	/*+------------------------------------------------------------------------
+		Any non-NULL data which is passed to this API (napi_callback) via the
+		data field of the napi_property_descriptor items can be associated with
+		object and freed whenever object is garbage-collected by passing both
+		object and the data	to napi_add_finalizer. 
+	  +----------------------------------------------------------------------*/
+	
+	// 按照这个说法，把exAddon作为方法描述的参数(data)，将是它同该方法进行关联。
 
 	napi_property_descriptor descr[] = {
 		// {"utf8name", name, method, getter, setter, value, attributes, data}
-		{"testClass", NULL, NULL, TestClass::Set, TestClass::Get, napi_default, NULL},
-		DECLARE_NAPI_METHOD("", )};
+		{"MyPoint", NULL, NULL, Set, Get, NULL, napi_default, (void*) exAddon},
+		DECLARE_NAPI_METHOD("move", Move),
+		DECLARE_NAPI_METHOD("distance", Distance)
+	};
 
-	status = napi_define_class(env, "testClass", NAPI_AUTO_LENGTH, New, NULL, sizeof(descr) / sizeof(descr[0]), descr, &result);
+	status = napi_define_class(env, "myPoint", NAPI_AUTO_LENGTH, New, NULL, sizeof(descr) / sizeof(descr[0]), descr, &cons);
+	if(napi_ok != status) return NULL;
 
+	data->pt_cons = cons;
+	napi_create_reference(env, cons, 1, &ref);
+	data->pt_cons_ref = ref;
+
+	// 把 myPoint 导出到 global 上
+	status = napi_set_named_property(env, global, "myPoint", cons);
+	if (napi_ok != status) return NULL;
+
+	// 导出Addon的其他方法
 	descr = {// {"utf8name", name, method, getter, setter, value, attributes, data}
-			 {"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)data},
+			 {"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)(data->descr)},
 			 {"testObj", NULL, TestObject, NULL, NULL, NULL, napi_default, NULL},
 			 {"testCallback", NULL, TestCallback, NULL, NULL, NULL, napi_default, NULL}};
 
