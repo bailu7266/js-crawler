@@ -1,4 +1,4 @@
-const addon = require('./build/Release/n_addon');
+const addon = require('./build/Debug/n_addon');
 console.log(addon.hello('Tom', 'Jerry', 'McDonald'));
 console.log(addon.hello('Tom', 'Jerry', 'McDonald'));
 var obj = {

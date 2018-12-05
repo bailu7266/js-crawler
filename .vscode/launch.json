@@ -6,16 +6,15 @@
     // "HTTPS_PROXY": "http://127.0.0.1:49454"
 
     "version": "0.2.0",
-    "configurations": [
-        {
+    "configurations": [{
             "type": "lldb",
             "request": "custom",
-            "name": "Debug Addon hello.js",
+            "name": "Debug napi C/C++ Addon",
             "targetCreateCommands": [
-                "target create ${workspaceFolder}/node-gyp build --debug"
+                "target create node"
             ],
             "processCreateCommands": [
-                "settings set target.run-args",
+                "settings set target.run-args ${workspaceFolder}/hello.js",
                 "process launch"
             ]
         },

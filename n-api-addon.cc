@@ -3,7 +3,7 @@
 #define NAPI_VERSION 3
 
 #include <node_api.h>
-#include <stdio.h>
+#include <iostream>
 #include <assert.h>
 #include <string.h>
 #include <list>
@@ -16,16 +16,17 @@ namespace learning
 #undef WE_ARE_HERE
 #endif
 */
-#define WE_ARE_HERE printf("\nLine: %d", __LINE__);
+#define WE_ARE_HERE std::cout << "\nNow we are in line: " << __LINE__;
 
 class AddonData
 {
   public:
-	AddonData() {
+	AddonData()
+	{
 		mid = seq;
 		refCons = refExports = refAd = NULL;
 	};
-	~AddonData(void) {};
+	~AddonData(void){};
 
 	int Clear(napi_env);
 
@@ -36,35 +37,45 @@ class AddonData
 		napi_create_reference(env, obj, count, &ref);
 		weakRef.push_back(ref);
 	};*/
-	void SetCons(napi_env env, napi_value cons) {
+	void SetCons(napi_env env, napi_value cons)
+	{
 		assert(napi_ok == napi_create_reference(env, cons, 1, &refCons));
 	}
 
-	napi_value GetCons(napi_env env) {
+	napi_value GetCons(napi_env env)
+	{
 		napi_value nv;
 		assert(napi_ok == napi_get_reference_value(env, refCons, &nv));
 		return nv;
 	}
 
-	void SetExports(napi_env env, napi_value exp) {
+	void SetExports(napi_env env, napi_value exp)
+	{
 		assert(napi_ok == napi_create_reference(env, exp, 0, &refExports));
 	}
 
-	napi_value GetExports(napi_env env) {
+	napi_value GetExports(napi_env env)
+	{
 		napi_value nv;
 		assert(napi_ok == napi_get_reference_value(env, refExports, &nv));
 		return nv;
 	}
 
-	void SetAddon(napi_env env, napi_value ad) {
+	void SetAddon(napi_env env, napi_value ad)
+	{
 		assert(napi_ok == napi_create_reference(env, ad, 1, &refAd));
 	}
 
-	napi_value GetAddon(napi_env env) {
+	napi_value GetAddon(napi_env env)
+	{
 		napi_value nv;
 		assert(napi_ok == napi_get_reference_value(env, refAd, &nv));
 		return nv;
 	}
+
+	napi_ref AddonRef() const { return refAd; };
+	napi_ref ConsRef() const { return refCons; };
+	napi_ref ExportsRef() const { return refExports; };
 
 	int32_t mid;
 	char descr[64];
@@ -90,20 +101,23 @@ int AddonData::Clear(napi_env env)
 		}
 		weakRef.clear();
 	} */
-	if (refCons) {
+	if (refCons)
+	{
 		napi_delete_reference(env, refCons);
 		refCons = NULL;
 	}
-	if (refExports) {
+	if (refExports)
+	{
 		napi_delete_reference(env, refExports);
 		refExports = NULL;
 	}
-	if (refAd) {
+	if (refAd)
+	{
 		napi_delete_reference(env, refAd);
 		refAd = NULL;
 	}
 
-	return (int) 0;
+	return (int)0;
 }
 
 napi_value Method(napi_env env, napi_callback_info args)
@@ -132,7 +146,7 @@ napi_value Method(napi_env env, napi_callback_info args)
 			status = napi_get_value_string_utf8(env, argv[i], buff, sizeof(buff), nullptr);
 			if (status != napi_ok)
 			{
-				snprintf(buff, sizeof(result), "\n获取函数第 %d 个参数时失败!", i);
+				sprintf(buff, "\n获取函数第 %d 个参数时失败!", i);
 				strcat(result, buff);
 				break;
 			}
@@ -247,33 +261,45 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	return result;
 }
 
-size_t PtGetArgs(napi_env env, napi_callback_info info, napi_value argv[], napi_value* thisArg, bool* is_instance) {
+size_t PtGetArgs(napi_env env, napi_callback_info info, napi_value argv[], napi_value *thisPtr, bool *is_instance)
+{
 	napi_status status;
+	napi_ref refExdata;
 	napi_value exdata;
 	size_t argc = 2;
 	AddonData *data;
 
-	status = napi_get_cb_info(env, info, &argc, argv, thisArg, (void **)&exdata);
+	status = napi_get_cb_info(env, info, &argc, argv, thisPtr, (void **)&refExdata);
 	assert(napi_ok == status);
-	napi_valuetype vtype;
-	napi_typeof(env, exdata, &vtype);
-	printf("\nCheck external type: %d", (int) vtype);
 
-	WE_ARE_HERE
+	if (refExdata)
+	{
+		napi_get_reference_value(env, refExdata, &exdata);
+		napi_valuetype vtype;
+		napi_typeof(env, exdata, &vtype);
+		std::cout << "\nCheck external type: " << (int)vtype;
 
-	napi_get_value_external(env, exdata, (void**)&data);
+		WE_ARE_HERE
 
-	napi_value cons = data->GetCons(env);
+		napi_get_value_external(env, exdata, (void **)&data);
 
-	napi_instanceof(env, *thisArg, cons, is_instance);
+		napi_value cons = data->GetCons(env);
+
+		napi_instanceof(env, *thisPtr, cons, is_instance);
+	}
+	else
+	{ // (void*) data 直传递给method，getter和setter,不传递给constructor/new
+		*is_instance = false;
+	}
 
 	return argc;
 }
 
-void PtFinalizer(napi_env env, void* data, void* hint) {
+void PtFinalizer(napi_env env, void *data, void *hint)
+{
 	if (hint)
-		printf("Last word from: %s", (char*)hint);
-	delete (MyPoint*)data;
+		std::cout << "\nLast word from: " << (char *)hint;
+	delete (MyPoint *)data;
 }
 
 static napi_value New(napi_env env, napi_callback_info info)
@@ -289,14 +315,16 @@ static napi_value New(napi_env env, napi_callback_info info)
 
 	WE_ARE_HERE
 
-	if (is_instance) {
+	if (is_instance)
+	{
 		assert(2 <= argc);
-		napi_unwrap(env, thisArg, (void**) &point);
+		napi_unwrap(env, thisArg, (void **)&point);
 		napi_get_value_double(env, argv[0], &x);
 		napi_get_value_double(env, argv[1], &y);
 		point->Set(x, y);
 	}
-	else {
+	else
+	{
 		if (0 == argc)
 		{
 			point = new MyPoint();
@@ -313,9 +341,11 @@ static napi_value New(napi_env env, napi_callback_info info)
 			return NULL;
 		}
 
-		printf("\nthisArg looks like: %lld", (int64_t) thisArg);
-		
-		napi_wrap(env, thisArg, point, PtFinalizer, "New myPoint", NULL);
+		std::cout << "\nthisArg looks like: " << (int64_t)thisArg;
+
+		// assert(napi_ok == napi_create_object(env, &thisArg));
+
+		napi_wrap(env, thisArg, point, PtFinalizer, (void *)"New myPoint", NULL);
 	}
 
 	return thisArg;
@@ -332,22 +362,25 @@ static napi_value Set(napi_env env, napi_callback_info info)
 
 	WE_ARE_HERE
 
-	if (2 <= argc) {
+	if (2 <= argc)
+	{
 		// throw an exception
 		return NULL;
 	}
 
-	if (is_instance) {
+	if (is_instance)
+	{
 		double x, y;
 		napi_get_value_double(env, argv[0], &x);
 		napi_get_value_double(env, argv[1], &y);
-		napi_unwrap(env, thisArg, (void**) &point);
+		napi_unwrap(env, thisArg, (void **)&point);
 
 		point->Set(x, y);
 
 		return thisArg;
 	}
-	else {
+	else
+	{
 		// throw an exception
 		return NULL;
 	}
@@ -360,12 +393,13 @@ static napi_value Get(napi_env env, napi_callback_info info)
 	MyPoint *point;
 	bool is_instance = false;
 
-	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance);
+	PtGetArgs(env, info, argv, &thisArg, &is_instance);
 
 	WE_ARE_HERE
 
-	if (is_instance) {
-		napi_unwrap(env, thisArg, (void**)&point);
+	if (is_instance)
+	{
+		napi_unwrap(env, thisArg, (void **)&point);
 		double x, y;
 		napi_value value, xy_value;
 
@@ -378,13 +412,15 @@ static napi_value Get(napi_env env, napi_callback_info info)
 
 		return value;
 	}
-	else {
+	else
+	{
 		// throw an exception
 		return NULL;
 	}
 }
 
-static napi_value Move(napi_env env, napi_callback_info info) {
+static napi_value Move(napi_env env, napi_callback_info info)
+{
 	napi_value argv[2];
 	napi_value thisArg;
 	MyPoint *point;
@@ -394,28 +430,32 @@ static napi_value Move(napi_env env, napi_callback_info info) {
 
 	WE_ARE_HERE
 
-	if (2 <= argc) {
+	if (2 <= argc)
+	{
 		// throw an exception
 		return NULL;
 	}
 
-	if (is_instance) {
+	if (is_instance)
+	{
 		double x, y;
 		napi_get_value_double(env, argv[0], &x);
 		napi_get_value_double(env, argv[1], &y);
-		napi_unwrap(env, thisArg, (void**)&point);
+		napi_unwrap(env, thisArg, (void **)&point);
 
 		point->Move(x, y);
 
 		return thisArg;
 	}
-	else {
+	else
+	{
 		// throw an exception
 		return NULL;
 	}
 }
 
-static napi_value Distance(napi_env env, napi_callback_info info) {
+static napi_value Distance(napi_env env, napi_callback_info info)
+{
 	napi_value argv[2];
 	napi_value thisArg;
 	MyPoint *point;
@@ -425,25 +465,28 @@ static napi_value Distance(napi_env env, napi_callback_info info) {
 
 	WE_ARE_HERE
 
-	if (2 <= argc) {
+	if (2 <= argc)
+	{
 		// throw an exception
 		return NULL;
 	}
 
-	if (is_instance) {
+	if (is_instance)
+	{
 		double x, y;
 		napi_get_value_double(env, argv[0], &x);
 		napi_get_value_double(env, argv[1], &y);
-		napi_unwrap(env, thisArg, (void**)&point);
+		napi_unwrap(env, thisArg, (void **)&point);
 
 		double d = point->Distance(x, y);
-		
+
 		napi_value value;
 		napi_create_double(env, d, &value);
 
 		return value;
 	}
-	else {
+	else
+	{
 		// throw an exception
 		return NULL;
 	}
@@ -452,7 +495,7 @@ static napi_value Distance(napi_env env, napi_callback_info info) {
 void AdFinalizer(napi_env env, void *data, void *hint)
 {
 	if (hint)
-		printf("Last word from: %s", (char*)hint);
+		std::cout << "\nLast word from: " << (char *)hint;
 
 	AddonData *ad = (AddonData *)data;
 	ad->Clear(env);
@@ -461,11 +504,9 @@ void AdFinalizer(napi_env env, void *data, void *hint)
 
 napi_value init(napi_env env, napi_value exports)
 {
-	static int32_t mid = 0;
-
 	napi_status status;
 	napi_value global;
-	napi_value exAddon;
+	napi_value exdata;
 	napi_value cons; // constructor for myPoint
 
 	/*
@@ -489,10 +530,10 @@ napi_value init(napi_env env, napi_value exports)
 		return nullptr;
 
 	/* external 还没有完全搞清楚，先撂下 */
-	status = napi_create_external(env, data, AdFinalizer, "Addon Data", &exAddon);
+	status = napi_create_external(env, data, AdFinalizer, (void *)"Addon Data", &exdata);
 	assert(napi_ok == status);
 
-	data->SetAddon(env, exAddon);
+	data->SetAddon(env, exdata);
 
 	/*+------------------------------------------------------------------------
 		Any non-NULL data which is passed to this API (napi_callback) via the
@@ -503,11 +544,14 @@ napi_value init(napi_env env, napi_value exports)
 
 	// 按照这个说法，把exAddon作为方法描述的参数(data)，将是它同该方法进行关联。
 
+	uint64_t adRef = (uint64_t)data->AddonRef();
+	std::cout << "Addon reference: " << adRef;
+
 	napi_property_descriptor descr[] = {
 		// {"utf8name", name, method, getter, setter, value, attributes, data}
-		{"MyPoint", NULL, NULL, Set, Get, NULL, napi_default, (void *)exAddon},
-		{ "move", NULL, Move, NULL, NULL, NULL, napi_default, (void *)exAddon },
-		{ "distance", NULL, Distance, NULL, NULL, NULL, napi_default, (void *)exAddon }};
+		{"MyPoint", NULL, NULL, Set, Get, NULL, napi_default, (void *)adRef},
+		{"move", NULL, Move, NULL, NULL, NULL, napi_default, (void *)adRef},
+		{"distance", NULL, Distance, NULL, NULL, NULL, napi_default, (void *)adRef}};
 
 	status = napi_define_class(env, "myPoint", NAPI_AUTO_LENGTH, New, NULL, sizeof(descr) / sizeof(descr[0]), descr, &cons);
 	if (napi_ok != status)
@@ -521,12 +565,12 @@ napi_value init(napi_env env, napi_value exports)
 		return NULL;
 
 	// 导出Addon的其他方法
-	napi_property_descriptor descrE[] = {// {"utf8name", name, method, getter, setter, value, attributes, data}
-			 {"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)(data->descr)},
-			 {"testObj", NULL, TestObject, NULL, NULL, NULL, napi_default, NULL},
-			 {"testCallback", NULL, TestCallback, NULL, NULL, NULL, napi_default, NULL}};
+	napi_property_descriptor descr1[] = {// {"utf8name", name, method, getter, setter, value, attributes, data}
+										 {"hello", NULL, Method, NULL, NULL, NULL, napi_default, (void *)(data->descr)},
+										 {"testObj", NULL, TestObject, NULL, NULL, NULL, napi_default, NULL},
+										 {"testCallback", NULL, TestCallback, NULL, NULL, NULL, napi_default, NULL}};
 
-	status = napi_define_properties(env, exports, sizeof(descrE) / sizeof(descrE[0]), descrE);
+	status = napi_define_properties(env, exports, sizeof(descr1) / sizeof(descr1[0]), descr1);
 	if (status == napi_ok)
 		return exports;
 	else
