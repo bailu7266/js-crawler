@@ -8,6 +8,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "lldb",
+            "request": "custom",
+            "name": "Debug Addon hello.js",
+            "targetCreateCommands": [
+                "target create ${workspaceFolder}/node-gyp build --debug"
+            ],
+            "processCreateCommands": [
+                "settings set target.run-args",
+                "process launch"
+            ]
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch hello.js",

@@ -10,7 +10,16 @@ public:
 		x = x0, y = y0;
 	};
 
-	~MyPoint() {};
+	void Set(double x0, double y0) {
+		x = x0, y = y0;
+	}
+
+	void Get(double& x0, double& y0) const {
+		x0 = x;
+		y0 = y;
+	}
+
+	~MyPoint(void) {};
 
 	MyPoint Move(double x1, double y1) {
 		x += x1;

@@ -22,3 +22,5 @@ ret = addon.testCallback((s, buff) => {
 });
 
 console.log('回调函数返回：' + ret);
+
+var pt = new myPoint(1, 2);
