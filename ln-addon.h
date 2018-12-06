@@ -3,44 +3,48 @@
 
 #include <math.h>
 
-class MyPoint {
-public:
-	MyPoint() : x(0), y(0) {};
+class MyPoint
+{
+  public:
+	MyPoint() : x(0), y(0){};
 	// MyPoint(MyPoint sp) { x = sp.x, y = sp.y; }
-	/* ¹¹Ôìº¯Êý²»ÄÜ°üº¬×ÔÀàÐÍ£¬ÌýÆðÀ´ÊÇºÏÀíµÄ£¬µ«Èç¹ûÄÜ¹»×öµÄÆñ²»ÊÇºÜºÃ */
-	MyPoint(double x0, double y0) {	x = x0, y = y0;	};
+	/* ï¿½ï¿½ï¿½ìº¯ï¿½ï¿½ï¿½ï¿½ï¿½Ü°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çºï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÇºÜºï¿½ */
+	MyPoint(double x0, double y0) { x = x0, y = y0; };
 
 	void Set(double x0, double y0) { x = x0, y = y0; }
 	void SetX(double x0) { x = x0; }
 	void SetY(double y0) { y = y0; }
 
-	void Get(double& x0, double& y0) const { x0 = x, y0 = y; }
+	void Get(double &x0, double &y0) const { x0 = x, y0 = y; }
 	double GetX() const { return x; }
 	double GetY() const { return y; }
 
-	~MyPoint(void) {};
+	~MyPoint(void){};
 
-	MyPoint Move(double x1, double y1) {
+	MyPoint Move(double x1, double y1)
+	{
 		x += x1;
-        x += y1;
-        return *this;
+		y += y1;
+		return *this;
 	}
 
-    double Distance(MyPoint p) {
+	double Distance(MyPoint p)
+	{
 		double dx = x - p.x;
-        double dy = y - p.y;
-        return sqrt(dx * dx + dy * dy);
+		double dy = y - p.y;
+		return sqrt(dx * dx + dy * dy);
 	}
 
-    double Distance(double x1, double y1) {
+	double Distance(double x1, double y1)
+	{
 		double dx = x - x1;
-        double dy = y - y1;
-        return sqrt(dx * dx + dy * dy);
+		double dy = y - y1;
+		return sqrt(dx * dx + dy * dy);
 	}
 
-private:
-    double x;
-    double y;
+  private:
+	double x;
+	double y;
 };
 
-#endif	// LEARNING_CADDON
+#endif // LEARNING_CADDON

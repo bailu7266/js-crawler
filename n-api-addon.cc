@@ -261,7 +261,7 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	return result;
 }
 
-size_t PtGetArgs(napi_env env, napi_callback_info info, napi_value argv[], napi_value *thisPtr, bool *is_instance, napi_value* consPtr = nullptr)
+size_t PtGetArgs(napi_env env, napi_callback_info info, napi_value argv[], napi_value *thisPtr, bool *is_instance, napi_value *consPtr = nullptr)
 {
 	napi_status status;
 	napi_ref refExdata;
@@ -277,19 +277,21 @@ size_t PtGetArgs(napi_env env, napi_callback_info info, napi_value argv[], napi_
 		napi_get_reference_value(env, refExdata, &exdata);
 		napi_valuetype vtype;
 		napi_typeof(env, exdata, &vtype);
-		std::cout << "\nCheck external type: " << (int)vtype;
+		assert(napi_external == vtype);
 
 		napi_get_value_external(env, exdata, (void **)&data);
 
 		napi_value cons = data->GetCons(env);
-		if (consPtr) *consPtr = cons;
+		if (consPtr)
+			*consPtr = cons;
 
 		napi_instanceof(env, *thisPtr, cons, is_instance);
 	}
 	else
 	{ // (void*) data 在napi_define_class中传递(constructor的参数)
 		*is_instance = false;
-		if(consPtr) *consPtr = nullptr;
+		if (consPtr)
+			*consPtr = nullptr;
 	}
 
 	return argc;
@@ -302,7 +304,7 @@ void PtFinalizer(napi_env env, void *data, void *hint)
 	delete (MyPoint *)data;
 }
 
-static napi_value New(napi_env env, napi_callback_info info)
+napi_value New(napi_env env, napi_callback_info info)
 {
 	napi_value argv[2];
 	napi_value thisArg;
@@ -314,23 +316,15 @@ static napi_value New(napi_env env, napi_callback_info info)
 
 	double x, y;
 
-	WE_ARE_HERE
-
 	if (is_instance)
 	{
-		assert(2 <= argc);
-		napi_unwrap(env, thisArg, (void **)&point);
-		napi_get_value_double(env, argv[0], &x);
-		napi_get_value_double(env, argv[1], &y);
-		point->Set(x, y);
-	}
-	else
-	{
-		if (0 == argc)
+		switch (argc)
 		{
+		case 0:
 			point = new MyPoint();
-		}
-		else if (1 == argc)
+			break;
+
+		case 1:
 		{
 			// 此处需要检验argv[0]传入的napi_value是否是该class的实例
 			bool bInst = false;
@@ -339,36 +333,74 @@ static napi_value New(napi_env env, napi_callback_info info)
 			{
 				// Construct from another instance
 				MyPoint *sp;
-				napi_unwrap(env, argv[0], (void**)&sp);
+				napi_unwrap(env, argv[0], (void **)&sp);
 				point = new MyPoint(sp->GetX(), sp->GetY());
 			}
 			else
 			{
 				// 参数类型不对，应该throw an exception, 下面是一个尝试，不一定对。
-				napi_throw_error(env, "TYPE_ERROR", "参数类型不对");
+				point = nullptr;
+				napi_throw_error(env, "E_ARG_TYPE", "参数类型不对");
 			}
 		}
-		else
-		{
+		break;
+
+		case 2:
+		default:
 			napi_get_value_double(env, argv[0], &x);
 			napi_get_value_double(env, argv[1], &y);
 			point = new MyPoint(x, y);
 		}
 
-		std::cout << "\nthisArg looks like: " << (int64_t)thisArg;
-		
 		// 既然this不是class instance, 所以需要创建一个该类的instance
 		// assert(napi_ok == napi_create_object(env, &thisArg));
 		/* already-created JavaScript object that is the this argument to the constructor callback.
 		   That this object was created from the constructor function's prototype,
 		   so it already has definitions of all the instance properties and methods. */
-		assert(napi_ok == napi_wrap(env, thisArg, point, PtFinalizer, (void *)"New myPoint", NULL));
+		assert(napi_ok == napi_wrap(env, thisArg, (void *)point, PtFinalizer, (void *)"New myPoint", NULL));
+
+		return thisArg;
 	}
+
+	// 这会是什么情况：应该是通过class/constructor名字直接调用了constructor，而没有使用new，所以传入的this不是class instance，
+	// 而是其调用时的当前object的this handler
+	napi_throw_error(env, "UNDEF_FUNC", "该函数在当前范围中未定义");
+	return NULL;
+}
+
+napi_value SetX(napi_env env, napi_callback_info info)
+{
+	napi_value argv[2];
+	napi_value thisArg;
+	MyPoint *point;
+	bool is_instance = false;
+
+	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance);
+
+	if (!is_instance)
+	{
+		// throw an exception
+		napi_throw_error(env, "WRONG_PROTO", "Wrong prototype for this property");
+		return NULL;
+	}
+
+	if (0 == argc)
+	{
+		// No argument, throw an exception
+		napi_throw_error(env, "LACK_ARG", "Insufficient arguments");
+		return NULL;
+	}
+
+	double x;
+	napi_get_value_double(env, argv[0], &x);
+	napi_unwrap(env, thisArg, (void **)&point);
+
+	point->SetX(x);
 
 	return thisArg;
 }
 
-static napi_value SetX(napi_env env, napi_callback_info info)
+napi_value SetY(napi_env env, napi_callback_info info)
 {
 	napi_value argv[2];
 	napi_value thisArg;
@@ -377,66 +409,30 @@ static napi_value SetX(napi_env env, napi_callback_info info)
 
 	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance);
 
-	WE_ARE_HERE
+	if (!is_instance)
+	{
+		// throw an exception
+		napi_throw_error(env, "WRONG_PROTO", "Wrong prototype for this property");
+		return NULL;
+	}
 
 	if (0 == argc)
 	{
 		// No argument, throw an exception
+		napi_throw_error(env, "LACK_ARG", "Insufficient arguments");
 		return NULL;
 	}
 
-	if (is_instance)
-	{
-		double x;
-		napi_get_value_double(env, argv[0], &x);
-		napi_unwrap(env, thisArg, (void **)&point);
+	double y;
+	napi_get_value_double(env, argv[0], &y);
+	napi_unwrap(env, thisArg, (void **)&point);
 
-		point->SetX(x);
+	point->SetY(y);
 
-		return thisArg;
-	}
-	else
-	{
-		// throw an exception
-		return NULL;
-	}
+	return thisArg;
 }
 
-static napi_value SetY(napi_env env, napi_callback_info info)
-{
-	napi_value argv[2];
-	napi_value thisArg;
-	MyPoint *point;
-	bool is_instance = false;
-
-	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance);
-
-	WE_ARE_HERE
-
-	if (0 == argc)
-	{
-		// No argument, throw an exception
-		return NULL;
-	}
-
-	if (is_instance)
-	{
-		double y;
-		napi_get_value_double(env, argv[0], &y);
-		napi_unwrap(env, thisArg, (void **)&point);
-
-		point->SetY(y);
-
-		return thisArg;
-	}
-	else
-	{
-		// throw an exception
-		return NULL;
-	}
-}
-
-static napi_value GetX(napi_env env, napi_callback_info info)
+napi_value GetX(napi_env env, napi_callback_info info)
 {
 	napi_value argv[2];
 	napi_value thisArg;
@@ -444,8 +440,6 @@ static napi_value GetX(napi_env env, napi_callback_info info)
 	bool is_instance = false;
 
 	PtGetArgs(env, info, argv, &thisArg, &is_instance);
-
-	WE_ARE_HERE
 
 	if (is_instance)
 	{
@@ -456,14 +450,13 @@ static napi_value GetX(napi_env env, napi_callback_info info)
 
 		return x_value;
 	}
-	else
-	{
-		// throw an exception
-		return NULL;
-	}
+
+	// throw an exception
+	napi_throw_error(env, "WRONG_PROTO", "Wrong prototype for this property");
+	return NULL;
 }
 
-static napi_value GetY(napi_env env, napi_callback_info info)
+napi_value GetY(napi_env env, napi_callback_info info)
 {
 	napi_value argv[2];
 	napi_value thisArg;
@@ -472,25 +465,22 @@ static napi_value GetY(napi_env env, napi_callback_info info)
 
 	PtGetArgs(env, info, argv, &thisArg, &is_instance);
 
-	WE_ARE_HERE
+	if (is_instance)
+	{
+		napi_unwrap(env, thisArg, (void **)&point);
+		napi_value y_value;
+		double y = point->GetY();
+		napi_create_double(env, y, &y_value);
 
-		if (is_instance)
-		{
-			napi_unwrap(env, thisArg, (void **)&point);
-			napi_value y_value;
-			double y = point->GetY();
-			napi_create_double(env, y, &y_value);
+		return y_value;
+	}
 
-			return y_value;
-		}
-		else
-		{
-			// throw an exception
-			return NULL;
-		}
+	// throw an exception
+	napi_throw_error(env, "WRONG_PROTO", "Wrong prototype for this property");
+	return NULL;
 }
 
-static napi_value Move(napi_env env, napi_callback_info info)
+napi_value Move(napi_env env, napi_callback_info info)
 {
 	napi_value argv[2];
 	napi_value thisArg;
@@ -499,69 +489,92 @@ static napi_value Move(napi_env env, napi_callback_info info)
 
 	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance);
 
-	WE_ARE_HERE
+	if (!is_instance)
+	{
+		// throw an exception
+		napi_throw_error(env, "WRONG_PROTO", "Wrong prototype for this property");
+		return NULL;
+	}
 
 	if (2 < argc)
 	{
 		// Not enough arguments, should throw an exception
+		napi_throw_error(env, "LACK_ARG", "Insufficient arguments");
 		return NULL;
 	}
 
-	if (is_instance)
-	{
-		double x, y;
-		napi_get_value_double(env, argv[0], &x);
-		napi_get_value_double(env, argv[1], &y);
-		napi_unwrap(env, thisArg, (void **)&point);
+	double x, y;
+	napi_get_value_double(env, argv[0], &x);
+	napi_get_value_double(env, argv[1], &y);
+	napi_unwrap(env, thisArg, (void **)&point);
 
-		point->Move(x, y);
+	point->Move(x, y);
 
-		return thisArg;
-	}
-	else
-	{
-		// throw an exception
-		return NULL;
-	}
+	return thisArg;
 }
 
-static napi_value Distance(napi_env env, napi_callback_info info)
+napi_value Distance(napi_env env, napi_callback_info info)
 {
 	napi_value argv[2];
 	napi_value thisArg;
+	napi_value cons;
 	MyPoint *point;
 	bool is_instance = false;
 
-	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance);
+	size_t argc = PtGetArgs(env, info, argv, &thisArg, &is_instance, &cons);
 
-	WE_ARE_HERE
-
-	if (2 <= argc)
+	if (!is_instance)
 	{
 		// throw an exception
+		napi_throw_error(env, "WRONG_PROTO", "Wrong prototype for this property");
 		return NULL;
 	}
 
-	if (is_instance)
+	if (0 == argc)
+	{
+		// throw an exception
+		napi_throw_error(env, "LACK_ARG", "Insufficient arguments");
+		return NULL;
+	}
+
+	napi_value value;
+	double dist;
+
+	assert(napi_ok == napi_unwrap(env, thisArg, (void **)&point));
+
+	if (1 == argc)
+	{
+		// 此处需要检验argv[0]传入的napi_value是否是该class的实例
+		bool bInst = false;
+		napi_instanceof(env, argv[0], cons, &bInst);
+		if (bInst)
+		{
+			// Construct from another instance
+			MyPoint *sp;
+			napi_unwrap(env, argv[0], (void **)&sp);
+			dist = point->Distance(*sp);
+		}
+		else
+		{
+			// 参数类型不对，应该throw an exception, 下面是一个尝试，不一定对。
+			point = nullptr;
+			napi_throw_error(env, "E_ARG_TYPE", "参数类型不对");
+			return NULL;
+		}
+	}
+	else
 	{
 		double x, y;
 		napi_get_value_double(env, argv[0], &x);
 		napi_get_value_double(env, argv[1], &y);
-		napi_unwrap(env, thisArg, (void **)&point);
 
-		double d = point->Distance(x, y);
-
-		napi_value value;
-		napi_create_double(env, d, &value);
-
-		return value;
+		dist = point->Distance(x, y);
 	}
-	else
-	{
-		// throw an exception
-		return NULL;
-	}
-}
+
+	napi_create_double(env, dist, &value);
+
+	return value;
+} // namespace learning
 
 void AdFinalizer(napi_env env, void *data, void *hint)
 {
@@ -616,23 +629,22 @@ napi_value init(napi_env env, napi_value exports)
 	// 按照这个说法，把exAddon作为方法描述的参数(data)，将是它同该方法进行关联。
 
 	napi_ref adRef = data->AddonRef();
-	std::cout << "Addon reference: " << adRef;
 
 	napi_property_descriptor descr[] = {
 		// {"utf8name", name, method, getter, setter, value, attributes, data}
-		{"x", NULL, NULL, SetX, GetX, NULL, napi_default, (void *)adRef},
-		{"y", NULL, NULL, SetY, GetY, NULL, napi_default, (void *)adRef},
+		{"x", NULL, NULL, GetX, SetX, NULL, napi_default, (void *)adRef},
+		{"y", NULL, NULL, GetY, SetY, NULL, napi_default, (void *)adRef},
 		{"move", NULL, Move, NULL, NULL, NULL, napi_default, (void *)adRef},
 		{"distance", NULL, Distance, NULL, NULL, NULL, napi_default, (void *)adRef}};
 
-	status = napi_define_class(env, "myPoint", NAPI_AUTO_LENGTH, New, (void*) adRef, sizeof(descr) / sizeof(descr[0]), descr, &cons);
+	status = napi_define_class(env, "MyPoint", NAPI_AUTO_LENGTH, New, (void *)adRef, sizeof(descr) / sizeof(descr[0]), descr, &cons);
 	if (napi_ok != status)
 		return NULL;
 
 	data->SetCons(env, cons);
 
 	// 把 myPoint 导出到 global 上
-	status = napi_set_named_property(env, global, "myPoint", cons);
+	status = napi_set_named_property(env, global, "MyPoint", cons);
 	if (napi_ok != status)
 		return NULL;
 
