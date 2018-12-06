@@ -23,4 +23,10 @@ ret = addon.testCallback((s, buff) => {
 
 console.log('回调函数返回：' + ret);
 
-var pt = new myPoint(1, 2);
+var pt1 = new myPoint(1, 2);
+var pt2 = myPoint(3, 4);
+console.log('pt1.x = ' + pt1.x + 'pt1.y = ' + pt1.y);
+console.log('pt2.x = ' + pt2.x + 'pt2.y = ' + pt2.y);
+pt1.move(10, 20);
+console.log('pt1变成了：x = ' + pt1.x + '\ty = ' + pt1.y);
+console.log('pt1和pt2之间的距离：' + pt1.distance(pt2.x, pt2.y));

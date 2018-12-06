@@ -6,18 +6,17 @@
 class MyPoint {
 public:
 	MyPoint() : x(0), y(0) {};
-	MyPoint(double x0, double y0) {
-		x = x0, y = y0;
-	};
+	// MyPoint(MyPoint sp) { x = sp.x, y = sp.y; }
+	/* 构造函数不能包含自类型，听起来是合理的，但如果能够做的岂不是很好 */
+	MyPoint(double x0, double y0) {	x = x0, y = y0;	};
 
-	void Set(double x0, double y0) {
-		x = x0, y = y0;
-	}
+	void Set(double x0, double y0) { x = x0, y = y0; }
+	void SetX(double x0) { x = x0; }
+	void SetY(double y0) { y = y0; }
 
-	void Get(double& x0, double& y0) const {
-		x0 = x;
-		y0 = y;
-	}
+	void Get(double& x0, double& y0) const { x0 = x, y0 = y; }
+	double GetX() const { return x; }
+	double GetY() const { return y; }
 
 	~MyPoint(void) {};
 
