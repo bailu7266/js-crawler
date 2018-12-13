@@ -8,7 +8,7 @@ class MyPoint
   public:
 	MyPoint() : x(0), y(0){};
 	// MyPoint(MyPoint sp) { x = sp.x, y = sp.y; }
-	/* ���캯�����ܰ��������ͣ��������Ǻ���ģ�������ܹ��������Ǻܺ� */
+	/* 构造函数不能引用构造本类作为参数：印象中是可以的，不知错哪了？ */
 	MyPoint(double x0, double y0) { x = x0, y = y0; };
 
 	void Set(double x0, double y0) { x = x0, y = y0; }

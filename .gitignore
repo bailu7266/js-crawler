@@ -7,3 +7,5 @@ tmp
 !.vscode/launch.json
 *.log
 build
+test*.js
+binding.gyp

@@ -11,16 +11,12 @@
 
 namespace learning
 {
-#pragma setlocale("zh")
-#pragma execution_charater_set("zh")
-
 	/*
 	#ifdef WE_ARE_HERE
 	#undef WE_ARE_HERE
 	#endif
+	#define WE_ARE_HERE std::cout << "\nNow we are in line: " << __LINE__;
 	*/
-#define WE_ARE_HERE std::cout << "\nNow we are in line: " << __LINE__;
-
 	class AddonData
 	{
 	public:
@@ -33,7 +29,7 @@ namespace learning
 
 		int Clear(napi_env);
 
-		/*/ 尝试关联weak reference
+		/*// 尝试关联weak reference
 		void SetWeak(napi_env env, uint32_t count, napi_value obj)
 		{
 			napi_ref ref;
@@ -138,7 +134,7 @@ namespace learning
 		strcpy(result, (char *)data);
 		if (status != napi_ok)
 		{
-			strcat(result, "获取回调函数信息失败!");
+			strcpy(result, "\n获取回调函数信息失败!");
 		}
 		else
 		{
@@ -232,12 +228,13 @@ namespace learning
 		if (status != napi_ok)
 			return FailureCode(env, -1);
 
-		status = napi_create_string_utf8(env, "C Addon调用 Javascript 函数一定很酷!", NAPI_AUTO_LENGTH, &(argv[0]));
+		char str[] = "C Addon调用 Javascript 函数一定很酷\n";
+		status = napi_create_string_utf8(env, str, sizeof(str), &(argv[0]));
 		if (status != napi_ok)
 			return FailureCode(env, -2);
 
 		// 测试分配一个buff, napi_create_buff(_copy),有点疑问，这个buff啥时候释放？
-		char testStr[] = "这是C-Addon分配的空间!";
+		char testStr[] = "这是C-Addon分配的空间\n";
 		void *buff;
 
 		/*+------------------------------------------------------------------------
@@ -609,7 +606,7 @@ namespace learning
 		*/
 
 		AddonData *data = new AddonData();
-		strcpy(data->descr, "就想看看定义函数中的 void* data 是个啥!");
+		strcpy(data->descr, "就想看看定义函数中的 void* data 是个啥");
 		data->SetExports(env, exports);
 
 		status = napi_get_global(env, &global);
