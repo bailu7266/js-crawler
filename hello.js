@@ -31,3 +31,6 @@ pt1.move(10, 20);
 console.log('\npt1变成了：x = ' + pt1.x + '\ty = ' + pt1.y);
 console.log('\npt1和pt2之间的距离：' + pt1.distance(pt2.x, pt2.y));
 console.log('\npt1和pt2之间的距离：' + pt1.distance(pt2));
+
+var asyncHook = require('async_hooks');
+addon.testAsync(asyncHook, '天涯第一钩');
