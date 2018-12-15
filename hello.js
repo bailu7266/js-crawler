@@ -33,4 +33,5 @@ console.log('\npt1和pt2之间的距离：' + pt1.distance(pt2.x, pt2.y));
 console.log('\npt1和pt2之间的距离：' + pt1.distance(pt2));
 
 var asyncHook = require('async_hooks');
-addon.testAsync(asyncHook, '天涯第一钩');
+addon.testAsync(asyncHook, 'n-addon.天字一号');
+// addon.testAsync(asyncHook, 'n-addon.天字一号');
