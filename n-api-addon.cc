@@ -21,7 +21,7 @@ namespace learning
 	*/
 
 using namespace std::chrono;
-using clock_type = system_clock;
+using clock_type = high_resolution_clock;
 
 typedef struct
 {
@@ -613,7 +613,10 @@ void AdFinalizer(napi_env env, void *data, void *hint)
 
 void execAsync(napi_env env, void *data)
 {
-	double ret = 0;
+	double avg1, avg2;
+	double sum = 0;
+	const int TOTAL_REP_COUNT = 100000;
+
 	clock_type::time_point start = clock_type::now();
 	// time_point<high_resolution_clock, milliseconds> msStart = time_point_cast<doubleMs>(start);
 
@@ -629,12 +632,21 @@ void execAsync(napi_env env, void *data)
 
 	((WORK_DATA *)data)->start = start;
 
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < TOTAL_REP_COUNT; i++)
 	{
-		ret += (double)rand() / (double)RAND_MAX;
+		double rd = (double)rand() / (double)RAND_MAX;
+		sum += rd;
+		if (i == 0)
+			avg1 = rd;
+		else
+		{
+			double wt = (double)rand() / (double)RAND_MAX;
+			avg1 = (avg1 + wt * rd) / (1 + wt);
+		}
 	}
+	avg2 = sum / TOTAL_REP_COUNT;
 
-	std::cout << "\n这是异步函数的输出: " << ret << "\n";
+	std::cout << "\n这是异步函数的输出: 总和 = " << sum << "\t平均值1 = " << avg1 << "\t平均值2 =  " << avg2 << "\n";
 }
 
 void complAsync(napi_env env, napi_status status, void *data)
