@@ -6,9 +6,11 @@
 #include <iostream>
 #include <assert.h>
 #include <string.h>
+#include <sstream>
 #include <ctime>
 #include <chrono>
 #include <list>
+#include <boost/format.hpp>
 #include "ln-addon.h"
 
 namespace learning
@@ -21,7 +23,8 @@ namespace learning
 	*/
 
 using namespace std::chrono;
-using clock_type = high_resolution_clock;
+using clock_type = std::chrono::high_resolution_clock;
+using boost::format;
 
 typedef struct
 {
@@ -149,43 +152,44 @@ napi_value Method(napi_env env, napi_callback_info args)
 	napi_status status;
 	napi_value argv[8];
 	char buff[256];
-	char result[256];
+	std::string result;
 	size_t argc = sizeof(argv) / sizeof(argv[0]);
 	napi_value thisArg;
 	void *data;
 
 	status = napi_get_cb_info(env, args, &argc, argv, &thisArg, &data);
-	strcpy(result, (char *)data);
+	result = (char *)data;
 	if (status != napi_ok)
 	{
-		strcpy(result, "\n获取回调函数信息失败!");
+		result = "\n获取回调函数信息失败!";
 	}
 	else
 	{
-		strcat(result, "\n Hello ");
+		result = "\n Hello ";
 
 		for (int i = 0;;)
 		{
 			status = napi_get_value_string_utf8(env, argv[i], buff, sizeof(buff), nullptr);
 			if (status != napi_ok)
 			{
-				sprintf(buff, "\n获取函数第 %d 个参数时失败!", i);
-				strcat(result, buff);
+				// sprintf(buff, "\n获取函数第 %d 个参数时失败!", i);
+				// format fmtter(format("\n获取函数第 %1% 个参数时失败!") % i);
+				result += (format("\n获取函数第 %1% 个参数时失败!") % i).str();
 				break;
 			}
 			else
 			{
-				strcat(result, buff);
+				result += buff;
 				i++;
 				if (i < (int)argc)
-					strcat(result, " and ");
+					result += " and ";
 				else
 					break;
 			}
 		}
 	}
 
-	status = napi_create_string_utf8(env, result, NAPI_AUTO_LENGTH, &greeting);
+	status = napi_create_string_utf8(env, result.c_str(), NAPI_AUTO_LENGTH, &greeting);
 
 	if (status != napi_ok)
 		return nullptr;
@@ -207,7 +211,7 @@ napi_value TestObject(napi_env env, napi_callback_info info)
 {
 	napi_status status;
 	char buff[256];
-	char strRet[256];
+	std::string strRet("用中文回答：");
 	napi_value obj;
 	size_t argc = 1;
 	napi_value req, res;
@@ -225,11 +229,11 @@ napi_value TestObject(napi_env env, napi_callback_info info)
 	if (status != napi_ok)
 		return FailureCode(env, -3);
 
-	sprintf(strRet, "用中文回答：%s", buff);
+	strRet += buff;
 	// strcpy(strRet, "我也说中文：");
 	// strcat(strRet, buff);
 
-	status = napi_create_string_utf8(env, strRet, NAPI_AUTO_LENGTH, &res);
+	status = napi_create_string_utf8(env, strRet.c_str(), NAPI_AUTO_LENGTH, &res);
 	if (status != napi_ok)
 		return FailureCode(env, -4);
 
@@ -262,17 +266,17 @@ napi_value TestCallback(napi_env env, napi_callback_info info)
 	void *buff;
 
 	/*+------------------------------------------------------------------------
-		  | 理解：这个buff空间应该是Nodejs分配的，传递给addon，所以不用操心这个空间的管理，
-		  | nodejs会回收的。其lifespan是这样的：napi_create_* （其实就是nodejs)分配,
-		  |	addon通过返回的指针(buff)可以访问，并传递给nodejs提供的callback函数，但
-		  |	addon的这个方法退出时，nodejs也就回收了这个空间。（??)
-		  |	更合理的解释：napi_create_*分配的空间同其他对象一样，都是该模块有效，模块退出时，
-		  |	这些空间和对象就都自动回收了（nodejs）。
-		  | 由于Nodejs是单进程的，所以没有考虑多进程并发情况，而addon则可能被不同进程加载，也
-		  | 可能存在线程并发访问的情况，这对应全局变量来说是危险的，所以需要context-aware机制，
-		  | 需要在模块初始化时，为每个模块实例预留一个独立的空间，保存每个模块实例特有的数据，
-		  | 而这些数据被传递给addon的方法使用（exports 方法时的（void* data））
-		  +--------------------------------------------------------------------- */
+	  | 理解：这个buff空间应该是Nodejs分配的，传递给addon，所以不用操心这个空间的管理，
+	  | nodejs会回收的。其lifespan是这样的：napi_create_* （其实就是nodejs)分配,
+	  |	addon通过返回的指针(buff)可以访问，并传递给nodejs提供的callback函数，但
+	  |	addon的这个方法退出时，nodejs也就回收了这个空间。（??)
+	  |	更合理的解释：napi_create_*分配的空间同其他对象一样，都是该模块有效，模块退出时，
+	  |	这些空间和对象就都自动回收了（nodejs）。
+	  | 由于Nodejs是单进程的，所以没有考虑多进程并发情况，而addon则可能被不同进程加载，也
+	  | 可能存在线程并发访问的情况，这对应全局变量来说是危险的，所以需要context-aware机制，
+	  | 需要在模块初始化时，为每个模块实例预留一个独立的空间，保存每个模块实例特有的数据，
+	  | 而这些数据被传递给addon的方法使用（exports 方法时的（void* data））
+	  +--------------------------------------------------------------------- */
 	status = napi_create_buffer_copy(env, sizeof(testStr), testStr, &buff, &(argv[1]));
 	if (status != napi_ok)
 		return FailureCode(env, -4);
@@ -685,9 +689,12 @@ napi_value TestAsync(napi_env env, napi_callback_info info)
 	if (napi_ok != status || argc < 2) // resource_name 是必须的，它是标识这个 async_work 的，且需要保证唯一
 	{
 		// 仅为了测试fata_error用
-		char _line[32];
-		snprintf(_line, sizeof(_line), "于第 %d 行", __LINE__);
-		napi_fatal_error(_line, NAPI_AUTO_LENGTH, "获取testAsync函数参数失败/参数不足", NAPI_AUTO_LENGTH);
+		/*char _line[32];
+		
+		snprintf(_line, sizeof(_line), "于第 %d 行", __LINE__);*/
+		std::ostringstream oss;
+		oss << "于第 " << __LINE__ << " 行";
+		napi_fatal_error(oss.str().c_str(), NAPI_AUTO_LENGTH, "获取testAsync函数参数失败/参数不足", NAPI_AUTO_LENGTH);
 	}
 
 	asyncResName = argv[1];
