@@ -1,11 +1,20 @@
+# Binding files
+binding.gyp
+
+# node dependencies
 node_modules
 package-lock.json
+
+# eslint config
 .eslintrc.js
 tmp
 .DS_Store
 .vscode
 !.vscode/launch.json
 *.log
+
+# build immediate file
 build
+
+# scripts just for test, excercise, validation etc.
 test*.js
-binding.gyp

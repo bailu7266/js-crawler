@@ -3,18 +3,18 @@ const {
     BrowserWindow
 } = require('electron');
 
-let win = null;
+let winMain;
 
 function createWindow() {
-    win = new BrowserWindow({
-        width: 800,
-        hight: 600
+    winMain = new BrowserWindow({
+        width: 1200,
+        hight: 960
     });
-    win.loadFile('welcome.html');
+    winMain.loadFile('welcome.html');
 
-    win.webContents.openDevTools();
+    winMain.webContents.openDevTools();
 
-    win.on('closed', () => {
+    winMain.on('closed', () => {
         win = null;
     });
 }
