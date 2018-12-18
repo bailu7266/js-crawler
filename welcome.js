@@ -1,10 +1,19 @@
 // This is the welcome renderer process, providing navigator for whole application
 // In renderer process electron can only be used as remote
 // 其实remote就是用同步IPC实现renderer process和main process之间通信的
-const { remote } = require('electron');
-const { BrowserWindow } = remote
+const {
+    remote
+} = require('electron');
+const {
+    BrowserWindow
+} = remote;
 var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
+
+document.getElementById('versions').innerHTML =
+    'node ' + mp.versions.node + ', ' +
+    'chrome ' + mp.versions.chrome + ', ' +
+    'electron ' + mp.versions.electron + '.';
 
 function f1() {
     console.log(this.id);
@@ -16,3 +25,25 @@ function f1() {
 document.getElementById('btn-1').onclick = f1;
 
 document.getElementById('btn-2').onclick = f1;
+
+document.getElementById('btn-3').onclick = () => {
+    let win = new BrowserWindow();
+    let url = require('url').format({
+        protocol: 'file',
+        slashes: true,
+        pathname: require('path').join(__dirname, 'page1.html')
+    });
+    win.loadURL(url);
+    win.on('closed', () => {
+        win = null;
+    });
+};
+
+document.getElementById('btn-4').onclick = () => {
+    let url = require('url').format({
+        protocol: 'file',
+        slashes: true,
+        pathname: require('path').join(__dirname, 'page1.html')
+    });
+    winMain.loadURL(url);
+};

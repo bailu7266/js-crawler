@@ -15,7 +15,7 @@ function createWindow() {
     winMain.webContents.openDevTools();
 
     winMain.on('closed', () => {
-        win = null;
+        winMain = null;
     });
 }
 
