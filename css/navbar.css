@@ -1,0 +1,40 @@
+div.navbar {
+    /* position: fixed; */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    clear: both;
+}
+
+div.navbar>ul {
+    /* position: fixed;
+    width: 100%; */
+    overflow: hidden;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f1f1;
+    clear: both;
+}
+
+div.navbar li {
+    float: left;
+}
+
+div.navbar li a {
+    display: inline-block;
+    color: #000000;
+    padding: 0.5em 1.5em;
+    text-decoration: none;
+    text-align: center;
+}
+
+div.navbar li a:hover {
+    background-color: #555;
+    color: white;
+}
+
+div.navbar .active {
+    background-color: cadetblue;
+    color: white;
+}
