@@ -5,13 +5,23 @@
     <meta charset="UTF-8">
     <title>Welcome</title>
     <link rel="stylesheet" type="text/css" href="./css/navbar.css">
+    <link rel="stylesheet" type="text/css" href="./css/dropdown.css">
 </head>
 
 <body>
     <div class="navbar">
         <ul>
-            <li><a id="link-1" class="active" href="#">Home</a></li>
-            <li style="float:right"><a href="#about">About</a></li>
+            <li>
+                <div class="dropdown">
+                    <a id="link-1" class="mi active" ref="#">Home</a>
+                    <div class="dropdown-content">
+                        <a href="#">链接1</a>
+                        <a href="#">链接2</a>
+                        <a href="#">链接3</a>
+                    </div>
+                </div>
+            </li>
+            <li style="float:right"><a href="#about" class="mi">About</a></li>
         </ul>
     </div>
     <h1>Welcome to Luke's JS exercise space!</h1>
@@ -28,14 +38,25 @@
         document.write(process.versions.electron)
     </script>.
 -->
-    <div>
-        <tr>
-            <td><button id='btn-1'>第一个按钮</button></td>
-            <td><button id='btn-2'>第二个按钮</button></td>
-            <td><button id='btn-3'>新增一个web tab</button></td>
-            <td><button id='btn-4'>重装一个新的页面</button></td>
-        </tr>
+    <div class="navbar vertical">
+        <ul>
+            <li><a id='btn-1'>第一个按钮</a></li>
+            <li><a id='btn-2'>第二个按钮</a></li>
+            <li><a id='btn-3'>新增一个web tab</a></li>
+            <li><a id='btn-4'>重装一个新的页面</a></li>
+        </ul>
     </div>
+
+    <div class="dropdown">
+        <p>一个下拉菜单</p>
+        <div class="dropdown-content">
+            <a href="#">链接1</a>
+            <a href="#">链接2</a>
+            <a href="#">链接3</a>
+        </div>
+    </div>
+    </div>
+
     <div>
         <h2 id='output'></h2>
         <h3 id='output-child'></h3>

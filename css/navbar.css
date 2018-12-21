@@ -1,40 +1,76 @@
 div.navbar {
-    /* position: fixed; */
-    width: 100%;
+    /* custom define navbar variables (custom properties) */
+    --bg-color: #f1f1f1;
+    --text-color: #000000;
+    --hover-bg-color: lightseagreen;
+    --hover-color: white;
+    --active-bg-color: mediumseagreen;
+    --active-color: white;
     margin: 0;
     padding: 0;
-    clear: both;
 }
 
 div.navbar>ul {
-    /* position: fixed;
-    width: 100%; */
-    overflow: hidden;
+    width: 100%;
     list-style-type: none;
     margin: 0;
     padding: 0;
-    background-color: #f1f1f1;
+    background-color: var(--bg-color);
     clear: both;
 }
 
 div.navbar li {
-    float: left;
+    /* float: left; */
+    display: inline;
 }
 
-div.navbar li a {
+div.navbar li a.mi {
     display: inline-block;
-    color: #000000;
+    color: var(--text-color);
     padding: 0.5em 1.5em;
     text-decoration: none;
     text-align: center;
 }
 
-div.navbar li a:hover {
-    background-color: #555;
-    color: white;
+div.navbar li a.mi:hover {
+    background-color: var(--hover-bg-color);
+    color: var(--hover-color);
 }
 
 div.navbar .active {
-    background-color: cadetblue;
-    color: white;
+    background-color: var(--active-bg-color);
+    color: var(--active-color);
+}
+
+div.navbar.vertical {
+    width: 10em;
+    margin: 0;
+    padding: 0;
+}
+
+div.navbar.vertical>ul {
+    list-style-type: none;
+    display: block;
+    min-width: 16em;
+    color: var(--text-color);
+    padding: 0.75em 1em;
+    text-align: left;
+    text-decoration: none;
+}
+
+div.navbar.vertical li {
+    display: block;
+}
+
+div.navbar.vertical li a {
+    display: block;
+    color: var(--text-color);
+    padding: 0.5em;
+    text-decoration: none;
+    text-align: left;
+}
+
+div.navbar.vertical li a:hover {
+    background-color: var(--hover-bg-color);
+    color: var(--hover-color);
 }
