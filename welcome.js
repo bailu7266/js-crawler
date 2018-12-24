@@ -24,9 +24,11 @@ function f1() {
         '您刚按下了' + this.childNodes[0].nodeValue;
 }
 
-document.getElementById('btn-1').onclick = f1;
+let btn1 = document.getElementById('btn-1');
+btn1.onclick = f1;
 
-document.getElementById('btn-2').onclick = f1;
+let btn2 = document.getElementById('btn-2');
+btn2.onclick = f1;
 
 document.getElementById('btn-3').onclick = () => {
     let win = new BrowserWindow();
@@ -52,8 +54,7 @@ document.getElementById('btn-4').onclick = () => {
 
 document.getElementById('link-1').onclick = () => {
     dialog.showMessageBox(
-        winMain,
-        {
+        winMain, {
             type: 'info',
             buttons: [],
             message: '这是一个测试用的Info对话框！',
@@ -64,3 +65,9 @@ document.getElementById('link-1').onclick = () => {
         }
     );
 };
+
+btn1.addEventListener('click', () => {
+    console.log('Additional event handler triggered');
+    let testAddon = require('./hello.js');
+    testAddon();
+});

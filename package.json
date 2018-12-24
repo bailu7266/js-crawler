@@ -23,6 +23,7 @@
         "url-parse": "^1.4.4"
     },
     "devDependencies": {
-        "electron": "^3.0.12"
+        "electron": "^3.0.12",
+        "electron-rebuild": "^1.8.2"
     }
 }
