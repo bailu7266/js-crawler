@@ -1,8 +1,14 @@
 // This is the welcome renderer process, providing navigator for whole application
 // In renderer process electron can only be used as remote
 // 其实remote就是用同步IPC实现renderer process和main process之间通信的
-const { ipcRenderer, remote } = require('electron');
-const { BrowserWindow, dialog } = remote;
+const {
+    ipcRenderer,
+    remote
+} = require('electron');
+const {
+    BrowserWindow,
+    dialog
+} = remote;
 var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
 
@@ -76,9 +82,11 @@ btn1.addEventListener('click', () => {
 
 btn3.addEventListener('click', () => {
     let url = `file://${__dirname}/page1.html`;
-    ipcRenderer.send('MCH-NewBrowerView', url);
+    let ret = ipcRenderer.sendSync('SMCH-NewBrowerView', url);
+    console.log(ret);
 });
-
+/*
 ipcRenderer.on('MCH-NewBrowserView-OK', (event, arg) => {
     console.log('新增 BrowserView 成功');
 });
+*/

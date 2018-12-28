@@ -6,11 +6,11 @@
     // "HTTPS_PROXY": "http://127.0.0.1:49454"
 
     "version": "0.2.0",
-    "configurations": [
-        {
+    "configurations": [{
             "type": "node",
             "request": "launch",
             "name": "Electron Main",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "windows": {
                 "runtimeExecutable": "C:/Users/bai_l/AppData/Roaming/npm/electron"
             },

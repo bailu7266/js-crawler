@@ -16,11 +16,13 @@
     "dependencies": {
         "cheerio": "^0.22.0",
         "lunr": "1.x",
+        "mongodb": "^3.1.10",
+        "qs": "^6.5.2",
         "request": "^2.6.5",
         "request-promise": "^4.2.2",
-        "qs": "^6.5.2",
-        "mongodb": "^3.1.10",
         "url-parse": "^1.4.4"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "electron": "^4.0.0"
+    }
 }

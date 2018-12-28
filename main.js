@@ -8,8 +8,13 @@ const {
 let winMain;
 
 function createWindow() {
-    let winBounds = { width: 1200, height: 960 };
-    winMain = new BrowserWindow(winBounds);
+    let options = {
+        width: 1200,
+        height: 960,
+        titleBarStyle: 'customButtonsOnHover',
+        frame: false
+    };
+    winMain = new BrowserWindow(options);
 
     let view = new BrowserView();
     winMain.setBrowserView(view);
@@ -56,15 +61,20 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('MCH-NewBrowerView', (event, url) => {
+ipcMain.on('SMCH-NewBrowerView', (event, url) => {
     console.log('准备新增一个 BrowserView: ' + url);
     let vwNew = new BrowserView();
     vwNew.setBackgroundColor('#ff0000');
     winMain.setBrowserView(vwNew);
-    // vwNew.webContents.loadURL(url);
+    vwNew.webContents.loadURL(url);
 
     let bounds = winMain.getContentBounds();
-    let vwBounds = { x: 0, y: 0, width: bounds.width, height: bounds.height };
+    let vwBounds = {
+        x: 0,
+        y: 0,
+        width: bounds.width,
+        height: bounds.height
+    };
     let view = BrowserView.getAllViews();
     let vwCnt = view.length; // 包含了新增view
     vwBounds.width = bounds.width / vwCnt;
@@ -74,5 +84,6 @@ ipcMain.on('MCH-NewBrowerView', (event, url) => {
         // vwNew.setAutoResize({ width: true, height: true });
     }
 
-    event.sender.send('MCH-NewBrowerView-OK');
+    // event.sender.send('MCH-NewBrowerView-OK');
+    event.returnValue = 'NewBrowserView is OK';
 });
