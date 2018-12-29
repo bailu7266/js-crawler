@@ -1,22 +1,36 @@
 const {
     app,
     ipcMain,
+    dialog,
     BrowserView,
     BrowserWindow
 } = require('electron');
-
+let path = require('path');
 let winMain;
 
 function createWindow() {
     let options = {
         width: 1200,
         height: 960,
-        titleBarStyle: 'customButtonsOnHover',
-        frame: false
+        // titleBarStyle: 'customButtonsOnHover',
+        // frame: false,
+        webPreferences: {
+            nodeIntegration: false,
+        }
     };
+
+    // 在macOS下，创建frameless window
+    if (process.platform == 'darwin') {
+        options.titleBarStyle = 'customButtonsOnHover';
+        options.frame = false;
+    }
     winMain = new BrowserWindow(options);
 
-    let view = new BrowserView();
+    let view = new BrowserView({
+        webPreferences: {
+            nodeIntegration: true,
+        }
+    });
     winMain.setBrowserView(view);
     let viewBounds = winMain.getContentBounds();
     viewBounds.x = 0;
@@ -24,13 +38,12 @@ function createWindow() {
     // viewBounds.width = winBounds.width;
     // viewBounds.height = winBounds.height;
     view.setBounds(viewBounds);
-    view.setBackgroundColor('#0000ff');
-    // view.setAutoResize({ width: true, height: true });
+    view.setAutoResize({ width: true, height: true });
 
     let url = require('url').format({
         protocol: 'file',
         slashes: true,
-        pathname: require('path').join(__dirname, 'welcome.html')
+        pathname: path.join(__dirname, 'welcome.html')
     });
 
     view.webContents.loadURL(url);
@@ -63,8 +76,18 @@ app.on('activate', () => {
 
 ipcMain.on('SMCH-NewBrowerView', (event, url) => {
     console.log('准备新增一个 BrowserView: ' + url);
+
+    dialog.showMessageBox({
+        type: 'info',
+        button: [],
+        message: '无法创建新的 BrowserView',
+        detail: '目前(electron 4.0.0)BrowserView只支持一个BrowserWindow创建一个BrowserView',
+    });
+
+    event.returnValue = '创建新的 BrowserView 没有成功';
+
+    /*
     let vwNew = new BrowserView();
-    vwNew.setBackgroundColor('#ff0000');
     winMain.setBrowserView(vwNew);
     vwNew.webContents.loadURL(url);
 
@@ -86,4 +109,10 @@ ipcMain.on('SMCH-NewBrowerView', (event, url) => {
 
     // event.sender.send('MCH-NewBrowerView-OK');
     event.returnValue = 'NewBrowserView is OK';
+    */
+});
+
+ipcMain.on('AMCH-Request-TestAddon', (event, arg) => {
+    require('./hello.js')();
+    event.sender.send('AMCH-Response-TestAddon', 'TestAddon OK');
 });

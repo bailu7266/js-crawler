@@ -1,0 +1,48 @@
+b-container {
+    float: left;
+    position: relative;
+    position: 0, 0;
+    width: 100%;
+}
+
+.b-row {
+    display: block;
+    position: relative;
+    width: 100%;
+    margin: 0 0;
+}
+
+.b-col {
+    position: relative;
+    height: 100%;
+    margin: 0 0;
+}
+
+b-toolbar {
+    position: fixed;
+    position: 0, 0;
+    width: 100%;
+    padding: 0.2em 1em;
+    border: 1px;
+    background-color: #b2b2b2;
+}
+
+b-toolbar li {
+    display: inline;
+}
+
+b-toolbar a {
+    padding: 0em 0.5em;
+    text-align: center;
+    text-decoration: none;
+}
+
+b-toolbar a:hover {
+    background-color: chocolate;
+}
+
+b-toolbar img.b-link {
+    width: 2em;
+    height: 2em;
+    border: none;
+}
