@@ -1,4 +1,22 @@
-b-container {
+:root {
+    --bar-top-padding: 0.2em;
+    --bar-img-height: 3em;
+
+    --img-link: {
+        display: block;
+        padding: 0.2em 0.5em;
+        /* width: 3em; */
+        height: 3em;
+        /* margin: 0.5em; */
+        border: none;
+    }
+
+    --link-hover: {
+        background-color: chocolate;
+    }
+}
+
+.b-container {
     float: left;
     position: relative;
     position: 0, 0;
@@ -18,31 +36,99 @@ b-container {
     margin: 0 0;
 }
 
-b-toolbar {
-    position: fixed;
-    position: 0, 0;
-    width: 100%;
-    padding: 0.2em 1em;
-    border: 1px;
+.b-hbar {
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+.b-hbar>ul {
+    list-style-type: none;
+    padding: 0 2em;
+    margin: 0;
+    overflow: auto;
     background-color: #b2b2b2;
 }
 
-b-toolbar li {
-    display: inline;
+.b-hbar li {
+    float: left;
+    /* display: block; */
 }
 
-b-toolbar a {
-    padding: 0em 0.5em;
-    text-align: center;
+.b-hbar a {
+    display: block;
+    /* text-align: center; */
+    /* height: 3em; */
     text-decoration: none;
+    margin: 0;
 }
 
-b-toolbar a:hover {
+.b-hbar a>img {
+    /* @apply --img-link; */
+    display: block;
+    padding-top: var(--bar-top-padding);
+    padding-bottom: var(--bar-top-padding);
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    /* width: 3em; */
+    height: var(--bar-img-height);
+    /* margin: 0.5em; */
+    border: none;
+}
+
+.b-hbar a:hover {
+    @apply --link-hover;
     background-color: chocolate;
 }
 
-b-toolbar img.b-link {
-    width: 2em;
-    height: 2em;
+.b-vbar {
     border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+.b-vbar>ul {
+    list-style-type: none;
+    height: 100%;
+    width: 4em;
+    padding: 0;
+    margin: 0;
+    background-color: #b2b2b2;
+}
+
+.b-vbar li {
+    display: block;
+    /* width: 4em; */
+}
+
+.b-vbar a {
+    display: block;
+    text-decoration: none;
+    margin: 0;
+}
+
+.b-vbar a>img {
+    /* @apply --img-link; */
+    padding: 0.5em;
+    width: 3em;
+    /* height: 3em; */
+    /* margin: 0.5em; */
+    border: none;
+}
+
+.b-vbar a:hover {
+    /* @apply --link-hover; */
+    background-color: chocolate;
+}
+
+.b-frame {
+    position: fixed;
+    top: calc(var(--bar-img-height) + 2 * var(--bar-top-padding));
+    left: 0;
+    width: 100%;
+    height: 100% - calc(var(--bar-img-height) + 2 * var(--bar-top-padding));
+    margin: 0;
+    padding: 0;
 }
