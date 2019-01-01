@@ -1,6 +1,11 @@
 :root {
-    --bar-top-padding: 0.2em;
-    --bar-img-height: 3em;
+    --hbar-v-padding: 0.2em;
+    --hbar-content-height: 3em;
+    --hover-bg-color: chocolate;
+    --vbar-content-width: 2em;
+    --vbar-padding: 0.5em;
+    --rescol-width: 20em;
+    --rescol-left: calc(var(--vbar-content-width) + 2 * var(--vbar-padding));
 
     --img-link: {
         display: block;
@@ -12,7 +17,7 @@
     }
 
     --link-hover: {
-        background-color: chocolate;
+        background-color: var(--hover-bg-color);
     }
 }
 
@@ -67,22 +72,38 @@
 .b-hbar a>img {
     /* @apply --img-link; */
     display: block;
-    padding-top: var(--bar-top-padding);
-    padding-bottom: var(--bar-top-padding);
+    padding-top: var(--hbar-v-padding);
+    padding-bottom: var(--hbar-v-padding);
     padding-right: 0.5em;
     padding-left: 0.5em;
     /* width: 3em; */
-    height: var(--bar-img-height);
+    height: var(--hbar-content-height);
     /* margin: 0.5em; */
     border: none;
 }
 
 .b-hbar a:hover {
     @apply --link-hover;
-    background-color: chocolate;
+    background-color: var(--hover-bg-color);
+}
+
+.b-frame {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    position: fixed;
+    top: calc(var(--hbar-content-height) + 2 * var(--hbar-v-padding));
+    left: 0;
+    width: 100%;
+    height: calc(100% - calc(var(--hbar-content-height) + 2 * var(--hbar-v-padding)));
+    margin: 0;
+    padding: 0;
 }
 
 .b-vbar {
+    flex-basis: auto;
     border: none;
     outline: none;
     padding: 0;
@@ -92,7 +113,7 @@
 .b-vbar>ul {
     list-style-type: none;
     height: 100%;
-    width: 4em;
+    /* width: 4em; */
     padding: 0;
     margin: 0;
     background-color: #b2b2b2;
@@ -111,8 +132,8 @@
 
 .b-vbar a>img {
     /* @apply --img-link; */
-    padding: 0.5em;
-    width: 3em;
+    padding: var(--vbar-padding);
+    width: var(--vbar-content-width);
     /* height: 3em; */
     /* margin: 0.5em; */
     border: none;
@@ -120,15 +141,59 @@
 
 .b-vbar a:hover {
     /* @apply --link-hover; */
-    background-color: chocolate;
+    background-color: var(--hover-bg-color);
 }
 
-.b-frame {
-    position: fixed;
-    top: calc(var(--bar-img-height) + 2 * var(--bar-top-padding));
-    left: 0;
-    width: 100%;
-    height: 100% - calc(var(--bar-img-height) + 2 * var(--bar-top-padding));
-    margin: 0;
-    padding: 0;
+.b-vbar a.inactive {
+    opacity: 0.5;
 }
+
+.b-rescol {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-basis: var(--rescol-width);
+    /* position: absolute;
+    top: 0;
+    left: var(--rescol-left);
+    width: var(--rescol-width);
+    height: 100%;
+    margin: 0; */
+    background-color: #3f3f3f;
+}
+
+.b-main {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-basis: 100%;
+    /* position: absolute;
+    top: 0;
+    left: calc(var(--rescol-left) + var(--rescol-width));
+    right: 0;
+    height: 100%; */
+    margin: 0;
+}
+
+.b-main :nth-child(1) {
+    flex-basis: 100%;
+    border-bottom: 8px solid dark;
+    background-color: seagreen;
+}
+
+.b-main :nth-child(2) {
+    flex-basis: 50%;
+    /*flex-shrink: 2;*/
+    background-color: dodgerblue;
+}
+
+/*
+.b-view {
+    flex-basis: 100%;
+    background-color: seagreen;
+}
+
+.b-output {
+    flex-basis: 50%;
+    flex-shrink: 2;
+    background-color: dodgerblue;
+}
+*/
