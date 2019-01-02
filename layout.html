@@ -1,92 +1,53 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Layout</title>
-        <link rel="stylesheet" type="text/css" href="./css/layout.css" />
-    </head>
 
-    <body>
-        <div
-            class="b-hbar"
-            style="position: fixed; top:0; left:0%; width: 100%"
-        >
-            <ul>
-                <li>
-                    <a> <img src="./images/home.png" alt="Home" /> </a>
-                </li>
-                <li>
-                    <a>
-                        <img
-                            src="./images/design-tools.png"
-                            alt="Design Tools"
-                        />
-                    </a>
-                </li>
-                <li>
-                    <a href="./page1.html" target="b-view">
-                        <img src="./images/camera.png" alt="Camera" />
-                    </a>
-                </li>
-                <li>
-                    <a>
-                        <img
-                            src="./images/Gear_icon-72a7cf.svg.png"
-                            alt="Settings"
-                        />
-                    </a>
-                </li>
-                <li>
-                    <a> <img src="./images/notebook.png" alt="Note Book" /> </a>
-                </li>
-                <li style="float: right">
-                    <a> <img src="./images/search.png" alt="Search" /> </a>
-                </li>
-            </ul>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layout</title>
+    <link rel="stylesheet" type="text/css" href="./css/layout.css" />
+</head>
+
+<body>
+    <div class="flex-col init-container">
+        <div class="b-toolbar flex-row">
+            <a> <img src="./images/home.png" alt="Home" /> </a>
+            <a>
+                <img src="./images/design-tools.png" alt="Design Tools" />
+            </a>
+            <a href="./test.html" target="c-view">
+                <img src="./images/camera.png" alt="Camera" />
+            </a>
+            <a>
+                <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
+            </a>
+            <a> <img src="./images/notebook.png" alt="Note Book" /> </a>
+            <a> <img src="./images/search.png" alt="Search" /> </a>
         </div>
-        <div class="b-frame">
-            <div class="b-vbar">
-                <ul>
-                    <li>
-                        <a> <img src="./images/home.png" alt="Home" /> </a>
-                    </li>
-                    <li>
-                        <a>
-                            <img
-                                src="./images/design-tools.png"
-                                alt="Design Tools"
-                            />
-                        </a>
-                    </li>
-                    <li>
-                        <a> <img src="./images/camera.png" alt="Camera" /> </a>
-                    </li>
-                    <li>
-                        <a>
-                            <img
-                                src="./images/Gear_icon-72a7cf.svg.png"
-                                alt="Settings"
-                            />
-                        </a>
-                    </li>
-                    <li>
-                        <a class="inactive">
-                            <img src="./images/notebook.png" alt="Note Book" />
-                        </a>
-                    </li>
-                    <li style="position: absolute; bottom: 2em">
-                        <a><img src="./images/search.png" alt="Search"/></a>
-                    </li>
-                </ul>
+        <div class="flex-row">
+            <div class="b-toolbar flex-col">
+                <a> <img src="./images/home.png" alt="Home" /> </a>
+                <a>
+                    <img src="./images/design-tools.png" alt="Design Tools" />
+                </a>
+                <a> <img src="./images/camera.png" alt="Camera" /> </a>
+                <a>
+                    <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
+                </a>
+                <a class="disabled">
+                    <img src="./images/notebook.png" alt="Note Book" />
+                </a>
+                <a><img src="./images/search.png" alt="Search" /></a>
             </div>
-            <div class="b-rescol"></div>
-            <div class="b-main">
+            <div class="b-rescol flex-col"></div>
+            <div class="flex-col main-col">
                 <div class="b-view">
-                    <iframe src="./page1.html">Test</iframe>
+                    <iframe src="./page1.html" name="c-view">iframe not supported in this system</iframe>
                 </div>
                 <div class="b-output"></div>
             </div>
         </div>
-    </body>
+    </div>
+</body>
+
 </html>
