@@ -10,34 +10,42 @@
 
 <body>
     <div class="flex-col init-container">
-        <div class="b-toolbar flex-row">
-            <a> <img src="./images/home.png" alt="Home" /> </a>
-            <a>
-                <img src="./images/design-tools.png" alt="Design Tools" />
-            </a>
-            <a href="./test.html" target="c-view">
-                <img src="./images/camera.png" alt="Camera" />
-            </a>
-            <a>
-                <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
-            </a>
-            <a> <img src="./images/notebook.png" alt="Note Book" /> </a>
-            <a> <img src="./images/search.png" alt="Search" /> </a>
-        </div>
-        <div class="flex-row">
-            <div class="b-toolbar flex-col">
+        <div class="toolpanel">
+            <div class="flex-row b-toolbar" style="float:left">
                 <a> <img src="./images/home.png" alt="Home" /> </a>
                 <a>
                     <img src="./images/design-tools.png" alt="Design Tools" />
                 </a>
-                <a> <img src="./images/camera.png" alt="Camera" /> </a>
+                <a href="./test.html" target="c-view">
+                    <img src="./images/camera.png" alt="Camera" />
+                </a>
                 <a>
                     <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
                 </a>
-                <a class="disabled">
-                    <img src="./images/notebook.png" alt="Note Book" />
-                </a>
-                <a><img src="./images/search.png" alt="Search" /></a>
+                <a> <img src="./images/notebook.png" alt="Note Book" /> </a>
+            </div>
+            <div class="flex-row b-toolbar" style="float:right">
+                <a> <img src="./images/search.png" alt="Search" /> </a>
+            </div>
+        </div>
+        <div class="flex-row">
+            <div class="toolpanel">
+                <div class="b-toolbar flex-col">
+                    <a> <img src="./images/home.png" alt="Home" /> </a>
+                    <a>
+                        <img src="./images/design-tools.png" alt="Design Tools" />
+                    </a>
+                    <a> <img src="./images/camera.png" alt="Camera" /> </a>
+                    <a>
+                        <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
+                    </a>
+                    <a class="disabled">
+                        <img src="./images/notebook.png" alt="Note Book" />
+                    </a>
+                </div>
+                <div class="b-toolbar flex-col" style="position: absolute; bottom: 0">
+                    <a><img src="./images/search.png" alt="Search" /></a>
+                </div>
             </div>
             <div class="b-rescol flex-col"></div>
             <div class="flex-col main-col">
