@@ -11,8 +11,9 @@ const {
 } = remote;
 var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
+var iframe = document.getElementById('content-view');
 
-document.getElementById('versions').innerHTML =
+iframe.contentWindow.document.getElementById('versions').innerHTML =
     'node ' +
     mp.versions.node +
     ', ' +
@@ -30,13 +31,13 @@ function f1() {
         '您刚按下了' + this.childNodes[0].nodeValue;
 }
 
-let btn1 = document.getElementById('btn-1');
+let btn1 = iframe.contentWindow.document.getElementById('btn-1');
 btn1.onclick = f1;
 
-let btn2 = document.getElementById('btn-2');
+let btn2 = iframe.contentWindow.document.getElementById('btn-2');
 btn2.onclick = f1;
 
-let btn3 = document.getElementById('btn-3');
+let btn3 = iframe.contentWindow.document.getElementById('btn-3');
 /*
 btn3.onclick = () => {
     let win = new BrowserWindow();
@@ -51,7 +52,7 @@ btn3.onclick = () => {
     });
 };
 */
-document.getElementById('btn-4').onclick = () => {
+iframe.contentWindow.document.getElementById('btn-4').onclick = () => {
     let url = require('url').format({
         protocol: 'file',
         slashes: true,
@@ -60,7 +61,7 @@ document.getElementById('btn-4').onclick = () => {
     winMain.loadURL(url);
 };
 
-document.getElementById('link-1').onclick = () => {
+iframe.contentWindow.document.getElementById('link-1').onclick = () => {
     dialog.showMessageBox(
         winMain, {
             type: 'info',

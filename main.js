@@ -10,7 +10,7 @@ let winMain;
 
 function createWindow() {
     let options = {
-        width: 1200,
+        width: 1600,
         height: 960,
         // titleBarStyle: 'customButtonsOnHover',
         // frame: false,
@@ -38,7 +38,10 @@ function createWindow() {
     // viewBounds.width = winBounds.width;
     // viewBounds.height = winBounds.height;
     view.setBounds(viewBounds);
-    view.setAutoResize({ width: true, height: true });
+    view.setAutoResize({
+        width: true,
+        height: true
+    });
 
     let url = require('url').format({
         protocol: 'file',
