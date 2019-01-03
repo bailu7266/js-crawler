@@ -1,12 +1,9 @@
 :root {
     --item-v-padding: 0.2em;
     --item-h-padding: 0.5em;
-    --item-size: 3em;
+    --item-size: 2em;
     --hover-bg-color: chocolate;
-    --vbar-content-width: 2em;
-    --vbar-padding: 0.5em;
-    --rescol-width: 20em;
-    --rescol-left: calc(var(--vbar-content-width) + 2 * var(--vbar-padding));
+    --min-res-col-width: 8em;
     --toolbar-bg-color: #b2b2b2;
 }
 
@@ -16,7 +13,7 @@
     box-sizing: border-box;
 }
 
-.init-container {
+#window-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -34,136 +31,113 @@
     flex-direction: row;
 }
 
-[class*="flex-"]>div:first-of-type {
-    flex-basis: initial;
-}
-
-[class*="flex-"]>div:last-of-type {
-    flex-basis: 100%;
-}
-
-.b-toolbar {
+.toolbar {
     background-color: var(--toolbar-bg-color);
 }
 
-.flex-row.b-toolbar {
+.flex-row.toolbar {
     padding: 0 2em;
 }
 
-.flex-col.b-toolbar {
+.flex-col.toolbar {
     padding: 2em 0;
 }
 
-.b-toolbar a {
+.toolbar a {
     text-decoration: none;
 }
 
-.flex-row.b-toolbar a {
-    /* float: left; */
-    /* display: block; */
-    /* text-align: center; */
-    /* height: 3em; */
+.flex-row.toolbar a {
     padding: var(--item-v-padding) var(--item-h-padding);
 }
 
-.flex-col.b-toolbar a {
+.flex-col.toolbar a {
     padding: var(--item-h-padding);
 }
 
-.b-toolbar a>img {
+.toolbar a>img {
     display: block;
-    /* width: 3em; */
     height: var(--item-size);
     border: none;
 }
 
-.b-toolbar a:hover {
+.toolbar a:hover {
     background-color: var(--hover-bg-color);
 }
 
-.b-toolbar a.disabled {
+.toolbar a:active {
+    background-color: var(--active-bg-color, green);
+}
+
+.toolbar a.disabled {
     opacity: 0.5;
 }
 
-.toolpanel {
+#tool-panel {
+    flex: 0 1 auto;
     background-color: var(--toolbar-bg-color);
 }
 
-
-/*
-.main-frame {
-    display: flex;
-    flex-flow: row nowrap;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: auto;
-    position: fixed;
-    top: calc(var(--item-size) + 2 * var(--item-v-padding));
-    left: 0;
-    width: 100%;
-    height: calc(100% - calc(var(--item-size) + 2 * var(--item-v-padding)));
-    margin: 0;
-    padding: 0;
+#content-row {
+    flex: 1 1 auto;
 }
-*/
 
-.b-rescol {
-    /* display: flex;
-    flex-flow: column nowrap; */
-    flex-basis: var(--rescol-width);
-    /* position: absolute;
-    top: 0;
-    left: var(--rescol-left);
-    width: var(--rescol-width);
-    height: 100%;
-    margin: 0; */
+#side-panel {
+    flex: 0 1 auto;
+    background-color: var(--toolbar-bg-color);
+}
+
+#res-column {
+    flex: 1 1 auto;
     background-color: #3f3f3f;
+    min-width: var(--min-res-col-width);
 }
 
-.b-main {
-    /* display: flex;
-    flex-flow: column nowrap; */
-    /* flex-basis: 100%; */
-    /* position: absolute;
-    top: 0;
-    left: calc(var(--rescol-left) + var(--rescol-width));
-    right: 0;
-    height: 100%; */
-    margin: 0;
+#main-column {
+    flex: 3 1 auto;
 }
 
-.main-col {
-    display: flex;
-    flex-basis: 80%;
-}
-
-
-/*
-.b-main :nth-child(1) {
-    flex-basis: 100%;
-    border-bottom: 8px solid dark;
+#main-view {
+    flex: 2 1 auto;
     background-color: seagreen;
 }
 
-.b-main :nth-child(2) {
-    flex-basis: 50%; */
-
-
-/*flex-shrink: 2;*/
-
-
-/* background-color: dodgerblue;
-}
-*/
-
-.b-view {
-    /* flex-basis: 100%; */
-    min-height: 60%;
-    background-color: seagreen;
-}
-
-.b-output {
-    /* flex-basis: 50%; */
-    flex-shrink: 3;
+#console {
+    flex: 1 2 auto;
     background-color: dodgerblue;
+}
+
+#title-panel {
+    flex: 0 1 auto;
+    background-color: #3c3c3c;
+}
+
+#view-tabs {
+    float: left;
+}
+
+.title-tab {
+    float: left;
+    display: inline-flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 10em;
+    padding: 0.5em;
+    border-right: 1px solid #1f1f1f;
+}
+
+.title-tab>img {
+    flex: 0 1 auto;
+    display: block;
+    height: 1em;
+    border: none;
+}
+
+.title-tab>h3 {
+    display: inline-block;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 0.8em;
+    font-style: italic;
+    color: #c5c5c5;
 }

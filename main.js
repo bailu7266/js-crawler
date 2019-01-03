@@ -22,8 +22,8 @@ function createWindow() {
     // 在macOS下，创建frameless window
     if (process.platform == 'darwin') {
         options.titleBarStyle = 'customButtonsOnHover';
-        options.frame = false;
     }
+    options.frame = false;
     winMain = new BrowserWindow(options);
 
     let view = new BrowserView({
@@ -43,7 +43,7 @@ function createWindow() {
     let url = require('url').format({
         protocol: 'file',
         slashes: true,
-        pathname: path.join(__dirname, 'welcome.html')
+        pathname: path.join(__dirname, 'index.html')
     });
 
     view.webContents.loadURL(url);
