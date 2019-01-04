@@ -14,8 +14,10 @@ var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
 var iDoc = document.getElementById('content-view').contentWindow.document;
 // var $ = require('jquery').load(iDoc);
+let iframeDom = $('#content-view').contents();
 
-iDoc.getElementById('versions').innerHTML =
+// iDoc.getElementById('versions').innerHTML =
+iframeDom.find('#versions').html(
     'node ' +
     mp.versions.node +
     ', ' +
@@ -24,7 +26,8 @@ iDoc.getElementById('versions').innerHTML =
     ', ' +
     'electron ' +
     mp.versions.electron +
-    '.';
+    '.');
+
 /*
 function f1() {
     console.log(this.id);
@@ -35,10 +38,8 @@ function f1() {
 */
 function f1() {
     console.log(this.id);
-    console.log($('title').innerHTML);
-    $('#output').innerHTML = '您刚按下了' + this.innerHTML;
-    $('#output-child').innerHTML =
-        '您刚按下了' + this.childNodes[0].nodeValue;
+    iframeDom.find('#output').html('您刚按下了' + this.innerHTML);
+    iframeDom.find('#output-child').html('您刚按下了' + this.childNodes[0].nodeValue);
 }
 
 let btn1 = iDoc.getElementById('btn-1');
@@ -62,15 +63,16 @@ btn3.onclick = () => {
     });
 };
 */
-iDoc.getElementById('btn-4').onclick = () => {
+iframeDom.find('#btn-4').click(() => {
     let url = require('url').format({
         protocol: 'file',
         slashes: true,
         pathname: require('path').join(__dirname, 'page1.html')
     });
     console.log('即将加载: ' + url);
-    winMain.loadURL(url);
-};
+    // winMain.loadURL(url);
+    document.getElementById('content-view').src = url;
+});
 
 iDoc.getElementById('link-1').onclick = () => {
     dialog.showMessageBox(

@@ -66,7 +66,7 @@ function createWindow() {
     Menu.setApplicationMenu(menu);
 
     function devToolsWindow() {
-        let menuDev = Menu.getApplicationMenu().getMenuItemById('dev-tools');
+        let menuDev = Menu.getApplicationMenu().getMenuItemById('devtools');
         if (menuDev.checked) {
             view.webContents.openDevTools();
         } else {
@@ -75,34 +75,97 @@ function createWindow() {
     }
 
     function buildMenu() {
-        const template = [{
-                label: '文件',
-                submenu: [{ role: 'quit' }]
-            },
-            {
-                role: 'window',
-                submenu: [
-                    { role: 'minimize' },
-                    { role: 'close' },
-                ],
-            },
-            {
-                label: 'Dev',
-                submenu: [{
+        let template = [{
+            role: 'window',
+            submenu: [{
+                    role: 'minimize'
+                },
+                {
+                    role: 'close'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    label: 'Development Tools',
                     click: devToolsWindow,
                     type: 'checkbox',
-                    label: 'Development Tools',
                     checked: true,
-                    id: 'dev-tools'
-                }]
-            }
-        ];
+                    id: 'devtools'
+                }
+            ]
+        }];
+
+        if (process.platform === 'darwin') {
+            template.unshift({
+                label: app.getName(),
+                submenu: [{
+                        role: 'about'
+                    },
+                    {
+                        type: 'separator'
+                    },
+                    {
+                        role: 'services'
+                    },
+                    {
+                        type: 'separator'
+                    },
+                    {
+                        role: 'hide'
+                    },
+                    {
+                        role: 'hideothers'
+                    },
+                    {
+                        role: 'unhide'
+                    },
+                    {
+                        type: 'separator'
+                    },
+                    {
+                        role: 'quit'
+                    }
+                ]
+            });
+
+            template[1].submenu = [{
+                    role: 'minimize'
+                },
+                {
+                    role: 'close'
+                },
+                {
+                    role: 'zoom'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    label: 'Development Tools',
+                    click: devToolsWindow,
+                    type: 'checkbox',
+                    checked: true,
+                    id: 'devtools'
+                }
+            ];
+        }
 
         return Menu.buildFromTemplate(template);
     }
 
     winMain.on('closed', () => {
         winMain = null;
+    });
+
+    view.webContents.on('devtools-opened', () => {
+        let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+        devMI.checked = true;
+    });
+
+    view.webContents.on('devtools-closed', () => {
+        let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+        devMI.checked = false;
     });
 }
 

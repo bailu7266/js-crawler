@@ -13,6 +13,14 @@
     box-sizing: border-box;
 }
 
+body {
+    -webkit-app-region: drag;
+}
+
+button {
+    -webkit-app-region: no-drag;
+}
+
 #window-container {
     position: fixed;
     top: 0;
@@ -32,6 +40,8 @@
 }
 
 .toolbar {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     background-color: var(--toolbar-bg-color);
 }
 
@@ -117,6 +127,8 @@
 }
 
 .title-tab {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     float: left;
     display: inline-flex;
     flex-flow: row nowrap;
