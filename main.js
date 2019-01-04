@@ -3,7 +3,8 @@ const {
     ipcMain,
     dialog,
     BrowserView,
-    BrowserWindow
+    BrowserWindow,
+    Menu
 } = require('electron');
 let path = require('path');
 let winMain;
@@ -22,8 +23,12 @@ function createWindow() {
     // 在macOS下，创建frameless window
     if (process.platform == 'darwin') {
         options.titleBarStyle = 'customButtonsOnHover';
+        options.frame = false;
+    } else {
+        options.titleBarStyle = 'hidden';
+        // options.frame = false;
     }
-    options.frame = false;
+
     winMain = new BrowserWindow(options);
 
     let view = new BrowserView({
@@ -52,6 +57,49 @@ function createWindow() {
     view.webContents.loadURL(url);
 
     view.webContents.openDevTools();
+
+    let menu = buildMenu();
+    /*
+        if (process.platform == 'win32' || process.platform == 'linux')
+            winMain.setMenu(menu);
+        else*/
+    Menu.setApplicationMenu(menu);
+
+    function devToolsWindow() {
+        let menuDev = Menu.getApplicationMenu().getMenuItemById('dev-tools');
+        if (menuDev.checked) {
+            view.webContents.openDevTools();
+        } else {
+            view.webContents.closeDevTools();
+        }
+    }
+
+    function buildMenu() {
+        const template = [{
+                label: '文件',
+                submenu: [{ role: 'quit' }]
+            },
+            {
+                role: 'window',
+                submenu: [
+                    { role: 'minimize' },
+                    { role: 'close' },
+                ],
+            },
+            {
+                label: 'Dev',
+                submenu: [{
+                    click: devToolsWindow,
+                    type: 'checkbox',
+                    label: 'Development Tools',
+                    checked: true,
+                    id: 'dev-tools'
+                }]
+            }
+        ];
+
+        return Menu.buildFromTemplate(template);
+    }
 
     winMain.on('closed', () => {
         winMain = null;

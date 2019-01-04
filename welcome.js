@@ -9,11 +9,13 @@ const {
     BrowserWindow,
     dialog
 } = remote;
+var $ = require('jquery');
 var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
-var iframe = document.getElementById('content-view');
+var iDoc = document.getElementById('content-view').contentWindow.document;
+// var $ = require('jquery').load(iDoc);
 
-iframe.contentWindow.document.getElementById('versions').innerHTML =
+iDoc.getElementById('versions').innerHTML =
     'node ' +
     mp.versions.node +
     ', ' +
@@ -23,21 +25,29 @@ iframe.contentWindow.document.getElementById('versions').innerHTML =
     'electron ' +
     mp.versions.electron +
     '.';
-
+/*
 function f1() {
     console.log(this.id);
-    document.getElementById('output').innerHTML = '您刚按下了' + this.innerHTML;
-    document.getElementById('output-child').innerHTML =
+    iDoc.getElementById('output').innerHTML = '您刚按下了' + this.innerHTML;
+    iDoc.getElementById('output-child').innerHTML =
+        '您刚按下了' + this.childNodes[0].nodeValue;
+}
+*/
+function f1() {
+    console.log(this.id);
+    console.log($('title').innerHTML);
+    $('#output').innerHTML = '您刚按下了' + this.innerHTML;
+    $('#output-child').innerHTML =
         '您刚按下了' + this.childNodes[0].nodeValue;
 }
 
-let btn1 = iframe.contentWindow.document.getElementById('btn-1');
+let btn1 = iDoc.getElementById('btn-1');
 btn1.onclick = f1;
 
-let btn2 = iframe.contentWindow.document.getElementById('btn-2');
+let btn2 = iDoc.getElementById('btn-2');
 btn2.onclick = f1;
 
-let btn3 = iframe.contentWindow.document.getElementById('btn-3');
+let btn3 = iDoc.getElementById('btn-3');
 /*
 btn3.onclick = () => {
     let win = new BrowserWindow();
@@ -52,16 +62,17 @@ btn3.onclick = () => {
     });
 };
 */
-iframe.contentWindow.document.getElementById('btn-4').onclick = () => {
+iDoc.getElementById('btn-4').onclick = () => {
     let url = require('url').format({
         protocol: 'file',
         slashes: true,
         pathname: require('path').join(__dirname, 'page1.html')
     });
+    console.log('即将加载: ' + url);
     winMain.loadURL(url);
 };
 
-iframe.contentWindow.document.getElementById('link-1').onclick = () => {
+iDoc.getElementById('link-1').onclick = () => {
     dialog.showMessageBox(
         winMain, {
             type: 'info',
