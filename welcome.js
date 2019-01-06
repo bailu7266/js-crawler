@@ -1,14 +1,8 @@
 // This is the welcome renderer process, providing navigator for whole application
 // In renderer process electron can only be used as remote
 // 其实remote就是用同步IPC实现renderer process和main process之间通信的
-const {
-    ipcRenderer,
-    remote
-} = require('electron');
-const {
-    BrowserWindow,
-    dialog
-} = remote;
+const { ipcRenderer, remote } = require('electron');
+const { BrowserWindow, dialog } = remote;
 var $ = require('jquery');
 var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
@@ -17,16 +11,19 @@ var iDoc = document.getElementById('content-view').contentWindow.document;
 let iframeDom = $('#content-view').contents();
 
 // iDoc.getElementById('versions').innerHTML =
-iframeDom.find('#versions').html(
-    'node ' +
-    mp.versions.node +
-    ', ' +
-    'chrome ' +
-    mp.versions.chrome +
-    ', ' +
-    'electron ' +
-    mp.versions.electron +
-    '.');
+iframeDom
+    .find('#versions')
+    .html(
+        'node ' +
+            mp.versions.node +
+            ', ' +
+            'chrome ' +
+            mp.versions.chrome +
+            ', ' +
+            'electron ' +
+            mp.versions.electron +
+            '.'
+    );
 
 /*
 function f1() {
@@ -39,7 +36,9 @@ function f1() {
 function f1() {
     console.log(this.id);
     iframeDom.find('#output').html('您刚按下了' + this.innerHTML);
-    iframeDom.find('#output-child').html('您刚按下了' + this.childNodes[0].nodeValue);
+    iframeDom
+        .find('#output-child')
+        .html('您刚按下了' + this.childNodes[0].nodeValue);
 }
 
 let btn1 = iDoc.getElementById('btn-1');
@@ -71,12 +70,14 @@ iframeDom.find('#btn-4').click(() => {
     });
     console.log('即将加载: ' + url);
     // winMain.loadURL(url);
-    document.getElementById('content-view').src = url;
+    // document.getElementById('content-view').src = url;
+    $('#content-view').attr('src', url);
 });
 
 iDoc.getElementById('link-1').onclick = () => {
     dialog.showMessageBox(
-        winMain, {
+        winMain,
+        {
             type: 'info',
             buttons: [],
             message: '这是一个测试用的Info对话框！',

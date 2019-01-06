@@ -88,6 +88,24 @@ button {
     background-color: var(--toolbar-bg-color);
 }
 
+#window-ctrl {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 3em;
+    background-color: var(--toolbar-bg-color);
+}
+
+#window-ctrl a>img {
+    -webkit-app-region: no-drag;
+    height: 1em;
+    padding: 0.1em;
+    border: none;
+}
+
 #content-row {
     flex: 1 1 auto;
 }
