@@ -106,6 +106,8 @@ button {
 }
 
 #head-title {
+    -webkit-user-select: none;
+    --webkit-app-region: no-drag;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 1em;
     font-weight: bold;
@@ -113,7 +115,6 @@ button {
 }
 
 #menubar {
-    /* float: left; */
     flex: 0 0 auto;
     display: flex;
     flex-flow: row nowrap;
@@ -123,6 +124,8 @@ button {
 }
 
 #app-icon {
+    -webkit-user-select: none;
+    --webkit-app-region: no-drag;
     display: block;
     border: none;
     flex: 0 1 var(--titlebar-height);
@@ -131,8 +134,13 @@ button {
     padding: 4px;
 }
 
-#menubar button {
+#menubar .button {
+    -webkit-user-select: none;
+    --webkit-app-region: no-drag;
     flex: 0 1 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
     height: 100%;
     border: none;
     padding-left: 0.5em;
@@ -143,7 +151,7 @@ button {
     background-color: var(--titlebar-bg-color);
 }
 
-#menubar button:hover {
+#menubar .button:hover {
     color: black;
     background-color: var(--titlebar-hover-color);
     font-weight: bold;
@@ -158,7 +166,9 @@ button {
     background-color: var(--titlebar-bg-color);
 }
 
-#window-ctrls button {
+#window-ctrls .button {
+    -webkit-user-select: none;
+    --webkit-app-region: no-drag;
     grid-row: 1 / span 1;
     display: flex;
     justify-content: center;
@@ -179,7 +189,7 @@ button {
     grid-column: 2;
 }
 
-#window-ctrl #restore-btn {
+#window-ctrls #restore-btn {
     grid-column: 2;
     display: none;
 }

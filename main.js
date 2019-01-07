@@ -24,6 +24,7 @@ function createWindow() {
     // 在macOS下，创建frameless window
     if (process.platform == 'darwin') {
         options.titleBarStyle = 'customButtonsOnHover';
+        // options.titleBarStyle = 'hiddenInset';
         options.frame = false;
     } else {
         options.titleBarStyle = 'hidden';
@@ -159,7 +160,9 @@ function createWindow() {
         winMain = null;
     });
 
-    winMain.once('ready-to-show', () => { winMain.show(); });
+    winMain.once('ready-to-show', () => {
+        winMain.show();
+    });
 
     view.webContents.on('devtools-opened', () => {
         let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
