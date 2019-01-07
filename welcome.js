@@ -15,14 +15,14 @@ iframeDom
     .find('#versions')
     .html(
         'node ' +
-            mp.versions.node +
-            ', ' +
-            'chrome ' +
-            mp.versions.chrome +
-            ', ' +
-            'electron ' +
-            mp.versions.electron +
-            '.'
+        mp.versions.node +
+        ', ' +
+        'chrome ' +
+        mp.versions.chrome +
+        ', ' +
+        'electron ' +
+        mp.versions.electron +
+        '.'
     );
 
 /*
@@ -76,8 +76,7 @@ iframeDom.find('#btn-4').click(() => {
 
 iDoc.getElementById('link-1').onclick = () => {
     dialog.showMessageBox(
-        winMain,
-        {
+        winMain, {
             type: 'info',
             buttons: [],
             message: '这是一个测试用的Info对话框！',

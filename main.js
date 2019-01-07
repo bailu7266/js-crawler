@@ -11,6 +11,7 @@ let winMain;
 
 function createWindow() {
     let options = {
+        // show: false,
         width: 1600,
         height: 960,
         // titleBarStyle: 'customButtonsOnHover',
@@ -157,6 +158,8 @@ function createWindow() {
     winMain.on('closed', () => {
         winMain = null;
     });
+
+    winMain.once('ready-to-show', () => { winMain.show(); });
 
     view.webContents.on('devtools-opened', () => {
         let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');

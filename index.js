@@ -2,19 +2,29 @@ const {
     ipcRenderer,
     remote
 } = require('electron');
+let win = remote.getCurrentWindow();
 
-var linkRoutes = {
-    'link-home': onHome,
-    'link-tools': onTools,
-    'link-test': onTest,
-    'link-contacts': nothing,
-    'link-signup': nothing
+const routes = {
+    'min-btn': [{ 'click': () => { win.minimize(); } }],
+    'max-btn': [{ 'click': () => { win.maximize(); } }],
+    'restore-btn': [{ 'click': () => { win.restore(); } }],
+    'close-btn': [{ 'click': () => { win.close(); } }],
+    'link-home': [{ 'click': onHome }],
+    'link-tools': [{ 'click': onTools }],
+    'link-test': [{ 'click': onTest }],
+    'link-contacts': [{ 'click': nothing }],
+    'link-signup': [{ 'click': nothing }]
 };
-var keys = Object.keys(linkRoutes);
+
+let keys = Object.keys(routes);
 for (let i = 0; i < keys.length; i++) {
-    let fResp = linkRoutes[keys[i]];
-    if (fResp)
-        document.getElementById(keys[i]).addEventListener('click', fResp);
+    let actions = routes[keys[i]];
+    let actKeys = Object.keys(actions);
+    for (let j = 0; j < actKeys.length; j++) {
+        let fResp = actions[actKeys[j]];
+        if (fResp)
+            document.getElementById(keys[i]).addEventListener(actKeys[j], fResp);
+    }
 }
 
 function nothing() {}

@@ -6,7 +6,15 @@
     // "HTTPS_PROXY": "http://127.0.0.1:49454"
 
     "version": "0.2.0",
-    "configurations": [{
+    "configurations": [
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "测试程序test1",
+        "program": "${workspaceFolder}/test1.js",
+        "stopOnEntry": true
+    },
+    {
             "type": "node",
             "request": "launch",
             "name": "Electron Main",

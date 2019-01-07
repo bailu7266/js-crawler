@@ -4,7 +4,12 @@
     --item-size: 2em;
     --hover-bg-color: chocolate;
     --min-res-col-width: 8em;
-    --toolbar-bg-color: #b2b2b2;
+    --titlebar-height: 2em;
+    --titlebar-padding: 0.5em;
+    --titlebar-bg-color: #c5c5c5;
+    --titlebar-hover-color: #fbfbfb;
+    --toolbar-bg-color: #fbfbfb;
+    --close-btn-hover-color: #e81123;
 }
 
 * {
@@ -88,18 +93,113 @@ button {
     background-color: var(--toolbar-bg-color);
 }
 
-#window-ctrl {
-    -webkit-user-select: none;
-    -webkit-app-region: drag;
-    display: inline-flex;
-    flex-direction: row;
-    justify-content: space-around;
+#titlebar {
+    --webkit-app-region: drag;
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 0 1 var(--titlebar-height);
+    justify-content: space-between;
     align-items: center;
-    width: 3em;
-    background-color: var(--toolbar-bg-color);
+    overflow: hidden;
+    /* padding: var(--titlebar-padding); */
+    background-color: var(--titlebar-bg-color);
 }
 
-#window-ctrl a>img {
+#head-title {
+    font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+}
+
+#menubar {
+    /* float: left; */
+    flex: 0 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+}
+
+#app-icon {
+    display: block;
+    border: none;
+    flex: 0 1 var(--titlebar-height);
+    width: var(--titlebar-height);
+    height: 100%;
+    padding: 4px;
+}
+
+#menubar button {
+    flex: 0 1 auto;
+    height: 100%;
+    border: none;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1em;
+    color: #1f1f1f;
+    background-color: var(--titlebar-bg-color);
+}
+
+#menubar button:hover {
+    color: black;
+    background-color: var(--titlebar-hover-color);
+    font-weight: bold;
+}
+
+#window-ctrls {
+    -webkit-user-select: none;
+    -webkit-app-region: no-drag;
+    /* float: right; */
+    display: grid;
+    grid-template-columns: 1.5em 1.5em 1.5em;
+    background-color: var(--titlebar-bg-color);
+}
+
+#window-ctrls button {
+    grid-row: 1 / span 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding: 0.2em 0.5em;
+    margin: 0;
+    background-color: var(--titlebar-bg-color);
+    font-family: "Segoe MDL2 Assets";
+    font-size: 1em;
+}
+
+#window-ctrls #min-btn {
+    grid-column: 1;
+}
+
+#window-ctrls #max-btn {
+    grid-column: 2;
+}
+
+#window-ctrl #restore-btn {
+    grid-column: 2;
+    display: none;
+}
+
+#window-ctrls #close-btn {
+    grid-column: 3;
+}
+
+#min-btn:hover,
+#max-btn:hover,
+#restore-btn:hover {
+    background-color: var(--titlebar-hover-color);
+}
+
+#close-btn:hover {
+    color: white;
+    background-color: var(--close-btn-hover-color);
+}
+
+#window-ctrls a>img {
     -webkit-app-region: no-drag;
     height: 1em;
     padding: 0.1em;
@@ -166,10 +266,10 @@ button {
 
 .title-tab>h3 {
     display: inline-block;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 0.8em;
     font-style: italic;
-    color: #c5c5c5;
+    color: var(--titlebar-bg-color);
 }
 
 #main-view>iframe {

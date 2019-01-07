@@ -10,18 +10,31 @@
 
 <body>
     <div id="window-container" class="flex-col">
-        <div id="tool-panel">
-            <div id="window-ctrl" style="float:left">
-                <a><img src="./images/sign-math-character-multiple-icon.png"></a>
-                <a><img src="./images/sign-character-minus-math-stop-icon.png"></a>
-                <a><img src="./images/character-sign-add-increase-plus-math-icon.png"></a>
+        <div id="titlebar">
+            <div id="menubar">
+                <img id="app-icon" src="./images/logo-512.png" />
+                <button>文件</button>
             </div>
+            <span id="head-title">全新标题 - Wonderful</span>
+            <div id="window-ctrls">
+                <button id="min-btn"><span>&#xE921;</span></button>
+                <button id="max-btn"><span>&#xE922;</span></button>
+                <button id="restore-btn" style="display: none"><span>&#xE923;</span></button>
+                <button id="close-btn"><span>&#xE8BB;</span></button>
+                <!--
+                    <a><img src="./images/sign-math-character-multiple-icon.png"></a>
+                    <a><img src="./images/sign-character-minus-math-stop-icon.png"></a>
+                    <a><img src="./images/character-sign-add-increase-plus-math-icon.png"></a>
+                    -->
+            </div>
+        </div>
+        <div id="tool-panel">
             <div class="flex-row toolbar" style="float:left">
                 <a id="link-home" href="./layout.html"> <img src="./images/home.png" alt="Home" /> </a>
-                <a id="link-tools">
+                <a id="link-tools" href="./test.html" target="c-view">
                     <img src="./images/design-tools.png" alt="Design Tools" />
                 </a>
-                <a id="link-test" href="./test.html" target="c-view">
+                <a id="link-test">
                     <img src="./images/research_256.png" alt="Research" />
                 </a>
                 <a id="link-settings">
