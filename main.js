@@ -10,6 +10,7 @@ let path = require('path');
 let winMain;
 
 function createWindow() {
+    let frame = false;
     let options = {
         // show: false,
         width: 1600,
@@ -25,10 +26,10 @@ function createWindow() {
     if (process.platform == 'darwin') {
         options.titleBarStyle = 'customButtonsOnHover';
         // options.titleBarStyle = 'hiddenInset';
-        options.frame = false;
+        options.frame = frame;
     } else {
         options.titleBarStyle = 'hidden';
-        // options.frame = false;
+        options.frame = frame;
     }
 
     winMain = new BrowserWindow(options);
@@ -61,11 +62,12 @@ function createWindow() {
     view.webContents.openDevTools();
 
     let menu = buildMenu();
-    /*
-        if (process.platform == 'win32' || process.platform == 'linux')
+    if (process.platform == 'win32' || process.platform == 'linux') {
+        if (frame)
             winMain.setMenu(menu);
-        else*/
-    Menu.setApplicationMenu(menu);
+    } else {
+        Menu.setApplicationMenu(menu);
+    }
 
     function devToolsWindow() {
         let menuDev = Menu.getApplicationMenu().getMenuItemById('devtools');
@@ -165,13 +167,17 @@ function createWindow() {
     });
 
     view.webContents.on('devtools-opened', () => {
-        let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
-        devMI.checked = true;
+        if (frame) {
+            let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+            devMI.checked = true;
+        }
     });
 
     view.webContents.on('devtools-closed', () => {
-        let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
-        devMI.checked = false;
+        if (frame) {
+            let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+            devMI.checked = false;
+        }
     });
 }
 

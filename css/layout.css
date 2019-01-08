@@ -27,6 +27,7 @@ button {
 }
 
 #window-container {
+    -webkit-app-region: drag;
     position: fixed;
     top: 0;
     left: 0;
@@ -46,7 +47,6 @@ button {
 
 .toolbar {
     -webkit-user-select: none;
-    -webkit-app-region: drag;
     background-color: var(--toolbar-bg-color);
 }
 
@@ -94,20 +94,18 @@ button {
 }
 
 #titlebar {
-    --webkit-app-region: drag;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
     display: flex;
     flex-flow: row nowrap;
     flex: 0 1 var(--titlebar-height);
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
-    /* padding: var(--titlebar-padding); */
     background-color: var(--titlebar-bg-color);
 }
 
 #head-title {
-    -webkit-user-select: none;
-    --webkit-app-region: no-drag;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 1em;
     font-weight: bold;
@@ -124,8 +122,6 @@ button {
 }
 
 #app-icon {
-    -webkit-user-select: none;
-    --webkit-app-region: no-drag;
     display: block;
     border: none;
     flex: 0 1 var(--titlebar-height);
@@ -135,8 +131,7 @@ button {
 }
 
 #menubar .button {
-    -webkit-user-select: none;
-    --webkit-app-region: no-drag;
+    -webkit-app-region: no-drag;
     flex: 0 1 auto;
     display: flex;
     justify-content: flex-start;
@@ -158,23 +153,20 @@ button {
 }
 
 #window-ctrls {
-    -webkit-user-select: none;
-    -webkit-app-region: no-drag;
     /* float: right; */
     display: grid;
-    grid-template-columns: 1.5em 1.5em 1.5em;
+    grid-template-columns: repeat(3, 2em);
     background-color: var(--titlebar-bg-color);
 }
 
 #window-ctrls .button {
-    -webkit-user-select: none;
-    --webkit-app-region: no-drag;
+    -webkit-app-region: no-drag;
     grid-row: 1 / span 1;
     display: flex;
     justify-content: center;
     align-items: center;
     border: none;
-    padding: 0.2em 0.5em;
+    padding: 0.5em;
     margin: 0;
     background-color: var(--titlebar-bg-color);
     font-family: "Segoe MDL2 Assets";
@@ -210,13 +202,13 @@ button {
 }
 
 #window-ctrls a>img {
-    -webkit-app-region: no-drag;
     height: 1em;
     padding: 0.1em;
     border: none;
 }
 
 #content-row {
+    -webkit-user-select: none;
     flex: 1 1 auto;
 }
 
@@ -255,8 +247,6 @@ button {
 }
 
 .title-tab {
-    -webkit-user-select: none;
-    -webkit-app-region: drag;
     float: left;
     display: inline-flex;
     flex-flow: row nowrap;

@@ -2,6 +2,7 @@ const {
     ipcRenderer,
     remote
 } = require('electron');
+const { Menu, MenuItem } = remote;
 let win = remote.getCurrentWindow();
 
 const routes = {
@@ -52,20 +53,93 @@ const routes = {
     }
 };
 
-let keys = Object.keys(routes);
-let cnt = 0;
-for (let i = 0; i < keys.length; i++) {
-    let actions = routes[keys[i]];
-    let actKeys = Object.keys(actions);
-    for (let j = 0; j < actKeys.length; j++) {
-        let fResp = actions[actKeys[j]];
-        if (fResp && (fResp instanceof Function)) {
-            document.getElementById(keys[i]).addEventListener(actKeys[j], fResp);
-            cnt++;
+var currentPopu = null;
+var menuIds = ['menu-file', 'menu-window'];
+var menu = [];
+
+window.addEventListener('load', () => {
+    routeInit();
+    if (remote.getGlobal('process').platform != 'darwin') {
+        buildMenu();
+    }
+});
+
+function routeInit() {
+    let keys = Object.keys(routes);
+    for (let i = 0; i < keys.length; i++) {
+        let actions = routes[keys[i]];
+        let actKeys = Object.keys(actions);
+        for (let j = 0; j < actKeys.length; j++) {
+            let fResp = actions[actKeys[j]];
+            if (fResp && (fResp instanceof Function)) {
+                document.getElementById(keys[i]).addEventListener(actKeys[j], fResp);
+            }
         }
     }
 }
-console.log('一共注册了 ' + cnt + ' 个响应函数');
+
+function buildMenu() {
+    let menuFile = new Menu();
+    menuFile.append(new MenuItem({ role: 'about' }));
+    menuFile.append(new MenuItem({ type: 'separator' }));
+    menuFile.append(new MenuItem({ role: 'quit' }));
+    menu.push(menuFile);
+
+    let menuWindow = new Menu();
+    menuWindow.append(new MenuItem({ role: 'minimize' }));
+    menuWindow.append(new MenuItem({ role: 'close' }));
+    menuWindow.append(new MenuItem({ type: 'separator' }));
+    menuWindow.append(new MenuItem({
+        label: 'Development Tools',
+        type: 'checkbox',
+        id: 'devtools',
+        checked: win.webContents.isDevToolsOpened(),
+        click() {
+            if (this.checked) {
+                win.openDevTools();
+            } else {
+                win.closeDevTools();
+            }
+        }
+    }));
+    menu.push(menuWindow);
+
+    for (let i = 0; i < menuIds.length; i++) {
+        let mi = document.getElementById(menuIds[i]);
+        if (mi) {
+            // mi.addEventListener('click', clickMenu);
+            mi.onclick = clickMenu;
+            mi.addEventListener('mouseover', hoverMenu);
+        } else {
+            console.log('Something has been wrong with menu handler');
+        }
+    }
+}
+
+function clickMenu() {
+    this.blur();
+    if (currentPopu) {
+        currentPopu.closePopup();
+        currentPopu = null;
+    } else {
+        let idx = menuIds.indexOf(this.id);
+        currentPopu = menu[idx];
+        let rect = this.getBoundingClientRect();
+        currentPopu.popup({ x: rect.left, y: rect.top + rect.height });
+    }
+}
+
+function hoverMenu() {
+    if (currentPopu) {
+        if (this.id != menuIds[menu.indexOf(currentPopu)]) {
+            currentPopu.closePopup();
+            this.focus();
+            currentPopu = menu[menuIds.indexOf(this.id)];
+            let rect = this.getBoundingClientRect();
+            currentPopu.popup({ x: rect.left, y: rect.top + rect.height });
+        }
+    }
+}
 
 function nothing() {}
 
