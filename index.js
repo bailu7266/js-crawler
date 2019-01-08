@@ -2,7 +2,11 @@ const {
     ipcRenderer,
     remote
 } = require('electron');
-const { Menu, MenuItem } = remote;
+const {
+    Menu,
+    MenuItem
+} = remote;
+let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 
 const routes = {
@@ -55,12 +59,18 @@ const routes = {
 
 var currentPopu = null;
 var menuIds = ['menu-file', 'menu-window'];
+// 为了在mac上测试。
+// var menuIds = ['tab-1', 'tab-2'];
 var menu = [];
 
 window.addEventListener('load', () => {
     routeInit();
-    if (remote.getGlobal('process').platform != 'darwin') {
-        buildMenu();
+    if (platform == 'darwin') {
+        document.getElementById('titlebar').style.justifyContent = 'center';
+        document.getElementById('menubar').style.display = 'none';
+        document.getElementById('window-ctrls').style.display = 'none';
+    } else {
+        buildCustomMenu();
     }
 });
 
@@ -78,17 +88,30 @@ function routeInit() {
     }
 }
 
-function buildMenu() {
+function buildCustomMenu() {
     let menuFile = new Menu();
-    menuFile.append(new MenuItem({ role: 'about' }));
-    menuFile.append(new MenuItem({ type: 'separator' }));
-    menuFile.append(new MenuItem({ role: 'quit' }));
+    menuFile.append(new MenuItem({
+        role: 'about'
+    }));
+    menuFile.append(new MenuItem({
+        type: 'separator'
+    }));
+    menuFile.append(new MenuItem({
+        role: 'quit'
+    }));
     menu.push(menuFile);
 
     let menuWindow = new Menu();
-    menuWindow.append(new MenuItem({ role: 'minimize' }));
-    menuWindow.append(new MenuItem({ role: 'close' }));
-    menuWindow.append(new MenuItem({ type: 'separator' }));
+    menuWindow.append(new MenuItem({
+        role: 'minimize'
+    }));
+    menuWindow.append(new MenuItem({
+        role: 'close'
+    }));
+    menuWindow.append(new MenuItem({
+        type: 'separator'
+    }));
+
     menuWindow.append(new MenuItem({
         label: 'Development Tools',
         type: 'checkbox',
@@ -102,6 +125,7 @@ function buildMenu() {
             }
         }
     }));
+
     menu.push(menuWindow);
 
     for (let i = 0; i < menuIds.length; i++) {
@@ -125,7 +149,10 @@ function clickMenu() {
         let idx = menuIds.indexOf(this.id);
         currentPopu = menu[idx];
         let rect = this.getBoundingClientRect();
-        currentPopu.popup({ x: rect.left, y: rect.top + rect.height });
+        currentPopu.popup({
+            x: rect.left,
+            y: rect.top + rect.height
+        });
     }
 }
 
@@ -136,7 +163,10 @@ function hoverMenu() {
             this.focus();
             currentPopu = menu[menuIds.indexOf(this.id)];
             let rect = this.getBoundingClientRect();
-            currentPopu.popup({ x: rect.left, y: rect.top + rect.height });
+            currentPopu.popup({
+                x: rect.left,
+                y: rect.top + rect.height
+            });
         }
     }
 }

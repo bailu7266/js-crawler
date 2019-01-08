@@ -24,12 +24,13 @@ function createWindow() {
 
     // 在macOS下，创建frameless window
     if (process.platform == 'darwin') {
-        options.titleBarStyle = 'customButtonsOnHover';
-        // options.titleBarStyle = 'hiddenInset';
+        // frame = true;
         options.frame = frame;
+        // options.titleBarStyle = 'customButtonsOnHover';
+        options.titleBarStyle = 'hiddenInset';
     } else {
-        options.titleBarStyle = 'hidden';
         options.frame = frame;
+        options.titleBarStyle = 'hidden';
     }
 
     winMain = new BrowserWindow(options);
@@ -70,11 +71,13 @@ function createWindow() {
     }
 
     function devToolsWindow() {
-        let menuDev = Menu.getApplicationMenu().getMenuItemById('devtools');
-        if (menuDev.checked) {
-            view.webContents.openDevTools();
-        } else {
-            view.webContents.closeDevTools();
+        if (frame || (process.platform === 'darwin')) {
+            let menuDev = Menu.getApplicationMenu().getMenuItemById('devtools');
+            if (menuDev.checked) {
+                view.webContents.openDevTools();
+            } else {
+                view.webContents.closeDevTools();
+            }
         }
     }
 
@@ -167,14 +170,14 @@ function createWindow() {
     });
 
     view.webContents.on('devtools-opened', () => {
-        if (frame) {
+        if (frame || (process.platform === 'darwin')) {
             let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
             devMI.checked = true;
         }
     });
 
     view.webContents.on('devtools-closed', () => {
-        if (frame) {
+        if (frame || (process.platform === 'darwin')) {
             let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
             devMI.checked = false;
         }
