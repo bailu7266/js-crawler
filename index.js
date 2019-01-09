@@ -8,6 +8,7 @@ const {
 } = remote;
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
+let contents = remote.getCurrentWebContents();
 
 const routes = {
     'min-btn': {
@@ -56,22 +57,24 @@ const routes = {
         'click': nothing
     }
 };
-
+/*
 var currentPopu = null;
 var menuIds = ['menu-file', 'menu-window'];
 // 为了在mac上测试。
 // var menuIds = ['tab-1', 'tab-2'];
 var menu = [];
-
+*/
 window.addEventListener('load', () => {
-    routeInit();
     if (platform == 'darwin') {
         document.getElementById('titlebar').style.justifyContent = 'center';
         document.getElementById('menubar').style.display = 'none';
         document.getElementById('window-ctrls').style.display = 'none';
     } else {
-        buildCustomMenu();
+        // buildCustomMenu();
     }
+
+    // window.addEventListener('blur', () => { console.log('BrowserWindow lost focus'); }, false);
+    routeInit();
 });
 
 function routeInit() {
@@ -87,7 +90,7 @@ function routeInit() {
         }
     }
 }
-
+/*
 function buildCustomMenu() {
     let menuFile = new Menu();
     menuFile.append(new MenuItem({
@@ -116,12 +119,12 @@ function buildCustomMenu() {
         label: 'Development Tools',
         type: 'checkbox',
         id: 'devtools',
-        checked: win.webContents.isDevToolsOpened(),
+        checked: contents.isDevToolsOpened(),
         click() {
             if (this.checked) {
-                win.openDevTools();
+                contents.openDevTools();
             } else {
-                win.closeDevTools();
+                contents.closeDevTools();
             }
         }
     }));
@@ -131,9 +134,10 @@ function buildCustomMenu() {
     for (let i = 0; i < menuIds.length; i++) {
         let mi = document.getElementById(menuIds[i]);
         if (mi) {
-            // mi.addEventListener('click', clickMenu);
-            mi.onclick = clickMenu;
-            mi.addEventListener('mouseover', hoverMenu);
+            mi.addEventListener('click', clickMenu, false);
+            mi.addEventListener('mouseover', hoverMenu, false);
+            // mi.addEventListener('blur', blurMenu);
+            mi.addEventListener('mouseout', leaveMenu);
         } else {
             console.log('Something has been wrong with menu handler');
         }
@@ -141,36 +145,70 @@ function buildCustomMenu() {
 }
 
 function clickMenu() {
-    this.blur();
+    // this.blur();
     if (currentPopu) {
-        currentPopu.closePopup();
-        currentPopu = null;
+        let idx = menuIds.indexOf(this.id);
+        if (idx == menu.indexOf(currentPopu)) {
+            // this.blur();
+            currentPopu.closePopup();
+            currentPopu = null;
+        } else {
+            changeMenuItem(this);
+        }
     } else {
         let idx = menuIds.indexOf(this.id);
         currentPopu = menu[idx];
         let rect = this.getBoundingClientRect();
         currentPopu.popup({
+            async: true,
+            // window: contents,
             x: rect.left,
             y: rect.top + rect.height
         });
+        // win.focus();
     }
+}
+
+function changeMenuItem(elt) {
+    // elt.focus();
+    currentPopu.closePopup();
+    currentPopu = menu[menuIds.indexOf(elt.id)];
+    let rect = elt.getBoundingClientRect();
+    currentPopu.popup({
+        async: true,
+        // window: contents,
+        x: rect.left,
+        y: rect.top + rect.height
+    });
+    // win.focus();
+}
+
+function leaveMenu() {
+    // this.blur();
+    console.log('Mouse out of ' + this.id);
 }
 
 function hoverMenu() {
     if (currentPopu) {
         if (this.id != menuIds[menu.indexOf(currentPopu)]) {
-            currentPopu.closePopup();
-            this.focus();
-            currentPopu = menu[menuIds.indexOf(this.id)];
-            let rect = this.getBoundingClientRect();
-            currentPopu.popup({
-                x: rect.left,
-                y: rect.top + rect.height
-            });
+            // this.focus();
+            changeMenuItem(this);
         }
     }
 }
 
+function blurMenu() {
+    if (currentPopu) {
+        let idx = menuIds.indexOf(this.id);
+        if (idx && (idx != menu.indexOf(currentPopu))) {
+            changeMenuItem(this);
+        } else {
+            currentPopu.closePopup();
+            currentPopu = null;
+        }
+    }
+}
+*/
 function nothing() {}
 
 function onHome() {

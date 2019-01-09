@@ -7,12 +7,12 @@ const {
     Menu
 } = require('electron');
 let path = require('path');
-let winMain;
+let win;
 
 function createWindow() {
     let frame = false;
     let options = {
-        // show: false,
+        show: false,
         width: 1600,
         height: 960,
         // titleBarStyle: 'customButtonsOnHover',
@@ -33,24 +33,19 @@ function createWindow() {
         options.titleBarStyle = 'hidden';
     }
 
-    winMain = new BrowserWindow(options);
+    win = new BrowserWindow(options);
 
-    let view = new BrowserView({
-        webPreferences: {
-            nodeIntegration: true,
-        }
+    let view = new BrowserView();
+    win.setBrowserView(view);
+
+    let bounds = win.getContentBounds();
+    view.setBounds({
+        x: 0,
+        y: 0,
+        width: bounds.width,
+        height: bounds.height
     });
-    winMain.setBrowserView(view);
-    let viewBounds = winMain.getContentBounds();
-    viewBounds.x = 0;
-    viewBounds.y = 0;
-    // viewBounds.width = winBounds.width;
-    // viewBounds.height = winBounds.height;
-    view.setBounds(viewBounds);
-    view.setAutoResize({
-        width: true,
-        height: true
-    });
+    view.setAutoResize({ width: true, height: true });
 
     let url = require('url').format({
         protocol: 'file',
@@ -58,17 +53,19 @@ function createWindow() {
         pathname: path.join(__dirname, 'index.html')
     });
 
-    view.webContents.loadURL(url);
-
-    view.webContents.openDevTools();
-
     let menu = buildMenu();
     if (process.platform == 'win32' || process.platform == 'linux') {
         if (frame)
-            winMain.setMenu(menu);
+            win.setMenu(menu);
     } else {
         Menu.setApplicationMenu(menu);
     }
+
+    view.webContents.openDevTools();
+
+    view.webContents.loadURL(url);
+
+    // win.show();
 
     function devToolsWindow() {
         if (frame || (process.platform === 'darwin')) {
@@ -161,13 +158,15 @@ function createWindow() {
         return Menu.buildFromTemplate(template);
     }
 
-    winMain.on('closed', () => {
-        winMain = null;
+    win.on('closed', () => {
+        win = null;
     });
 
-    winMain.once('ready-to-show', () => {
-        winMain.show();
+    win.once('ready-to-show', () => {
+        win.show();
     });
+
+    view.webContents.on('dom-ready', () => { win.show(); });
 
     view.webContents.on('devtools-opened', () => {
         if (frame || (process.platform === 'darwin')) {
@@ -198,7 +197,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // 在macOS上，当单击dock图标并且没有其他窗口打开时，
     // 通常在应用程序中重新创建一个窗口。
-    if (winMain === null) {
+    if (win === null) {
         createWindow();
     }
 });
@@ -217,10 +216,10 @@ ipcMain.on('SMCH-NewBrowerView', (event, url) => {
 
     /*
     let vwNew = new BrowserView();
-    winMain.setBrowserView(vwNew);
+    win.setBrowserView(vwNew);
     vwNew.webContents.loadURL(url);
 
-    let bounds = winMain.getContentBounds();
+    let bounds = win.getContentBounds();
     let vwBounds = {
         x: 0,
         y: 0,

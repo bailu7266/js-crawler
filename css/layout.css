@@ -10,6 +10,7 @@
     --titlebar-hover-color: #fbfbfb;
     --toolbar-bg-color: #fbfbfb;
     --close-btn-hover-color: #e81123;
+    --menu-content-bg-color: whitesmoke;
 }
 
 * {
@@ -131,6 +132,13 @@ button {
     padding: 4px;
 }
 
+#menubar .item {
+    display: inline-block;
+    height: 100%;
+    font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1em;
+}
+
 #menubar .button {
     -webkit-app-region: no-drag;
     flex: 0 1 auto;
@@ -141,15 +149,78 @@ button {
     border: none;
     padding-left: 0.5em;
     padding-right: 0.5em;
-    font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 1em;
+    /* font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1em; */
     color: #1f1f1f;
     background-color: var(--titlebar-bg-color);
 }
 
-#menubar .button:hover {
+#menubar .contents {
+    position: absolute;
+    display: none;
+    width: 20em;
+    padding: 0.5em 0.2em;
+    background-color: var(--menu-content-bg-color);
+    z-index: 1;
+}
+
+#menubar .contents a {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 2em;
+}
+
+#menubar .contents hr {
+    display: block;
+    color: #3c3c3c;
+    border-width: 1px;
+    border-style: solid;
+    overflow: hidden;
+    margin: 0.5em;
+}
+
+#menubar .contents .submenu {
+    display: flex;
+    /* flex-flow: row nowrap; 
+    justify-content: flex-start; */
+    align-items: flex-start;
+}
+
+#menubar .contents .submenu a {
+    width: 100%;
+}
+
+#menubar .submenu>.contents {
+    /* position: relative; */
+    /* float: left; */
+    left: 100%;
+}
+
+#menubar .item:hover .button {
     color: black;
     background-color: var(--titlebar-hover-color);
+    font-weight: bold;
+}
+
+#menubar .item:hover>.contents {
+    display: block;
+}
+
+#menubar .contents a:hover,
+#menubar .submenu:hover>a {
+    color: white;
+    background-color: dodgerblue;
+}
+
+#menubar .submenu:hover>.contents {
+    display: inline-block;
+}
+
+#menubar .button:focus {
+    color: whitesmoke;
+    background-color: rebeccapurple;
     font-weight: bold;
 }
 
@@ -269,6 +340,7 @@ button {
     border: none;
 }
 
+
 /*
 .title-tab>span {
     display: inline-block;
@@ -278,6 +350,7 @@ button {
     color: var(--titlebar-bg-color);
 }
 */
+
 .title-tab:hover {
     font-weight: bold;
     font-style: normal;
