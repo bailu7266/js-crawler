@@ -13,14 +13,14 @@
         <div id="titlebar">
             <div id="menubar">
                 <img id="app-icon" src="./images/logo-512.png" />
-                <div class="item">
+                <div class="menu">
                     <div class="button" id="menu-file"><span>文件</span></div>
-                    <div class="contents">
+                    <div class="menu-list">
                         <a id=""><span>关于</span><span>Alt+A</span></a>
                         <hr>
                         <div class="submenu">
-                            <a><span>最近打开的文件</span><span></span></a>
-                            <div class="contents">
+                            <div class="itembtn"><span>最近打开的文件</span></div>
+                            <div class="menu-list">
                                 <a><span>文件1</span></a>
                                 <a><span>文件2</span></a>
                                 <a><span>文件3</span></a>
@@ -30,13 +30,13 @@
                         <a id=""><span>退出</span><span>Ctrl+X</span></a>
                     </div>
                 </div>
-                <div class="item">
+                <div class="menu">
                     <div class="button" id="menu-window"><span>Window</span></div>
-                    <div class="contents">
+                    <div class="menu-list">
                         <a><span>Minimize</span></a>
                         <a><span>Close</span></a>
                         <hr>
-                        <a><span>Development Tools</span></a>
+                        <a>Development Tools<input id="devtools" type="checkbox" checked="checked"><span class="checkmark"></span></a>
                     </div>
                 </div>
             </div>

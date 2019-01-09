@@ -65,13 +65,13 @@ var menuIds = ['menu-file', 'menu-window'];
 var menu = [];
 */
 window.addEventListener('load', () => {
-    if (platform == 'darwin') {
+    /*if (platform == 'darwin') {
         document.getElementById('titlebar').style.justifyContent = 'center';
         document.getElementById('menubar').style.display = 'none';
         document.getElementById('window-ctrls').style.display = 'none';
     } else {
         // buildCustomMenu();
-    }
+    }*/
 
     // window.addEventListener('blur', () => { console.log('BrowserWindow lost focus'); }, false);
     routeInit();

@@ -11,6 +11,7 @@
     --toolbar-bg-color: #fbfbfb;
     --close-btn-hover-color: #e81123;
     --menu-content-bg-color: whitesmoke;
+    --menu-item-width: 20em;
 }
 
 * {
@@ -132,8 +133,10 @@ button {
     padding: 4px;
 }
 
-#menubar .item {
-    display: inline-block;
+#menubar .menu {
+    flex: 0 0 auto;
+    display: block;
+    /* flex-flow: column nowrap; */
     height: 100%;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 1em;
@@ -155,67 +158,80 @@ button {
     background-color: var(--titlebar-bg-color);
 }
 
-#menubar .contents {
+#menubar .menu-list {
     position: absolute;
     display: none;
-    width: 20em;
-    padding: 0.5em 0.2em;
+    width: var(--menu-item-width);
+    padding: 0.5em 0em;
     background-color: var(--menu-content-bg-color);
     z-index: 1;
 }
 
-#menubar .contents a {
+#menubar .menu-list a,
+#menubar .menu-list .submenu,
+#menubar .menu-list .itembtn {
     display: flex;
     flex-flow: row;
     justify-content: space-between;
+}
+
+#menubar .menu-list a,
+#menubar .submenu .itembtn {
     align-items: center;
     padding: 0.5em 2em;
 }
 
-#menubar .contents hr {
+#menubar .menu-list .submenu {
+    align-items: flex-start;
+}
+
+#menubar .submenu .itembtn {
+    flex: 0 1 100%;
+}
+
+#menubar .submenu>.itembtn:after {
+    content: ">";
+    text-align: center;
+}
+
+#menubar .menu-list hr {
     display: block;
-    color: #3c3c3c;
+    /*color: #3c3c3c;*/
     border-width: 1px;
     border-style: solid;
     overflow: hidden;
     margin: 0.5em;
 }
 
-#menubar .contents .submenu {
-    display: flex;
-    /* flex-flow: row nowrap; 
-    justify-content: flex-start; */
-    align-items: flex-start;
-}
-
-#menubar .contents .submenu a {
-    width: 100%;
-}
-
-#menubar .submenu>.contents {
-    /* position: relative; */
-    /* float: left; */
+#menubar .submenu>.menu-list {
+    /* top: auto; */
     left: 100%;
+    transform: translateY(-0.5em);
 }
 
-#menubar .item:hover .button {
+#menubar .menu:hover .button {
     color: black;
     background-color: var(--titlebar-hover-color);
     font-weight: bold;
 }
 
-#menubar .item:hover>.contents {
+#menubar .menu:hover>.menu-list {
     display: block;
 }
 
-#menubar .contents a:hover,
-#menubar .submenu:hover>a {
+#menubar .menu-list a:hover,
+#menubar .submenu:hover>.itembtn {
     color: white;
     background-color: dodgerblue;
 }
 
-#menubar .submenu:hover>.contents {
-    display: inline-block;
+#menubar .submenu:hover>.menu-list {
+    display: block;
+}
+
+#menubar .submenu:hover>.itembtn:after {
+    content: "<";
+    text-align: center;
 }
 
 #menubar .button:focus {
@@ -224,6 +240,61 @@ button {
     font-weight: bold;
 }
 
+.menu-list input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+}
+
+/* On mouse-over, add a grey background color */
+/* .menulist a:hover input~.checkmark {
+    background-color: #ccc;
+}*/
+
+/* When the checkbox is checked, add a blue background */
+.menulist a input:checked~.checkmark {
+    background-color: #2196F3;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+/*.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+*/
+/* Show the checkmark when checked */
+.menulist a input:checked~.checkmark:after {
+    /* display: block; */
+    content: "x";
+}
+
+/* Style the checkmark/indicator */
+/*
+.menulist a .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+*/
 #window-ctrls {
     /* float: right; */
     display: grid;

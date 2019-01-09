@@ -26,8 +26,8 @@ function createWindow() {
     if (process.platform == 'darwin') {
         // frame = true;
         options.frame = frame;
-        // options.titleBarStyle = 'customButtonsOnHover';
-        options.titleBarStyle = 'hiddenInset';
+        options.titleBarStyle = 'customButtonsOnHover';
+        // options.titleBarStyle = 'hiddenInset';
     } else {
         options.frame = frame;
         options.titleBarStyle = 'hidden';
@@ -45,22 +45,25 @@ function createWindow() {
         width: bounds.width,
         height: bounds.height
     });
-    view.setAutoResize({ width: true, height: true });
+    view.setAutoResize({
+        width: true,
+        height: true
+    });
 
     let url = require('url').format({
         protocol: 'file',
         slashes: true,
         pathname: path.join(__dirname, 'index.html')
     });
-
-    let menu = buildMenu();
-    if (process.platform == 'win32' || process.platform == 'linux') {
-        if (frame)
-            win.setMenu(menu);
-    } else {
-        Menu.setApplicationMenu(menu);
-    }
-
+    /*
+        let menu = buildMenu();
+        if (process.platform == 'win32' || process.platform == 'linux') {
+            if (frame)
+                win.setMenu(menu);
+        } else {
+            Menu.setApplicationMenu(menu);
+        }
+    */
     view.webContents.openDevTools();
 
     view.webContents.loadURL(url);
@@ -166,21 +169,23 @@ function createWindow() {
         win.show();
     });
 
-    view.webContents.on('dom-ready', () => { win.show(); });
-
-    view.webContents.on('devtools-opened', () => {
-        if (frame || (process.platform === 'darwin')) {
-            let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
-            devMI.checked = true;
-        }
+    view.webContents.on('dom-ready', () => {
+        win.show();
     });
+    /*
+        view.webContents.on('devtools-opened', () => {
+            if (frame || (process.platform === 'darwin')) {
+                let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+                devMI.checked = true;
+            }
+        });
 
-    view.webContents.on('devtools-closed', () => {
-        if (frame || (process.platform === 'darwin')) {
-            let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
-            devMI.checked = false;
-        }
-    });
+        view.webContents.on('devtools-closed', () => {
+            if (frame || (process.platform === 'darwin')) {
+                let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+                devMI.checked = false;
+            }
+        });*/
 }
 
 app.on('ready', createWindow);
