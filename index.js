@@ -2,10 +2,6 @@ const {
     ipcRenderer,
     remote
 } = require('electron');
-const {
-    Menu,
-    MenuItem
-} = remote;
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 let contents = remote.getCurrentWebContents();
@@ -17,14 +13,7 @@ const routes = {
         }
     },
     'max-btn': {
-        'click': () => {
-            if (win.isMaximizable) {
-                // change window ctrls icon: from max -> restore
-                document.getElementById('max-btn').style.display = 'none';
-                document.getElementById('restore-btn').style.display = 'flex';
-                win.maximize();
-            }
-        }
+        'click': maxBrowerWindow
     },
     'restore-btn': {
         'click': () => {
@@ -90,6 +79,16 @@ function routeInit() {
         }
     }
 }
+
+function maxBrowerWindow() {
+    if (win.isMaximizable) {
+        // change window ctrls icon: from max -> restore
+        document.getElementById('max-btn').style.display = 'none';
+        document.getElementById('restore-btn').style.display = 'flex';
+        win.maximize();
+    }
+}
+
 /*
 function buildCustomMenu() {
     let menuFile = new Menu();

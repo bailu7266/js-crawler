@@ -16,7 +16,7 @@
                 <div class="menu">
                     <div class="button" id="menu-file"><span>文件</span></div>
                     <div class="menu-list">
-                        <a id=""><span>关于</span><span>Alt+A</span></a>
+                        <a id="link-about"><span>关于</span><span>Alt+A</span></a>
                         <hr>
                         <div class="submenu">
                             <div class="itembtn"><span>最近打开的文件</span></div>
@@ -27,16 +27,20 @@
                             </div>
                         </div>
                         <hr>
-                        <a id=""><span>退出</span><span>Ctrl+X</span></a>
+                        <a id="link-quit"><span>退出</span><span>Ctrl+X</span></a>
                     </div>
                 </div>
                 <div class="menu">
                     <div class="button" id="menu-window"><span>Window</span></div>
                     <div class="menu-list">
-                        <a><span>Minimize</span></a>
-                        <a><span>Close</span></a>
+                        <a id="link-min"><span>Minimize</span></a>
+                        <a id="link-close"><span>Close</span></a>
                         <hr>
-                        <a>Development Tools<input id="devtools" type="checkbox" checked="checked"><span class="checkmark"></span></a>
+                        <a id="link-devtools">
+                            <input id="devtools" type="checkbox" checked="checked">
+                            <img class="checkmark" src="./images/checkmark-solid.png" />
+                            <label for="devtools">Development Tools</label>
+                        </a>
                     </div>
                 </div>
             </div>
