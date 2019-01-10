@@ -17,7 +17,7 @@
 
 @font-face {
     font-family: MDL2;
-    src: url(file:///./fonts/segmdl2.ttf);
+    src: local("Segoe MDL2 Assets"), url(../fonts/segmdl2.ttf);
 }
 
 * {
@@ -79,7 +79,7 @@ button {
     padding: var(--item-h-padding);
 }
 
-.toolbar a>img {
+.toolbar a > img {
     display: block;
     height: var(--item-size);
     border: none;
@@ -196,7 +196,7 @@ button {
     flex: 0 1 100%;
 }
 
-#menubar .submenu>.itembtn:after {
+#menubar .submenu > .itembtn:after {
     content: ">";
     text-align: center;
 }
@@ -210,7 +210,7 @@ button {
     margin: 0.5em;
 }
 
-#menubar .submenu>.menu-list {
+#menubar .submenu > .menu-list {
     /* top: auto; */
     left: 100%;
     transform: translateY(-0.5em);
@@ -222,21 +222,21 @@ button {
     font-weight: bold;
 }
 
-#menubar .menu:hover>.menu-list {
+#menubar .menu:hover > .menu-list {
     display: block;
 }
 
 #menubar .menu-list a:hover,
-#menubar .submenu:hover>.itembtn {
+#menubar .submenu:hover > .itembtn {
     color: white;
     background-color: dodgerblue;
 }
 
-#menubar .submenu:hover>.menu-list {
+#menubar .submenu:hover > .menu-list {
     display: block;
 }
 
-#menubar .submenu:hover>.itembtn::after {
+#menubar .submenu:hover > .itembtn::after {
     content: "<";
     text-align: center;
 }
@@ -247,15 +247,15 @@ button {
     font-weight: bold;
 }
 
-.menu-list input[type=checkbox] {
+.menu-list input[type="checkbox"] {
     display: none;
 }
 
-.menu-list input[type=checkbox]~label {
+.menu-list input[type="checkbox"] ~ label {
     width: 100%;
 }
 
-.menu-list input[type=checkbox]+img.checkmark {
+.menu-list input[type="checkbox"] + img.checkmark {
     position: absolute;
     display: none;
     height: 2em;
@@ -264,7 +264,7 @@ button {
     padding: 0.5em;
 }
 
-.menu-list input[type=checkbox]:checked+img.checkmark {
+.menu-list input[type="checkbox"]:checked + img.checkmark {
     display: block;
 }
 
@@ -318,7 +318,7 @@ button {
     background-color: var(--close-btn-hover-color);
 }
 
-#window-ctrls a>img {
+#window-ctrls a > img {
     height: 1em;
     padding: 0.1em;
     border: none;
@@ -378,13 +378,12 @@ button {
     color: var(--titlebar-bg-color);
 }
 
-.title-tab>img {
+.title-tab > img {
     flex: 0 1 auto;
     display: block;
     height: 1em;
     border: none;
 }
-
 
 /*
 .title-tab>span {
@@ -403,7 +402,7 @@ button {
     background-color: var(--titlebar-bg-color);
 }
 
-#main-view>iframe {
+#main-view > iframe {
     flex: 1 1 auto;
     border: 1px solid royalblue;
 }

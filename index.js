@@ -12,6 +12,11 @@ const routes = {
             win.minimize();
         }
     },
+    'link-min': {
+        'click': () => {
+            win.minimize();
+        }
+    },
     'max-btn': {
         'click': maxBrowerWindow
     },
@@ -30,6 +35,11 @@ const routes = {
             win.close();
         }
     },
+    'link-close': {
+        'click': () => {
+            win.close();
+        }
+    },
     'link-home': {
         'click': onHome
     },
@@ -44,6 +54,9 @@ const routes = {
     },
     'link-signup': {
         'click': nothing
+    },
+    'devtools': {
+        'click': clickDevTools,
     }
 };
 /*
@@ -74,7 +87,7 @@ function routeInit() {
         for (let j = 0; j < actKeys.length; j++) {
             let fResp = actions[actKeys[j]];
             if (fResp && (fResp instanceof Function)) {
-                document.getElementById(keys[i]).addEventListener(actKeys[j], fResp);
+                document.getElementById(keys[i]).addEventListener(actKeys[j], fResp, false);
             }
         }
     }
@@ -87,6 +100,21 @@ function maxBrowerWindow() {
         document.getElementById('restore-btn').style.display = 'flex';
         win.maximize();
     }
+}
+
+function clickDevTools() {
+    if (this.checked) {
+        contents.openDevTools();
+    } else {
+        contents.closeDevTools();
+    }
+    // close menu-list
+    // 关闭了整个menu-list，即使在menu-list:hover的时候也不显示了
+    let menu = this.parentElement.parentElement; // .menu-list>a>input
+    menu.style.display = 'none';
+
+    // 应该设法让menu-list失去mouseover
+    // dispatchEvent('mouseout') to menu-list
 }
 
 /*
