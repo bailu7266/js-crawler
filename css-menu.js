@@ -1,17 +1,20 @@
 var menu = {};
-var current = null;
-var open = false;
-var focused = false;
+var menubar = null;
 
-function addCSSMenu(mi, tabIndex = -1) {
-    mi.tabIndex = tabIndex.toString(); // make it be able to be focused
-    menu[mi.id] = meusList(mi);
+function initMenubar(menuId) {
+    menubar = document.getElementById(menuId);
+    let btns = menubar.querySelectorAll('.menu>.button');
+    for (let i = 0; i < btns.length; i++) {
+        btns[i].tabIndex = '-1'; // make it be able to be focused
+        menu[btns[i].id] = meusList(btns[i]);
 
-    mi.addEventListener('click', clickMenu, false);
-    mi.addEventListener('mouseover', hoverMenu, false);
-    mi.addEventListener('blur', blurMenu, false);
-    mi.addEventListener('focus', focusMenu);
-    // mi.addEventListener('mouseout', leaveMenu, false);
+        // mi.addEventListener('click', clickMenu, false);
+        btns[i].addEventListener('mousedown', onMousedown, false);
+        btns[i].addEventListener('mouseover', hoverMenu, false);
+        btns[i].addEventListener('blur', blurMenu, false);
+        btns[i].addEventListener('focus', focusMenu);
+        // mi.addEventListener('mouseout', leaveMenu, false);
+    }
 }
 
 function meusList(mi) {
@@ -22,43 +25,22 @@ function meusList(mi) {
     return menuList;
 }
 
-/*
-    两种情况
-*/
-
-function clickMenu() {
-    console.log('click on menu ' + this.id);
-    // if (this === document.activeElement) { //因为focus事件在前，变成了废话
-    if (focused) {
+function onMousedown(event) {
+    event.preventDefault();
+    if (this.getAttribute('data-focused') === 'true') {
         this.blur();
     } else {
-        focused = true;
+        this.focus();
     }
 }
 
-function xclickMenu() {
-    console.log('click on menu ', this.id);
-    if (current) {
-        // menu[current].style.visibility = 'hidden';
-        if (this.id === current) {
-            current = null;
-            this.blur(); // toggle focus status
-        }
-        /*else {
-            current = this.id;
-            menu[current].style.visibility = 'visible';
-        } 
-    } else {
-        current = this.id;
-        menu[current].style.visibility = 'visible';*/
-        // this.focus(); //get focus automatically
-    }
-}
-
-function leaveMenu() {
-    // this.blur();
-    console.log('Mouse out of ' + this.id);
-}
+/*---------------------------------------------------------------------------------------
+    两种情况:
+    1. click menu button: 此时，先获取focus事件，然后获取click事件，此后在click同一个button的话，
+       将只获取click事件，而没有focus
+    2. hover切换：因为切换时，只有focus事件，所以无法感知切换，但切换后，如果click button的话，将只
+       发送click事件，而不会有focus(already focused)
+----------------------------------------------------------------------------------------*/
 
 /*
     有两种情况进入focus
@@ -69,33 +51,15 @@ function leaveMenu() {
 */
 
 function focusMenu() {
-    console.log('Menu ' + this.id + ' got focused, while open is ' + open);
-    // open = !open;
-    // menu[this.id].style.visibility = open ? 'visible' : 'hidden';
-    menu[this.id].style.visibility = 'visible';
-
-    /*
-    if (this.id === current) {
-        current = null;
-        this.blur();
-    } else {
-        current = this.id;
-        menu[this.id].style.visibility = 'visible';
-    } */
+    // menu[this.id].style.visibility = 'visible';
+    this.setAttribute('data-focused', 'true');
+    menubar.setAttribute('data-open', 'open');
 }
 
 function hoverMenu() {
-    if (focused && (this !== document.activeElement)) {
+    if (menubar.getAttribute('data-open') === 'open') {
         this.focus();
     }
-    /* if (current) {
-        if (this.id !== current) {
-            menu[current].style.visibility = 'hidden';
-            this.focus();
-            current = this.id;
-            menu[current].style.visibility = 'visible';
-        }
-    }*/
 }
 
 function blurMenu() {
@@ -108,21 +72,9 @@ function blurMenu() {
            过了， 不需要动作
         x. 想多了，其实很简单，blur后，简单hidden自己的menu-list就行了   
       +------------------------------------------------------------------*/
-    console.log('Menu ' + this.id + ' lost focus, While current is ' + current);
-
-    menu[this.id].style.visibility = 'hidden';
-    open = false;
-    focused = false; // 发送focus迁移时，因为有blur事件，导致focused被置false。看来blur前的状态必须要判断。
-
-    /* if (current) {
-        if (this.id !== current) {
-            let idx = Object.keys(menu).indexOf(this.id);
-            if (idx < 0) { // should be -1
-                menu[current].style.visibility = 'hidden';
-                current = null;
-            }
-        }
-    } */
+    // menu[this.id].style.visibility = 'hidden';
+    this.setAttribute('data-focused', 'false');
+    menubar.setAttribute('data-open', 'close');
 }
 
-module.exports = addCSSMenu;
+module.exports = initMenubar;

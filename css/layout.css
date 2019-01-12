@@ -166,6 +166,10 @@ button {
 
 #menubar .menu-list {
     visibility: hidden;
+    -webkit-transition-property: visibility;
+    -webkit-transition-delay: 100ms;
+    transition-property: visibility;
+    transition-delay: 100ms;
     position: absolute;
     display: block;
     width: var(--menu-item-width);
@@ -217,24 +221,31 @@ button {
     transform: translateY(-0.5em);
 }
 
+#menubar .button:focus,
 #menubar .menu:hover .button {
     color: black;
     background-color: var(--titlebar-hover-color);
     font-weight: bold;
+    box-shadow: none;
 }
 
+#menubar .button:focus {
+    outline: 0;
+}
+
+/*
 #menubar .button:focus {
     color: whitesmoke;
     background-color: rebeccapurple;
     font-weight: bold;
 }
+*/
 
-
-/* 
-#menubar .menu:hover>.menu-list {
+/*#menubar[data-open="open"] .menu>.button[data-focused="true"]+.menu-list,*/
+#menubar[data-open="open"] .menu>.button:focus+.menu-list,
+#menubar[data-open="open"] .menu:hover>.menu-list {
     visibility: visible;
 }
-*/
 
 #menubar .menu-list a:hover,
 #menubar .submenu:hover>.itembtn {

@@ -11,10 +11,10 @@
 <body>
     <div id="window-container" class="flex-col">
         <div id="titlebar">
-            <div id="menubar">
+            <div id="menubar" data-open="close">
                 <img id="app-icon" src="./images/logo-512.png" />
                 <div class="menu">
-                    <div class="button" id="menu-file"><span>文件</span></div>
+                    <div class="button" id="menu-file" data-focused="false"><span>文件</span></div>
                     <div class="menu-list">
                         <a id="link-about"><span>关于</span><span>Alt+A</span></a>
                         <hr>
@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="menu">
-                    <div class="button" id="menu-window"><span>Window</span></div>
+                    <div class="button" id="menu-window" data-focused="false"><span>Window</span></div>
                     <div class="menu-list">
                         <a id="link-min"><span>Minimize</span></a>
                         <a id="link-close"><span>Close</span></a>

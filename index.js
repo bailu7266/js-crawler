@@ -2,7 +2,10 @@ const {
     ipcRenderer,
     remote
 } = require('electron');
-const addCSSMenu = require('./css-menu.js');
+const {
+    app
+} = remote;
+const initMenubar = require('./css-menu.js');
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 let contents = remote.getCurrentWebContents();
@@ -58,6 +61,12 @@ const routes = {
     },
     'devtools': {
         'click': clickDevTools,
+    },
+    'link-quit': {
+        'click': () => {
+            console.log('link-quit clicked');
+            app.quit();
+        }
     }
 };
 
@@ -77,10 +86,12 @@ window.addEventListener('load', () => {
     }*/
 
     // window.addEventListener('blur', () => { console.log('BrowserWindow lost focus'); }, false);
-    for (let i = 0; i < menuIds.length; i++) {
+
+    /* for (let i = 0; i < menuIds.length; i++) {
         let mi = document.getElementById(menuIds[i]);
         if (mi) addCSSMenu(mi);
-    }
+    }*/
+    initMenubar('menubar');
 
     routeInit();
 });
@@ -116,8 +127,8 @@ function clickDevTools() {
     }
     // close menu-list
     // 关闭了整个menu-list，即使在menu-list:hover的时候也不显示了
-    let menu = this.parentElement.parentElement; // .menu-list>a>input
-    menu.style.display = 'none';
+    // let menu = this.parentElement.parentElement; // .menu-list>a>input
+    // menu.style.display = 'none';
 
     // 应该设法让menu-list失去mouseover
     // dispatchEvent('mouseout') to menu-list
