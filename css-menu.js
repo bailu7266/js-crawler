@@ -1,5 +1,6 @@
 var menu = {};
 var menubar = null;
+var timer = null;
 
 function initMenubar(menuId) {
     menubar = document.getElementById(menuId);
@@ -52,8 +53,14 @@ function onMousedown(event) {
 
 function focusMenu() {
     // menu[this.id].style.visibility = 'visible';
+    if (timer) {
+        clearTimeout(timer);
+        timer = null;
+    }
+    // setTimeout(() => {
     this.setAttribute('data-focused', 'true');
     menubar.setAttribute('data-open', 'open');
+    // }, 100);
 }
 
 function hoverMenu() {
@@ -70,11 +77,26 @@ function blurMenu() {
            但这种情况已经再clickMenu中处理过了，无需动作
         3. 还在current所在dropdown, 这是有clickMenu主动释放的，已经由它处理
            过了， 不需要动作
-        x. 想多了，其实很简单，blur后，简单hidden自己的menu-list就行了   
+        x. 想多了，其实很简单，blur后，简单hidden自己的menu-list就行了
+      Update:
+        blur后，如果立即hidden dropdown的话，将导致无法选中其中的选项，所以需要延迟，
+        可以在两个地方设定这个延迟：
+        1. blur事件中（如下），这个延时就是确保选项被选中。如果本blur后，本menubar
+           又获得了focus，则清空这个timer，这样也可以保证响应速度
+        2. 在CSS中设定，transition: visibility 100ms。
       +------------------------------------------------------------------*/
     // menu[this.id].style.visibility = 'hidden';
-    this.setAttribute('data-focused', 'false');
-    menubar.setAttribute('data-open', 'close');
+    // 这将导致blur事件的响应晚于foucus事件，所以应该在focus事件中判断timer
+    // 这对于.button来说无所谓，但会导致menubar data-* 被重置，所以menubar
+    // timer应该可以被focus清除。
+    setTimeout((() => {
+        this.setAttribute('data-focused', 'false');
+    }).bind(this), 100);
+
+    timer = setTimeout(() => {
+        timer = null;
+        menubar.setAttribute('data-open', 'close');
+    }, 100);
 }
 
 module.exports = initMenubar;
