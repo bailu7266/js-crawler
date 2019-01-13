@@ -14,7 +14,7 @@ function createWindow() {
     let frame = false;
     let tray = new Tray('./images/app-icon.png');
     let options = {
-        icon: tray,
+        icon: './images/app-icon.png',
         show: false,
         width: 1600,
         height: 960,

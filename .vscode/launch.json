@@ -22,6 +22,9 @@
             "windows": {
                 "runtimeExecutable": "C:/Users/bai_l/AppData/Roaming/npm/electron"
             },
+            "linux": {
+                "runtimeExecutable": "electron"
+            },
             "args": ["${workspaceFolder}"],
             "program": "${workspaceFolder}/main.js"
         },
