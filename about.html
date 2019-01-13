@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta>
+    <title>About</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 2em 0.5;
+            background-color: whitesmoke;
+        }
+
+        div.container {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: space-around;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1em;
+        }
+
+        div.contents {
+            display: flex;
+            flex-flow: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #app-icon {
+            flex: 0 1 auto;
+            display: block;
+            border: none;
+            padding: 0.5em;
+            width: 5em;
+        }
+
+        #versions {
+            flex: 0 1 atuo;
+            padding: 0.5em;
+        }
+
+        #btn-ok {
+            flex: 0 1 auto;
+            padding: 4px 32px;
+            font-size: 1em;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            border: 2px groove dimgrey;
+            background-color: #c5c5c5;
+        }
+
+        #btn-ok:active {
+            outline: none;
+            background-color: #a1a1a1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="contents">
+            <img id="app-icon" />
+            <p id="versions"></p>
+        </div>
+        <button id="btn-ok">Ok</button>
+    </div>
+
+    <script>
+        require('./about.js');
+    </script>
+</body>
+
+</html>

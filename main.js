@@ -4,14 +4,17 @@ const {
     dialog,
     BrowserView,
     BrowserWindow,
-    Menu
+    Menu,
+    Tray
 } = require('electron');
 let path = require('path');
-let win;
+var win;
 
 function createWindow() {
     let frame = false;
+    let tray = new Tray('./images/app-icon.png');
     let options = {
+        icon: tray,
         show: false,
         width: 1600,
         height: 960,
@@ -64,6 +67,27 @@ function createWindow() {
             Menu.setApplicationMenu(menu);
         }
     */
+    // build context-menu for system tray
+    let contextMenu = Menu.buildFromTemplate([{
+            label: '选项1',
+            type: 'checkbox',
+            checked: true
+        },
+        {
+            label: '选项2',
+            type: 'radio'
+        },
+        {
+            type: 'separator'
+        },
+        {
+            label: '选项3',
+            click: () => {}
+        }
+    ]);
+    tray.setContextMenu(contextMenu);
+    tray.setToolTip('学习 electron & Javascript');
+
     view.webContents.openDevTools();
 
     view.webContents.loadURL(url);
