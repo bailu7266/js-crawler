@@ -24,6 +24,6 @@
         "url-parse": "^1.4.4"
     },
     "devDependencies": {
-        "electron": "^4.0.0"
+        "electron": "^4.0.1"
     }
 }
