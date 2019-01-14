@@ -1,23 +1,22 @@
-var menu = {};
-var menubar = null;
-var timer = null;
-
-function initMenubar(menuId) {
-    menubar = document.getElementById(menuId);
-    let btns = menubar.querySelectorAll('.menu>.button');
+function Menubar(menuId) {
+    let self = this;
+    self.id = menuId;
+    self.timer = null;
+    self.menubar = document.getElementById(menuId);
+    self.menubar.onmousedown = () => { console.log('on-mousedown ' + this.id); };
+    this.menubar.tabIndex = '0'; // Make menubar keyborad-navigable
+    let btns = self.menubar.querySelectorAll('.menu>.button');
     for (let i = 0; i < btns.length; i++) {
-        btns[i].tabIndex = '-1'; // make it be able to be focused
-        menu[btns[i].id] = meusList(btns[i]);
-
-        // mi.addEventListener('click', clickMenu, false);
-        btns[i].addEventListener('mousedown', onMousedown, false);
-        btns[i].addEventListener('mouseover', hoverMenu, false);
-        btns[i].addEventListener('blur', blurMenu, false);
-        btns[i].addEventListener('focus', focusMenu);
-        // mi.addEventListener('mouseout', leaveMenu, false);
+        let btn = btns[i];
+        btn.tabIndex = '-1'; // make it be able to be focused
+        btn.addEventListener('mousedown', (e) => { return self.onMouseDown(btn, e); });
+        btn.addEventListener('mousedown', simpleOut);
+        btn.addEventListener('mouseover', (e) => { return self.hoverMenu(btn, e); });
+        btn.addEventListener('blur', (e) => { return self.blurMenu(btn, e); });
+        btn.addEventListener('focus', (e) => { return self.focusMenu(btn, e); });
     }
 }
-
+/*
 function meusList(mi) {
     let menuList = mi.parentElement.querySelector('.menu-list');
     if (!menuList)
@@ -25,15 +24,21 @@ function meusList(mi) {
 
     return menuList;
 }
-
-function onMousedown(event) {
-    event.preventDefault();
-    if (this.getAttribute('data-focused') === 'true') {
-        this.blur();
-    } else {
-        this.focus();
-    }
+*/
+function simpleOut() {
+    console.log(this.id + ' clicked');
 }
+
+Menubar.prototype.onMouseDown = function(btn, e) {
+    console.log('get click event from ' + btn.id);
+    e.preventDefault();
+    e.stopPropagation();
+    if (btn.getAttribute('data-focused') === 'true') {
+        btn.blur();
+    } else {
+        btn.focus();
+    }
+};
 
 /*---------------------------------------------------------------------------------------
     两种情况:
@@ -51,25 +56,25 @@ function onMousedown(event) {
        到focus事件
 */
 
-function focusMenu() {
+Menubar.prototype.focusMenu = function(btn) {
     // menu[this.id].style.visibility = 'visible';
-    if (timer) {
-        clearTimeout(timer);
-        timer = null;
+    if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
     }
     // setTimeout(() => {
-    this.setAttribute('data-focused', 'true');
-    menubar.setAttribute('data-open', 'open');
+    btn.setAttribute('data-focused', 'true');
+    this.menubar.setAttribute('data-open', 'open');
     // }, 100);
-}
+};
 
-function hoverMenu() {
-    if (menubar.getAttribute('data-open') === 'open') {
-        this.focus();
+Menubar.prototype.hoverMenu = function(btn) {
+    if (this.menubar.getAttribute('data-open') === 'open') {
+        btn.focus();
     }
-}
+};
 
-function blurMenu() {
+Menubar.prototype.blurMenu = function(btn) {
     /*+------------------------------------------------------------------
       情况分析：
         1. 非menubar所有成员区域获得了foucs，应该关闭dropdown，清空current
@@ -89,14 +94,15 @@ function blurMenu() {
     // 这将导致blur事件的响应晚于foucus事件，所以应该在focus事件中判断timer
     // 这对于.button来说无所谓，但会导致menubar data-* 被重置，所以menubar
     // timer应该可以被focus清除。
-    setTimeout((() => {
-        this.setAttribute('data-focused', 'false');
-    }).bind(this), 100);
-
-    timer = setTimeout(() => {
-        timer = null;
-        menubar.setAttribute('data-open', 'close');
+    setTimeout(() => {
+        btn.setAttribute('data-focused', 'false');
     }, 100);
-}
 
-module.exports = initMenubar;
+    let self = this;
+    this.timer = setTimeout(() => {
+        self.timer = null;
+        self.menubar.setAttribute('data-open', 'close');
+    }, 100);
+};
+
+module.exports = Menubar;

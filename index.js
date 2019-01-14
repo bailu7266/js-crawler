@@ -1,6 +1,6 @@
 const { ipcRenderer, remote } = require('electron');
 const { app, BrowserWindow } = remote;
-const initMenubar = require('./css-menu.js');
+const Menubar = require('./css-menu.js');
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 let contents = remote.getCurrentWebContents();
@@ -84,7 +84,7 @@ window.addEventListener('load', () => {
         let mi = document.getElementById(menuIds[i]);
         if (mi) addCSSMenu(mi);
     }*/
-    initMenubar('menubar');
+    new Menubar('menubar');
 
     routeInit();
 });
