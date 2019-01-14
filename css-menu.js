@@ -1,20 +1,49 @@
+function KeyCodes() {
+    this.enter = 13;
+    this.space = 32;
+    this.left = 37;
+    this.right = 38;
+    this.up = 39;
+    this.down = 40;
+}
+
 function Menubar(menuId) {
     let self = this;
-    self.id = menuId;
+    // self.id = menuId;
     self.timer = null;
+    // 定义方向键、控制键
+    self.keys = new KeyCodes();
     self.menubar = document.getElementById(menuId);
-    self.menubar.onmousedown = () => { console.log('on-mousedown ' + this.id); };
-    this.menubar.tabIndex = '0'; // Make menubar keyborad-navigable
-    let btns = self.menubar.querySelectorAll('.menu>.button');
-    for (let i = 0; i < btns.length; i++) {
-        let btn = btns[i];
+    /* self.menubar.onmousedown = function(e) {
+        e.preventDefault();
+        console.log('on-mousedown ' + this.id);
+    }; */
+    // self.menubar.tabIndex = '0'; // Make menubar keyborad-navigable
+    self.btns = self.menubar.querySelectorAll('.menu>.button');
+    for (let i = 0; i < self.btns.length; i++) {
+        let btn = self.btns[i];
         btn.tabIndex = '-1'; // make it be able to be focused
-        btn.addEventListener('mousedown', (e) => { return self.onMouseDown(btn, e); });
-        btn.addEventListener('mousedown', simpleOut);
-        btn.addEventListener('mouseover', (e) => { return self.hoverMenu(btn, e); });
-        btn.addEventListener('blur', (e) => { return self.blurMenu(btn, e); });
-        btn.addEventListener('focus', (e) => { return self.focusMenu(btn, e); });
+        // 此处必须用function表述方式，如果用()=>{}方式，在inner函数中的
+        // this为outer函数的this，此处就是Menubar
+        btn.addEventListener('mousedown', function(e) {
+            return self.onMouseDown(this, e);
+        });
+        btn.addEventListener('mouseover', function(e) {
+            return self.hoverMenu(this, e);
+        });
+        btn.addEventListener('blur', function(e) {
+            return self.blurMenu(this, e);
+        });
+        btn.addEventListener('focus', function(e) {
+            return self.focusMenu(this, e);
+        });
+        btn.addEventListener('keydown', function(e) {
+            return self.onKeyDown(this, e);
+        });
     }
+    self.btns[0].tabIndex = '0';
+    // active表述menubar当前获得focus的button，如果整个menubar都没有获得focus，则为null
+    self.active = null;
 }
 /*
 function meusList(mi) {
@@ -25,18 +54,20 @@ function meusList(mi) {
     return menuList;
 }
 */
-function simpleOut() {
-    console.log(this.id + ' clicked');
-}
 
 Menubar.prototype.onMouseDown = function(btn, e) {
-    console.log('get click event from ' + btn.id);
     e.preventDefault();
-    e.stopPropagation();
-    if (btn.getAttribute('data-focused') === 'true') {
-        btn.blur();
-    } else {
+    // e.stopPropagation();
+    if (btn.getAttribute('data-focused') === 'false') {
+        //if (btn.getAttribute('data-focused') === 'true') {
+        //    btn.blur();
+        //} else {
         btn.focus();
+    }
+    if (this.menubar.getAttribute('data-open') === 'open') {
+        this.menubar.setAttribute('data-open', 'close');
+    } else {
+        this.menubar.setAttribute('data-open', 'open');
     }
 };
 
@@ -64,13 +95,16 @@ Menubar.prototype.focusMenu = function(btn) {
     }
     // setTimeout(() => {
     btn.setAttribute('data-focused', 'true');
-    this.menubar.setAttribute('data-open', 'open');
+    // this.menubar.setAttribute('data-open', 'open');
+    this.active = btn;
     // }, 100);
 };
 
 Menubar.prototype.hoverMenu = function(btn) {
-    if (this.menubar.getAttribute('data-open') === 'open') {
+    if (this.active) {
+        // if (this.menubar.getAttribute('data-open') === 'open') {
         btn.focus();
+        // }
     }
 };
 
@@ -102,7 +136,20 @@ Menubar.prototype.blurMenu = function(btn) {
     this.timer = setTimeout(() => {
         self.timer = null;
         self.menubar.setAttribute('data-open', 'close');
+        self.active = null;
     }, 100);
+};
+
+Menubar.prototype.onKeyDown = (btn, e) => {
+    if (e.altKey) {
+        // blur，
+        // btn.blur();
+    }
+
+    switch (e.KeyCode) {
+    case this.enter:
+    case this.space:
+    }
 };
 
 module.exports = Menubar;

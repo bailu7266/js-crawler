@@ -79,7 +79,7 @@ button {
     padding: var(--item-h-padding);
 }
 
-.toolbar a > img {
+.toolbar a>img {
     display: block;
     height: var(--item-size);
     border: none;
@@ -201,7 +201,7 @@ button {
     flex: 0 1 100%;
 }
 
-#menubar .submenu > .itembtn:after {
+#menubar .submenu>.itembtn:after {
     content: ">";
     text-align: center;
 }
@@ -215,7 +215,7 @@ button {
     margin: 0.5em;
 }
 
-#menubar .submenu > .menu-list {
+#menubar .submenu>.menu-list {
     /* top: auto; */
     left: 100%;
     transform: translateY(-0.5em);
@@ -230,7 +230,7 @@ button {
 }
 
 #menubar .button:focus {
-    outline: 0;
+    outline: 2px solid var(--close-btn-hover-color);
 }
 
 /*
@@ -242,24 +242,24 @@ button {
 */
 
 /*#menubar[data-open="open"] .menu>.button[data-focused="true"]+.menu-list,*/
-#menubar[data-open="open"] .menu > .button:focus + .menu-list,
-#menubar[data-open="open"] .menu:hover > .menu-list {
+#menubar[data-open="open"] .menu>.button:focus+.menu-list,
+#menubar[data-open="open"] .menu:hover>.menu-list {
     visibility: visible;
     -webkit-transition-delay: 0ms;
     transition-delay: 0ms;
 }
 
 #menubar .menu-list a:hover,
-#menubar .submenu:hover > .itembtn {
+#menubar .submenu:hover>.itembtn {
     color: white;
     background-color: dodgerblue;
 }
 
-#menubar .submenu:hover > .menu-list {
+#menubar .submenu:hover>.menu-list {
     visibility: visible;
 }
 
-#menubar .submenu:hover > .itembtn::after {
+#menubar .submenu:hover>.itembtn::after {
     content: "<";
     text-align: center;
 }
@@ -268,11 +268,11 @@ button {
     display: none;
 }
 
-.menu-list input[type="checkbox"] ~ label {
+.menu-list input[type="checkbox"]~label {
     width: 100%;
 }
 
-.menu-list input[type="checkbox"] + img.checkmark {
+.menu-list input[type="checkbox"]+img.checkmark {
     position: absolute;
     display: none;
     height: 2em;
@@ -281,7 +281,7 @@ button {
     padding: 0.5em;
 }
 
-.menu-list input[type="checkbox"]:checked + img.checkmark {
+.menu-list input[type="checkbox"]:checked+img.checkmark {
     display: block;
 }
 
@@ -335,7 +335,7 @@ button {
     background-color: var(--close-btn-hover-color);
 }
 
-#window-ctrls a > img {
+#window-ctrls a>img {
     height: 1em;
     padding: 0.1em;
     border: none;
@@ -395,7 +395,7 @@ button {
     color: var(--titlebar-bg-color);
 }
 
-.title-tab > img {
+.title-tab>img {
     flex: 0 1 auto;
     display: block;
     height: 1em;
@@ -419,7 +419,7 @@ button {
     background-color: var(--titlebar-bg-color);
 }
 
-#main-view > iframe {
+#main-view>iframe {
     flex: 1 1 auto;
     border: 1px solid royalblue;
 }
