@@ -2,24 +2,24 @@ function KeyCodes() {
     this.enter = 13;
     this.space = 32;
     this.left = 37;
-    this.right = 38;
-    this.up = 39;
+    this.right = 39;
+    this.up = 38;
     this.down = 40;
 }
 
 function Menubar(menuId) {
     let self = this;
-    // self.id = menuId;
+    self.id = '#' + menuId;
     self.timer = null;
     // 定义方向键、控制键
-    self.keys = new KeyCodes();
+    // self.keys = new KeyCodes();
     self.menubar = document.getElementById(menuId);
     /* self.menubar.onmousedown = function(e) {
         e.preventDefault();
         console.log('on-mousedown ' + this.id);
     }; */
     // self.menubar.tabIndex = '0'; // Make menubar keyborad-navigable
-    self.btns = self.menubar.querySelectorAll('.menu>.button');
+    self.btns = Array.from(self.menubar.querySelectorAll('.menu>.button'));
     for (let i = 0; i < self.btns.length; i++) {
         let btn = self.btns[i];
         btn.tabIndex = '-1'; // make it be able to be focused
@@ -41,9 +41,22 @@ function Menubar(menuId) {
             return self.onKeyDown(this, e);
         });
     }
-    self.btns[0].tabIndex = '0';
-    // active表述menubar当前获得focus的button，如果整个menubar都没有获得focus，则为null
+    // active: 表示menubar当前是否获得focus
+    // select: 表示当前活跃的button，如果menubar握有focus，则该button
+    //         拥有focus, 如果当前没有，则在下次menubar获得focus时，该button
+    //         会被focus
+    self.select = self.btns[0];
+    self.select.tabIndex = '0';
     self.active = null;
+
+    // only for alt-key
+    window.addEventListener('keydown', function(e) { return self.onAltKey(e); });
+
+    // for mouse over menu-list box
+    let mlist = self.menubar.querySelectorAll('.menu-list');
+    for (let li = 0; li < mlist.length; li++) {
+        mlist[li].addEventListener('mouseover', function(e) { return self.onHoverList(this, e); });
+    }
 }
 /*
 function meusList(mi) {
@@ -54,6 +67,15 @@ function meusList(mi) {
     return menuList;
 }
 */
+Menubar.prototype.onAltKey = function(e) {
+    if (e.altKey) {
+        if (this.active) {
+            this.select.blur();
+        } else {
+            this.select.focus();
+        }
+    }
+};
 
 Menubar.prototype.onMouseDown = function(btn, e) {
     e.preventDefault();
@@ -64,10 +86,10 @@ Menubar.prototype.onMouseDown = function(btn, e) {
         //} else {
         btn.focus();
     }
-    if (this.menubar.getAttribute('data-open') === 'open') {
-        this.menubar.setAttribute('data-open', 'close');
+    if (this.menubar.getAttribute('data-open') === 'true') {
+        this.menubar.setAttribute('data-open', 'false');
     } else {
-        this.menubar.setAttribute('data-open', 'open');
+        this.menubar.setAttribute('data-open', 'true');
     }
 };
 
@@ -95,16 +117,43 @@ Menubar.prototype.focusMenu = function(btn) {
     }
     // setTimeout(() => {
     btn.setAttribute('data-focused', 'true');
-    // this.menubar.setAttribute('data-open', 'open');
-    this.active = btn;
+    // this.menubar.setAttribute('data-open', 'true');
+    this.selectButton(btn);
+    this.active = true;
     // }, 100);
+};
+
+Menubar.prototype.selectButton = function(btn) {
+    // change select to btn
+    /* var idx = 0;
+    // indexOf collection
+    for (; idx < this.btns.length; idx++) {
+        if (btn === this.btns[idx]) {
+            break;
+        }
+    }
+    if (idx === this.btns.length) idx = -1; */
+    // if (this.btns.find((obj) => { return obj === btn; })) {
+    this.select.tabIndex = '-1';
+    btn.tabIndex = '0';
+    this.select = btn;
+    /* } else {
+        console.log('错误: ' + btn.id + ' 不是menubar成员');
+    } */
 };
 
 Menubar.prototype.hoverMenu = function(btn) {
     if (this.active) {
-        // if (this.menubar.getAttribute('data-open') === 'open') {
+        // if (this.menubar.getAttribute('data-open') === 'true') {
         btn.focus();
         // }
+    }
+};
+
+Menubar.prototype.onHoverList = function(list) {
+    let li = list.querySelector('a[data-select="true"]');
+    if (li) {
+        li.setAttribute('data-select', 'false');
     }
 };
 
@@ -135,21 +184,63 @@ Menubar.prototype.blurMenu = function(btn) {
     let self = this;
     this.timer = setTimeout(() => {
         self.timer = null;
-        self.menubar.setAttribute('data-open', 'close');
-        self.active = null;
+        self.menubar.setAttribute('data-open', 'false');
+        self.active = false;
     }, 100);
 };
 
-Menubar.prototype.onKeyDown = (btn, e) => {
+Menubar.prototype.onKeyDown = function(btn, e) {
+    if (e.defaultPrevented) return;
     if (e.altKey) {
-        // blur，
-        // btn.blur();
+        btn.blur();
+        return;
     }
 
-    switch (e.KeyCode) {
-    case this.enter:
-    case this.space:
+    var idx, next;
+    switch (e.key) {
+        case 'Enter':
+        case 'Space':
+            break;
+
+        case 'Left':
+        case 'ArrowLeft':
+            idx = this.btns.indexOf(btn);
+            next = idx === 0 ? this.btns.length - 1 : idx - 1;
+            this.btns[next].focus();
+            break;
+
+        case 'Right':
+        case 'ArrowRight':
+            idx = this.btns.indexOf(btn);
+            next = idx === this.btns.length - 1 ? 0 : idx + 1;
+            this.btns[next].focus();
+            break;
+
+        case 'Up':
+        case 'ArrowUp':
+            break;
+
+        case 'Down':
+        case 'ArrowDown':
+            if (this.menubar.getAttribute('data-open') === 'false') {
+                this.menubar.setAttribute('data-open', 'true');
+                btn.nextElementSibling.firstElementChild.setAttribute('data-select', 'true');
+            }
+            break;
+
+        case 'Esc':
+        case 'Escape':
+            /* if (this.menubar.getAttribute('data-open') === 'true') {
+                this.menubar.setAttribute('data-open', 'false');
+            } */
+            btn.blur();
+            break;
+
+        default:
+            return;
     }
+
+    e.preventDefault();
 };
 
 module.exports = Menubar;
