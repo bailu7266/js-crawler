@@ -252,6 +252,7 @@ button {
     transition-delay: 0ms;
 }
 
+#menubar .menu-list div[data-select="true"]>.itembtn,
 #menubar .menu-list a[data-select="true"],
 #menubar .menu-list a:hover,
 #menubar .submenu:hover>.itembtn {

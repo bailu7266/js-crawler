@@ -25,19 +25,19 @@ function Menubar(menuId) {
         btn.tabIndex = '-1'; // make it be able to be focused
         // 此处必须用function表述方式，如果用()=>{}方式，在inner函数中的
         // this为outer函数的this，此处就是Menubar
-        btn.addEventListener('mousedown', function(e) {
+        btn.addEventListener('mousedown', function (e) {
             return self.onMouseDown(this, e);
         });
-        btn.addEventListener('mouseover', function(e) {
+        btn.addEventListener('mouseover', function (e) {
             return self.hoverMenu(this, e);
         });
-        btn.addEventListener('blur', function(e) {
+        btn.addEventListener('blur', function (e) {
             return self.blurMenu(this, e);
         });
-        btn.addEventListener('focus', function(e) {
+        btn.addEventListener('focus', function (e) {
             return self.focusMenu(this, e);
         });
-        btn.addEventListener('keydown', function(e) {
+        btn.addEventListener('keydown', function (e) {
             return self.onKeyDown(this, e);
         });
     }
@@ -50,12 +50,16 @@ function Menubar(menuId) {
     self.active = null;
 
     // only for alt-key
-    window.addEventListener('keydown', function(e) { return self.onAltKey(e); });
+    window.addEventListener('keydown', function (e) {
+        return self.onAltKey(e);
+    });
 
     // for mouse over menu-list box
     let mlist = self.menubar.querySelectorAll('.menu-list');
     for (let li = 0; li < mlist.length; li++) {
-        mlist[li].addEventListener('mouseover', function(e) { return self.onHoverList(this, e); });
+        mlist[li].addEventListener('mouseover', function (e) {
+            return self.onHoverList(this, e);
+        });
     }
 }
 /*
@@ -67,7 +71,7 @@ function meusList(mi) {
     return menuList;
 }
 */
-Menubar.prototype.onAltKey = function(e) {
+Menubar.prototype.onAltKey = function (e) {
     if (e.altKey) {
         if (this.active) {
             this.select.blur();
@@ -77,7 +81,7 @@ Menubar.prototype.onAltKey = function(e) {
     }
 };
 
-Menubar.prototype.onMouseDown = function(btn, e) {
+Menubar.prototype.onMouseDown = function (btn, e) {
     e.preventDefault();
     // e.stopPropagation();
     if (btn.getAttribute('data-focused') === 'false') {
@@ -109,7 +113,7 @@ Menubar.prototype.onMouseDown = function(btn, e) {
        到focus事件
 */
 
-Menubar.prototype.focusMenu = function(btn) {
+Menubar.prototype.focusMenu = function (btn) {
     // menu[this.id].style.visibility = 'visible';
     if (this.timer) {
         clearTimeout(this.timer);
@@ -123,7 +127,7 @@ Menubar.prototype.focusMenu = function(btn) {
     // }, 100);
 };
 
-Menubar.prototype.selectButton = function(btn) {
+Menubar.prototype.selectButton = function (btn) {
     // change select to btn
     /* var idx = 0;
     // indexOf collection
@@ -142,7 +146,7 @@ Menubar.prototype.selectButton = function(btn) {
     } */
 };
 
-Menubar.prototype.hoverMenu = function(btn) {
+Menubar.prototype.hoverMenu = function (btn) {
     if (this.active) {
         // if (this.menubar.getAttribute('data-open') === 'true') {
         btn.focus();
@@ -150,14 +154,14 @@ Menubar.prototype.hoverMenu = function(btn) {
     }
 };
 
-Menubar.prototype.onHoverList = function(list) {
-    let li = list.querySelector('a[data-select="true"]');
+Menubar.prototype.onHoverList = function (list) {
+    let li = list.querySelector('*[data-select="true"]');
     if (li) {
         li.setAttribute('data-select', 'false');
     }
 };
 
-Menubar.prototype.blurMenu = function(btn) {
+Menubar.prototype.blurMenu = function (btn) {
     /*+------------------------------------------------------------------
       情况分析：
         1. 非menubar所有成员区域获得了foucs，应该关闭dropdown，清空current
@@ -189,14 +193,16 @@ Menubar.prototype.blurMenu = function(btn) {
     }, 100);
 };
 
-Menubar.prototype.onKeyDown = function(btn, e) {
+Menubar.prototype.onKeyDown = function (btn, e) {
     if (e.defaultPrevented) return;
     if (e.altKey) {
         btn.blur();
         return;
     }
 
-    var idx, next;
+    var next;
+    let idx = this.btns.indexOf(btn);
+    let mlist = btn.nextElementSibling;
     switch (e.key) {
         case 'Enter':
         case 'Space':
@@ -204,35 +210,79 @@ Menubar.prototype.onKeyDown = function(btn, e) {
 
         case 'Left':
         case 'ArrowLeft':
-            idx = this.btns.indexOf(btn);
             next = idx === 0 ? this.btns.length - 1 : idx - 1;
             this.btns[next].focus();
             break;
 
         case 'Right':
         case 'ArrowRight':
-            idx = this.btns.indexOf(btn);
             next = idx === this.btns.length - 1 ? 0 : idx + 1;
             this.btns[next].focus();
             break;
 
         case 'Up':
         case 'ArrowUp':
+            if (this.menubar.getAttribute('data-open') === 'true') {
+                // let cl = mlist.querySelector('a[data-select="true"] .submenu[data-select="true"]');
+                let cl = mlist.querySelector('*[data-select="true"]:not(hr)');
+                if (!cl) {
+                    selectFirst(mlist);
+                    break;
+                }
+                cl.setAttribute('data-select', 'false');
+                // 跳过分割线<hr>
+                while (
+                    cl.previousElementSibling &&
+                    cl.previousElementSibling.tagName === 'HR'
+                ) {
+                    cl = cl.previousElementSibling;
+                }
+                if (cl.previousElementSibling) {
+                    cl.previousElementSibling.setAttribute(
+                        'data-select',
+                        'true'
+                    );
+                } else {
+                    let last = mlist.lastElementChild;
+                    while (last && last.tagName === 'HR') last = last.previousElementSibling;
+                    if (last) last.setAttribute('data-select', 'true');
+                }
+            }
             break;
 
         case 'Down':
         case 'ArrowDown':
             if (this.menubar.getAttribute('data-open') === 'false') {
                 this.menubar.setAttribute('data-open', 'true');
-                btn.nextElementSibling.firstElementChild.setAttribute('data-select', 'true');
+                selectFirst(mlist);
+            } else {
+                // let cl = mlist.querySelector('a[data-select="true"] .submenu[data-select="true"]');
+                let cl = mlist.querySelector('*[data-select="true"]');
+                if (!cl) {
+                    selectFirst(mlist);
+                    break;
+                }
+                cl.setAttribute('data-select', 'false');
+                // 跳过分割线<hr>
+                while (
+                    cl.nextElementSibling &&
+                    cl.nextElementSibling.tagName === 'HR'
+                ) {
+                    cl = cl.nextElementSibling;
+                }
+                if (cl.nextElementSibling) {
+                    cl.nextElementSibling.setAttribute('data-select', 'true');
+                } else {
+                    selectFirst(mlist);
+                }
             }
             break;
 
         case 'Esc':
         case 'Escape':
             /* if (this.menubar.getAttribute('data-open') === 'true') {
-                this.menubar.setAttribute('data-open', 'false');
-            } */
+                    this.menubar.setAttribute('data-open', 'false');
+                } */
             btn.blur();
             break;
 
@@ -242,5 +292,12 @@ Menubar.prototype.onKeyDown = function(btn, e) {
 
     e.preventDefault();
 };
+
+function selectFirst(mlist) {
+    let first = mlist.firstElementChild;
+    while (first && first.tagName === 'HR') first = first.firstElementChild;
+    if (first)
+        first.setAttribute('data-select', 'true');
+}
 
 module.exports = Menubar;
