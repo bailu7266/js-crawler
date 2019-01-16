@@ -191,10 +191,12 @@ function createWindow() {
 
     win.once('ready-to-show', () => {
         win.show();
+        view.webContents.focus();
     });
 
     view.webContents.on('dom-ready', () => {
         win.show();
+        view.webContents.focus();
     });
     /*
         view.webContents.on('devtools-opened', () => {

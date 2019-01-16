@@ -260,10 +260,12 @@ button {
     background-color: dodgerblue;
 }
 
+#menubar .submenu[data-open="true"]>.menu-list,
 #menubar .submenu:hover>.menu-list {
     visibility: visible;
 }
 
+#menubar .submenu[data-open="true"]>.itembtn::after,
 #menubar .submenu:hover>.itembtn::after {
     content: "<";
     text-align: center;

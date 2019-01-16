@@ -1,5 +1,5 @@
 # Binding files
-binding.gyp
+# binding.gyp
 
 # node dependencies
 node_modules

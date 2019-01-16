@@ -25,19 +25,19 @@ function Menubar(menuId) {
         btn.tabIndex = '-1'; // make it be able to be focused
         // 此处必须用function表述方式，如果用()=>{}方式，在inner函数中的
         // this为outer函数的this，此处就是Menubar
-        btn.addEventListener('mousedown', function (e) {
+        btn.addEventListener('mousedown', function(e) {
             return self.onMouseDown(this, e);
         });
-        btn.addEventListener('mouseover', function (e) {
+        btn.addEventListener('mouseover', function(e) {
             return self.hoverMenu(this, e);
         });
-        btn.addEventListener('blur', function (e) {
+        btn.addEventListener('blur', function(e) {
             return self.blurMenu(this, e);
         });
-        btn.addEventListener('focus', function (e) {
+        btn.addEventListener('focus', function(e) {
             return self.focusMenu(this, e);
         });
-        btn.addEventListener('keydown', function (e) {
+        btn.addEventListener('keydown', function(e) {
             return self.onKeyDown(this, e);
         });
     }
@@ -50,14 +50,14 @@ function Menubar(menuId) {
     self.active = null;
 
     // only for alt-key
-    window.addEventListener('keydown', function (e) {
+    window.addEventListener('keydown', function(e) {
         return self.onAltKey(e);
     });
 
     // for mouse over menu-list box
     let mlist = self.menubar.querySelectorAll('.menu-list');
     for (let li = 0; li < mlist.length; li++) {
-        mlist[li].addEventListener('mouseover', function (e) {
+        mlist[li].addEventListener('mouseover', function(e) {
             return self.onHoverList(this, e);
         });
     }
@@ -71,7 +71,7 @@ function meusList(mi) {
     return menuList;
 }
 */
-Menubar.prototype.onAltKey = function (e) {
+Menubar.prototype.onAltKey = function(e) {
     if (e.altKey) {
         if (this.active) {
             this.select.blur();
@@ -81,7 +81,7 @@ Menubar.prototype.onAltKey = function (e) {
     }
 };
 
-Menubar.prototype.onMouseDown = function (btn, e) {
+Menubar.prototype.onMouseDown = function(btn, e) {
     e.preventDefault();
     // e.stopPropagation();
     if (btn.getAttribute('data-focused') === 'false') {
@@ -113,7 +113,7 @@ Menubar.prototype.onMouseDown = function (btn, e) {
        到focus事件
 */
 
-Menubar.prototype.focusMenu = function (btn) {
+Menubar.prototype.focusMenu = function(btn) {
     // menu[this.id].style.visibility = 'visible';
     if (this.timer) {
         clearTimeout(this.timer);
@@ -127,7 +127,7 @@ Menubar.prototype.focusMenu = function (btn) {
     // }, 100);
 };
 
-Menubar.prototype.selectButton = function (btn) {
+Menubar.prototype.selectButton = function(btn) {
     // change select to btn
     /* var idx = 0;
     // indexOf collection
@@ -146,7 +146,7 @@ Menubar.prototype.selectButton = function (btn) {
     } */
 };
 
-Menubar.prototype.hoverMenu = function (btn) {
+Menubar.prototype.hoverMenu = function(btn) {
     if (this.active) {
         // if (this.menubar.getAttribute('data-open') === 'true') {
         btn.focus();
@@ -154,14 +154,15 @@ Menubar.prototype.hoverMenu = function (btn) {
     }
 };
 
-Menubar.prototype.onHoverList = function (list) {
-    let li = list.querySelector('*[data-select="true"]');
+Menubar.prototype.onHoverList = function(list) {
+    collapseMenu(list);
+    /* let li = list.querySelector('*[data-select="true"]');
     if (li) {
         li.setAttribute('data-select', 'false');
-    }
+    } */
 };
 
-Menubar.prototype.blurMenu = function (btn) {
+Menubar.prototype.blurMenu = function(btn) {
     /*+------------------------------------------------------------------
       情况分析：
         1. 非menubar所有成员区域获得了foucs，应该关闭dropdown，清空current
@@ -181,11 +182,20 @@ Menubar.prototype.blurMenu = function (btn) {
     // 这将导致blur事件的响应晚于foucus事件，所以应该在focus事件中判断timer
     // 这对于.button来说无所谓，但会导致menubar data-* 被重置，所以menubar
     // timer应该可以被focus清除。
+    // 
+    let self = this;
+    // fade表示正在失去focus的button，为了解决定时器导致的典型的local变量失效
+    self.fade = btn;
     setTimeout(() => {
         btn.setAttribute('data-focused', 'false');
+        // 这个地方有一个典型问题，由于btn是由event处理函数的参数this，它的
+        // 生存期保证超过定时器的长度，所有导致定时触发时，this已经被释放了，
+        // 换成其他local变量也会出同样的问题。
+        // 一个可行的方法：弃用this/或者local object，改用实例变量
+        closeMenu(self.fade.parentElement);
+        self.fade = null;
     }, 100);
 
-    let self = this;
     this.timer = setTimeout(() => {
         self.timer = null;
         self.menubar.setAttribute('data-open', 'false');
@@ -193,7 +203,41 @@ Menubar.prototype.blurMenu = function (btn) {
     }, 100);
 };
 
-Menubar.prototype.onKeyDown = function (btn, e) {
+function closeMenu(menu) {
+    let mlist = menu.querySelector('.menu-list');
+    let select = mlist.querySelector('*[data-select="true"]');
+
+    if (select) {
+        select.setAttribute('data-select', 'false');
+        // 依据唯一性原装，将只有一个<a><div>被选中
+        if (select.classList.contains('submenu')) {
+            // 采用递归调用，因为menu结构是一样
+            closeMenu(select);
+        }
+    }
+    menu.setAttribute('data-open', 'false');
+}
+
+// 同closeMenu从根开始close不同，collapseMenu是中最低级的叶子开始折叠的
+// 另外一个不同是：collapseMenu参数是menu-list, 而closeMenu是menu/submenu
+function collapseMenu(mlist) {
+    let menu = mlist.parentElement;
+    menu.setAttribute('data-open', 'false');
+    let select = mlist.querySelector('*[data-select="true"]');
+
+    // 依据唯一性原装，将只有一个<a><div>被选中
+    if (select) {
+        select.setAttribute('data-select', 'false');
+    }
+
+    // 检查是否顶级menu
+    if (menu.classList.contains('submenu')) {
+        // 采用递归调用，因为menu结构是一样
+        closeMenu(menu.parentElement);
+    }
+}
+
+Menubar.prototype.onKeyDown = function(btn, e) {
     if (e.defaultPrevented) return;
     if (e.altKey) {
         btn.blur();
@@ -201,22 +245,73 @@ Menubar.prototype.onKeyDown = function (btn, e) {
     }
 
     var next;
+    var submenu;
     let idx = this.btns.indexOf(btn);
     let mlist = btn.nextElementSibling;
+
+    // 递归找到当前操作的submenu的menu-list
+    for (;;) {
+        let selSub = mlist.querySelector('.submenu[data-open="true"]');
+        if (!selSub) break;
+        mlist = selSub.querySelector('.menu-list');
+        submenu = selSub;
+    }
+
+    let select = mlist.querySelector('*[data-select="true"]');
+
     switch (e.key) {
         case 'Enter':
         case 'Space':
+        case ' ':
+            if (!select) { break; }
+            if (select.classList.contains('submenu')) {
+                // open submenu and select the first item
+                mlist = select.querySelector('.menu-list');
+                select.setAttribute('data-open', 'true');
+                if (mlist) selectFirst(mlist);
+            } else {
+                // deactivate menubar
+                btn.blur();
+                this.active = null;
+                // check if it is a checkbox menuitem
+                let ck = select.querySelector('input[type="checkbox"]');
+                if (ck) ck.click(); // checkbox menu item
+                else select.click(); // Normal link
+            }
             break;
 
         case 'Left':
         case 'ArrowLeft':
+            // 判断是否处在submenu中
+            if (submenu) {
+                let cl = mlist.querySelector('*[data-select="true"]');
+                if (cl) cl.setAttribute('data-select', 'false');
+                submenu.setAttribute('data-open', 'false');
+                break;
+            }
+
+            // 不在子submenu中
             next = idx === 0 ? this.btns.length - 1 : idx - 1;
+            selectFirst(this.btns[next].parentElement.querySelector('.menu-list'));
             this.btns[next].focus();
             break;
 
         case 'Right':
         case 'ArrowRight':
+            // 判断是否处在可以展开的submenu上
+            submenu = mlist.querySelector('.submenu[data-select="true"]');
+            if (submenu) {
+                let cl = submenu.querySelector('.menu-list').querySelector('*:not(hr)');
+                if (cl) {
+                    cl.setAttribute('data-select', 'true');
+                    submenu.setAttribute('data-open', 'true');
+                    break;
+                }
+            }
+
+            // 如果没有可展开的submenu
             next = idx === this.btns.length - 1 ? 0 : idx + 1;
+            selectFirst(this.btns[next].parentElement.querySelector('.menu-list'));
             this.btns[next].focus();
             break;
 
