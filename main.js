@@ -7,14 +7,15 @@ const {
     Menu,
     Tray
 } = require('electron');
+const nativeImage = require('electron').nativeImage;
 let path = require('path');
+let appImage = nativeImage.createFromPath('./images/app-icon.png');
 var win;
 
 function createWindow() {
     let frame = false;
-    let tray = new Tray('./images/app-icon.png');
     let options = {
-        icon: './images/app-icon.png',
+        icon: appImage,
         show: false,
         width: 1600,
         height: 960,
@@ -52,6 +53,18 @@ function createWindow() {
         width: true,
         height: true
     });
+
+    let tray;
+    if (process.platform === 'darwin') {
+        tray = new Tray(appImage.resize({
+            width: 16,
+            height: 16,
+            quality: 'best'
+        }));
+        tray.setTitle('无限遐想');
+    } else {
+        tray = new Tray(appImage);
+    }
 
     let url = require('url').format({
         protocol: 'file',
