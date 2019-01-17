@@ -3,34 +3,58 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Test</title>
     <style>
-        input[type=checkbox] {
-            -webkit-appearance: none;
-            /* display: none; */
+        @font-face {
+            font-family: MDL2;
+            src: local("Segoe MDL2 Assets"), url(./fonts/segmdl2.ttf);
         }
-        
-        input[type=checkbox]~label {
-            display: inline-block;
-            padding: 4em;
+        /*
+        label {
+            position: relative;
         }
-        
-        input[type=checkbox]:checked~label::before {
-            font-family: "Segoe MDL2 Assets";
-            font-size: 1em;
-            content: "\e73e";
-            color: red;
-            position: absolute;
-            transform: translate(-2em, 0.2em);
+        */
+        input[type="radio"] {
+                -webkit-appearance: none;
+                display: none;
+        }
+
+        input[type="radio"]+span {
+                display: block;
+                padding: 0.5em 2em;
+        }
+
+        input[type="radio"]:checked+span::before {
+                font-family: MDL2;
+                font-size: 1em;
+                content: "\e73e";
+                color: red;
+                position: absolute;
+                left: 1em;
+                /* transform: translate(-2em, 0.2em); */
         }
     </style>
 </head>
 
 <body>
     <p>Just for test</p>
-    <input id="ckbx" type="checkbox" checked="checked">
-    <label for='ckbx'>自定义checkbox</label>
+    <form id="f1">
+        <label for="radio">
+            <input id="radio" name="view" type="radio" checked />
+            <span>自定义radio</span>
+        </label>
+        <label for="radio0">
+            <input id="radio0" type="radio" name="view" />
+            <span>BrowserView 0</span>
+        </label>
+        <label for="radio1">
+            <input id="radio1" type="radio" name="view" />
+            <span>BrowserView 1</span>
+        </label>
+        <input id="ok" type="submit" value="submit" />
+    </form>
+
 </body>
 
 </html>

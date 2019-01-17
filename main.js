@@ -274,6 +274,14 @@ ipcMain.on('AMCH-Request', (e, name, msg) => {
     e.sender.send('AMCH-Response', name, result ? 'Success' : 'Failed');
 });
 
+ipcMain.on('SMCH-Request', (e, name, msg) => {
+    switch (name) {
+        case 'BrowserViews':
+            e.returnValue = BrowserView.getAllViews();
+            break;
+    }
+});
+
 function newBrowserView(url) {
     let nv = new BrowserView();
     win.setBrowserView(nv);
@@ -285,10 +293,13 @@ function newBrowserView(url) {
         width: bounds.width,
         height: bounds.height
     });
-    nv.setAutoResize({ width: true, height: true });
-    /*  let views = BrowserView.getAllViews();
+    nv.setAutoResize({
+        width: true,
+        height: true
+    });
+    let views = BrowserView.getAllViews();
     let vwCnt = views.length; // 包含了新增view
-    vwBounds.width = bounds.width / vwCnt;
+    /* vwBounds.width = bounds.width / vwCnt;
     for (let idx = 0; idx < vwCnt - 1; idx++) {
         vwBounds.x = bounds.width * idx / vwCnt;
         views[idx].setBounds(vwBounds);

@@ -3,27 +3,31 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Test</title>
     <style>
-        input[type=radio] {
-            -webkit-appearance: none;
-            /* display: none; */
+        @font-face {
+            font-family: MDL2;
+            src: local("Segoe MDL2 Assets"), url(./fonts/segmdl2.ttf);
         }
-        
-        input[type=radio]~span {
+
+        input[type="radio"] {
+            -webkit-appearance: none;
+            display: none;
+        }
+
+        input[type="radio"] + span {
             display: block;
             padding: 1em 4em;
         }
-        
-        input[type=radio]:checked~span::before {
-            font-family: "Segoe MDL2 Assets";
+
+        input[type="radio"]:checked + span::before {
+            font-family: MDL2;
             font-size: 1em;
             content: "\e73e";
             color: red;
             position: absolute;
             left: 2em;
-            /* transform: translate(-2em, 0.2em); */
         }
     </style>
 </head>
@@ -31,37 +35,32 @@
 <body>
     <p>Just for test</p>
     <form id="f1">
-        <label for='radio'>
-            <input id="radio" type="radio" checked="checked">
+        <label for="radio">
+            <input id="radio" type="radio" name="view" checked />
             <span>自定义radio</span>
         </label>
-        <input id="ok" type="submit" value="submit">
+        <input id="ok" type="submit" value="submit" />
     </form>
 
     <script>
         const {
+            ipcRenderer,
             remote
-        } = require('electron');
+        } = require("electron");
         const {
             BrowserView
         } = remote;
         let win = remote.getCurrentWindow();
-        let views = BrowserView.getAllViews();
-        console.log('共有BrowserView: ' + views.lenght);
-        let form = document.getElementById('f1');
-        let submitOk = document.getElementById('ok');
+        let views = ipcRenderer.sendSync("SMCH-Request", "BrowserViews");
+        console.log("共有BrowserView: " + views.lenght);
+        let form = document.getElementById("f1");
+        let submitOk = document.getElementById("ok");
+        console.log(submitOk.innerText);
         for (let i = 0; i < 2 /*views.lenght*/ ; i++) {
-            let frag = document.createDocumentFragment();
-            // let le = document.createElement('LABEL');
-            let le = document.createElement('DIV');
-            le.innerHTML = `<label><input id="radio${i}" type="radio" checked=false><span>BrowserView ${i}</span></label>`;
-            while (le.childNodes[0]) {
-                frag.appendChild(le.childNodes[0]);
-            }
-
-            frag.for = `radio${i}`;
-            console.log('生成Element: for = ' + frag.for+'\tRadio ID = ' + frag.childNodes[0].id);
-            form.appendChild(frag, submitOk);
+            submitOk.insertAdjacentHTML(
+                "beforebegin",
+                `<label for="radio${i}"><input id="radio${i}" type="radio" name="view" /><span>BrowserView ${i}</span></label>`
+            );
         }
     </script>
 </body>
