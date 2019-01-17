@@ -13,6 +13,7 @@
     --menu-content-bg-color: whitesmoke;
     --menu-item-width: 20em;
     --menu-font-size: 1em;
+    --tooltip-bg-color: lightyellow;
 }
 
 @font-face {
@@ -95,6 +96,43 @@ button {
 
 .toolbar a.disabled {
     opacity: 0.5;
+}
+
+.tooltip {
+    position: relative
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    width: 10em;
+    background-color: var(--tooltip-bg-color);
+    color: #0f0f0f;
+    text-align: center;
+    border-radius: 6px;
+    padding: 0.5em;
+    top: 120%;
+    left: 50%;
+    margin-left: -5em;
+    opacity: 0;
+    transition: opacity 1.2s;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent var(--tooltip-bg-color) transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 
 #tool-panel {
@@ -180,6 +218,7 @@ button {
 }
 
 #menubar .menu-list a,
+#menubar .menu-list label,
 #menubar .menu-list .submenu,
 #menubar .menu-list .itembtn {
     display: flex;
@@ -188,6 +227,7 @@ button {
 }
 
 #menubar .menu-list a,
+#menubar .menu-list label,
 #menubar .submenu .itembtn {
     align-items: center;
     padding: 0.5em 2em;
@@ -254,7 +294,9 @@ button {
 
 #menubar .menu-list div[data-select="true"]>.itembtn,
 #menubar .menu-list a[data-select="true"],
+#menubar .menu-list label[data-select="true"],
 #menubar .menu-list a:hover,
+#menubar .menu-list label:hover,
 #menubar .submenu:hover>.itembtn {
     color: white;
     background-color: dodgerblue;
@@ -275,11 +317,7 @@ button {
     display: none;
 }
 
-.menu-list input[type="checkbox"]~label {
-    width: 100%;
-}
-
-.menu-list input[type="checkbox"]+img.checkmark {
+.menu-list input[type="checkbox"]+.checkmark {
     position: absolute;
     display: none;
     height: 2em;
@@ -288,7 +326,7 @@ button {
     padding: 0.5em;
 }
 
-.menu-list input[type="checkbox"]:checked+img.checkmark {
+.menu-list input[type="checkbox"]:checked+.checkmark {
     display: block;
 }
 

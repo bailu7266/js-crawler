@@ -225,7 +225,7 @@ function collapseMenu(mlist) {
     menu.setAttribute('data-open', 'false');
     let select = mlist.querySelector('*[data-select="true"]');
 
-    // 依据唯一性原装，将只有一个<a><div>被选中
+    // 依据唯一性原装，将只有一个<a><div><label>被选中
     if (select) {
         select.setAttribute('data-select', 'false');
     }
@@ -318,7 +318,6 @@ Menubar.prototype.onKeyDown = function(btn, e) {
         case 'Up':
         case 'ArrowUp':
             if (this.menubar.getAttribute('data-open') === 'true') {
-                // let cl = mlist.querySelector('a[data-select="true"] .submenu[data-select="true"]');
                 let cl = mlist.querySelector('*[data-select="true"]:not(hr)');
                 if (!cl) {
                     selectFirst(mlist);
@@ -351,7 +350,6 @@ Menubar.prototype.onKeyDown = function(btn, e) {
                 this.menubar.setAttribute('data-open', 'true');
                 selectFirst(mlist);
             } else {
-                // let cl = mlist.querySelector('a[data-select="true"] .submenu[data-select="true"]');
                 let cl = mlist.querySelector('*[data-select="true"]');
                 if (!cl) {
                     selectFirst(mlist);

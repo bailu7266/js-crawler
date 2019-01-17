@@ -71,15 +71,15 @@ function createWindow() {
         slashes: true,
         pathname: path.join(__dirname, 'index.html')
     });
-    /*
-        let menu = buildMenu();
-        if (process.platform == 'win32' || process.platform == 'linux') {
-            if (frame)
-                win.setMenu(menu);
-        } else {
-            Menu.setApplicationMenu(menu);
-        }
-    */
+
+    let menu = buildMenu();
+    if (process.platform == 'win32' || process.platform == 'linux') {
+        if (frame)
+            win.setMenu(menu);
+    } else {
+        Menu.setApplicationMenu(menu);
+    }
+
     // build context-menu for system tray
     let contextMenu = Menu.buildFromTemplate([{
             label: '选项1',
@@ -101,7 +101,7 @@ function createWindow() {
     tray.setContextMenu(contextMenu);
     tray.setToolTip('学习 electron & Javascript');
 
-    view.webContents.openDevTools();
+    // view.webContents.openDevTools();
 
     view.webContents.loadURL(url);
 
@@ -189,7 +189,7 @@ function createWindow() {
                     label: 'Development Tools',
                     click: devToolsWindow,
                     type: 'checkbox',
-                    checked: true,
+                    checked: view.webContents.isDevToolsOpened(),
                     id: 'devtools'
                 }
             ];
@@ -211,20 +211,20 @@ function createWindow() {
         win.show();
         view.webContents.focus();
     });
-    /*
-        view.webContents.on('devtools-opened', () => {
-            if (frame || (process.platform === 'darwin')) {
-                let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
-                devMI.checked = true;
-            }
-        });
 
-        view.webContents.on('devtools-closed', () => {
-            if (frame || (process.platform === 'darwin')) {
-                let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
-                devMI.checked = false;
-            }
-        });*/
+    view.webContents.on('devtools-opened', () => {
+        if (frame || (process.platform === 'darwin')) {
+            let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+            devMI.checked = true;
+        }
+    });
+
+    view.webContents.on('devtools-closed', () => {
+        if (frame || (process.platform === 'darwin')) {
+            let devMI = Menu.getApplicationMenu().getMenuItemById('devtools');
+            devMI.checked = false;
+        }
+    });
 }
 
 app.on('ready', createWindow);
@@ -257,34 +257,54 @@ ipcMain.on('SMCH-NewBrowerView', (event, url) => {
     });
 
     event.returnValue = '创建新的 BrowserView 没有成功';
+});
 
-    /*
-    let vwNew = new BrowserView();
-    win.setBrowserView(vwNew);
-    vwNew.webContents.loadURL(url);
+ipcMain.on('AMCH-Request', (e, name, msg) => {
+    var result;
+    switch (name) {
+        case 'TestAddon':
+            result = onTestAddon(msg);
+            break;
+
+        case 'NewBrowserView':
+            result = newBrowserView(msg);
+            break;
+    }
+
+    e.sender.send('AMCH-Response', name, result ? 'Success' : 'Failed');
+});
+
+function newBrowserView(url) {
+    let nv = new BrowserView();
+    win.setBrowserView(nv);
 
     let bounds = win.getContentBounds();
-    let vwBounds = {
+    nv.setBounds({
         x: 0,
         y: 0,
         width: bounds.width,
         height: bounds.height
-    };
-    let view = BrowserView.getAllViews();
-    let vwCnt = view.length; // 包含了新增view
+    });
+    nv.setAutoResize({ width: true, height: true });
+    /*  let views = BrowserView.getAllViews();
+    let vwCnt = views.length; // 包含了新增view
     vwBounds.width = bounds.width / vwCnt;
     for (let idx = 0; idx < vwCnt - 1; idx++) {
         vwBounds.x = bounds.width * idx / vwCnt;
-        view[idx].setBounds(vwBounds);
-        // vwNew.setAutoResize({ width: true, height: true });
-    }
+        views[idx].setBounds(vwBounds);
+    } */
 
-    // event.sender.send('MCH-NewBrowerView-OK');
-    event.returnValue = 'NewBrowserView is OK';
-    */
-});
+    // e.sender.send('AMCH-Response', 'NewBrowerView', 'OK');
+    // e.returnValue = 'NewBrowserView is OK';
 
-ipcMain.on('AMCH-Request-TestAddon', (event, arg) => {
+    nv.webContents.openDevTools();
+    nv.webContents.loadURL(url);
+
+    return true;
+}
+
+function onTestAddon(msg) {
     require('./hello.js')();
-    event.sender.send('AMCH-Response-TestAddon', 'TestAddon OK');
-});
+    return true;
+    // e.sender.send('AMCH-Response-TestAddon', 'TestAddon OK');
+}

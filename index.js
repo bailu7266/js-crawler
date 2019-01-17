@@ -32,7 +32,8 @@ const routes = {
     'link-test': onTest,
     'link-contacts': nothing,
     'link-signup': nothing,
-    devtools: clickDevTools,
+    'new-view': newView,
+    'devtools': clickDevTools,
     'link-about': () => {
         let options = {
             parent: win,
@@ -86,6 +87,8 @@ window.addEventListener('load', () => {
     }*/
     new Menubar('menubar');
 
+    document.getElementById('devtools').checked = contents.isDevToolsOpened();
+
     routeInit();
 });
 
@@ -122,7 +125,15 @@ function nothing() {}
 function onHome() {}
 
 function onTest() {
-    ipcRenderer.send('AMCH-Request-TestAddon');
+    ipcRenderer.send('AMCH-Request', 'TestAddon');
 }
 
 function onTools() {}
+
+function newView() {
+    ipcRenderer.send('AMCH-Request', 'NewBrowserView', `file:///${__dirname}/nvtest.html`);
+}
+
+ipcRenderer.on('AMCH-Response', (e, name, msg) => {
+    console.log(name + ': ' + msg);
+});

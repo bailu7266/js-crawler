@@ -36,11 +36,11 @@
                         <a id="link-min"><span>Minimize</span></a>
                         <a id="link-close"><span>Close</span></a>
                         <hr>
-                        <a>
-                            <input id="devtools" type="checkbox" checked="checked">
+                        <label for="devtools">
+                            <input id="devtools" type="checkbox" checked=false>
                             <img class="checkmark" src="./images/checkmark-solid.png" />
-                            <label for="devtools">Development Tools</label>
-                        </a>
+                            Development Tools
+                        </label>
                     </div>
                 </div>
             </div>
@@ -59,15 +59,21 @@
         </div>
         <div id="tool-panel">
             <div class="flex-row toolbar" style="float:left">
-                <a id="link-home" href="./layout.html"> <img src="./images/home.png" alt="Home" /> </a>
-                <a id="link-tools" href="./test.html" target="c-view">
+                <a id="link-home" href="./layout.html" class="tooltip">
+                    <img src="./images/home.png" alt="Home" />
+                    <span class="tooltiptext">这是我老家</span>
+                </a>
+                <a id="link-tools" href="./test.html" target="c-view" class="tooltip">
                     <img src="./images/design-tools.png" alt="Design Tools" />
+                    <span class="tooltiptext">在iframe c-view 中显示一个新的页面</span>
                 </a>
-                <a id="link-test">
+                <a id="link-test" class="tooltip">
                     <img src="./images/research_256.png" alt="Research" />
+                    <span class="tooltiptext">Test Native Addon</span>
                 </a>
-                <a id="link-settings">
-                    <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
+                <a id="new-view" class="tooltip">
+                    <img src="./images/Gear_icon-72a7cf.svg.png" alt="NewView" />
+                    <span class="tooltiptext">新增一个BrowerView</span>
                 </a>
                 <a id="link-contacts"> <img src="./images/contacts.png" alt="Contacts" /> </a>
             </div>

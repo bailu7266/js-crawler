@@ -5,10 +5,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Test</title>
+    <style>
+        input[type=checkbox] {
+            -webkit-appearance: none;
+            /* display: none; */
+        }
+        
+        input[type=checkbox]~label {
+            display: inline-block;
+            padding: 4em;
+        }
+        
+        input[type=checkbox]:checked~label::before {
+            font-family: "Segoe MDL2 Assets";
+            font-size: 1em;
+            content: "\e73e";
+            color: red;
+            position: absolute;
+            transform: translate(-2em, 0.2em);
+        }
+    </style>
 </head>
 
 <body>
     <p>Just for test</p>
+    <input id="ckbx" type="checkbox" checked="checked">
+    <label for='ckbx'>自定义checkbox</label>
 </body>
 
 </html>
