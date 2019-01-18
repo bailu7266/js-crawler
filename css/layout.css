@@ -31,6 +31,10 @@ body {
     -webkit-app-region: drag;
 }
 
+:focus {
+    outline: none;
+}
+
 button {
     -webkit-app-region: no-drag;
 }

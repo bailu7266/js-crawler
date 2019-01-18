@@ -1,5 +1,11 @@
-const { ipcRenderer, remote } = require('electron');
-const { app, BrowserWindow } = remote;
+const {
+    ipcRenderer,
+    remote
+} = require('electron');
+const {
+    app,
+    BrowserWindow
+} = remote;
 const Menubar = require('./css-menu.js');
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
@@ -71,23 +77,15 @@ const routes = {
 };
 
 window.addEventListener('load', () => {
-    /*if (platform == 'darwin') {
+    if (platform == 'darwin') {
         document.getElementById('titlebar').style.justifyContent = 'center';
         document.getElementById('menubar').style.display = 'none';
         document.getElementById('window-ctrls').style.display = 'none';
     } else {
         // buildCustomMenu();
-    }*/
-
-    // window.addEventListener('blur', () => { console.log('BrowserWindow lost focus'); }, false);
-
-    /* for (let i = 0; i < menuIds.length; i++) {
-        let mi = document.getElementById(menuIds[i]);
-        if (mi) addCSSMenu(mi);
-    }*/
-    new Menubar('menubar');
-
-    document.getElementById('devtools').checked = contents.isDevToolsOpened();
+        new Menubar('menubar');
+        document.getElementById('devtools').checked = contents.isDevToolsOpened();
+    }
 
     routeInit();
 });

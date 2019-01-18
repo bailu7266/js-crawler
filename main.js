@@ -30,8 +30,8 @@ function createWindow() {
     if (process.platform == 'darwin') {
         // frame = true;
         options.frame = frame;
-        options.titleBarStyle = 'customButtonsOnHover';
-        // options.titleBarStyle = 'hiddenInset';
+        // options.titleBarStyle = 'customButtonsOnHover';
+        options.titleBarStyle = 'hiddenInset';
     } else {
         options.frame = frame;
         options.titleBarStyle = 'hidden';
@@ -283,6 +283,10 @@ ipcMain.on('AMCH-Request', (e, name, msg) => {
             }
             e.sender.send('AMCH-Response', name, arrIds);
             return;
+
+        case 'ShowAllViews':
+            result = showAllViews();
+            break;
     }
 
     e.sender.send('AMCH-Response', name, result ? 'Success' : 'Failed');
@@ -348,4 +352,36 @@ function changeBrowserView(select) {
     }
 
     return false;
+}
+
+function showAllViews() {
+    if (process.versions.electron < '5.0.0') {
+        // 目前还不支持多栏显示BrowserView   
+        dialog.showMessageBox({
+            type: 'info',
+            button: [],
+            message: '无法显示多个BrowserView',
+            detail: `当前electron版本(${process.versions.electron})不支持在一个BrowserWindow中显示多个BrowserView`,
+        });
+        return false;
+    }
+
+    let views = BrowserView.getAllViews();
+    let vwCnt = views.length; // 包含了新增view
+    let bounds = win.getContentBounds();
+    let vwBounds = {
+        x: 0,
+        y: 0,
+        height: bounds.height
+    };
+    for (let idx = 0; idx < vwCnt - 1; idx++) {
+        let view = views[idx];
+        vwBounds.x = bounds.width * idx / vwCnt;
+        view.setAutoResize({
+            width: false,
+            height: false
+        });
+        view.setBounds(vwBounds);
+        view.show();
+    }
 }
