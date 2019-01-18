@@ -10,18 +10,44 @@
             font-family: MDL2;
             src: local("Segoe MDL2 Assets"), url(./fonts/segmdl2.ttf);
         }
-
+        
+        form {
+            -webkit-user-select: none;
+            width: 24em;
+            margin: auto;
+        }
+        
+        label {
+            position: relative;
+            display: block;
+            padding: 1em 4em;
+        }
+        
+        input[type="checkbox"],
         input[type="radio"] {
             -webkit-appearance: none;
             display: none;
         }
-
-        input[type="radio"] + span {
-            display: block;
-            padding: 1em 4em;
+        
+        input[type="checkbox"]+span,
+        input[type="radio"]+span {
+            /* display: block; */
+            /* padding: 1em 4em; */
         }
-
-        input[type="radio"]:checked + span::before {
+        
+        input[type="checkbox"]~span.checkmark {
+            font-family: MDL2;
+            font-size: 1em;
+            position: absolute;
+            left: 2em;
+        }
+        
+        input[type="radio"]:disabled+span {
+            color: gray;
+        }
+        
+        input[type="checkbox"]:checked+span::before,
+        input[type="radio"]:checked:not(:disabled)+span::before {
             font-family: MDL2;
             font-size: 1em;
             content: "\e73e";
@@ -29,17 +55,27 @@
             position: absolute;
             left: 2em;
         }
+        
+        input[type="submit"] {
+            display: block;
+            margin: 1em auto;
+            font-size: 1em;
+        }
     </style>
 </head>
 
 <body>
-    <p>Just for test</p>
-    <form id="f1">
-        <label for="radio">
-            <input id="radio" type="radio" name="view" checked />
-            <span>自定义radio</span>
-        </label>
-        <input id="ok" type="submit" value="submit" />
+    <p>当前render process的id为: &#32<span id="pid"></span><br>Chromium id为: &#32<span id="cid"></span></p>
+    <form>
+        <fieldset>
+            <legend>选择BrowserView</legend>
+            <label for="all">
+                <input id="all" type="checkbox" checked=false />
+                <span>分列显示全部BrowserView</span>
+                <span class="checkmark">&#xe922</span>
+            </label>
+            <input id="ok" type="submit" value="submit" />
+        </fieldset>
     </form>
 
     <script>
@@ -50,18 +86,67 @@
         const {
             BrowserView
         } = remote;
-        let win = remote.getCurrentWindow();
-        let views = ipcRenderer.sendSync("SMCH-Request", "BrowserViews");
-        console.log("共有BrowserView: " + views.lenght);
-        let form = document.getElementById("f1");
+        // let win = remote.getCurrentWindow();
+        let contents = remote.getCurrentWebContents();
+        document.getElementById('pid').innerHTML = contents.getOSProcessId();
+        document.getElementById('cid').innerHTML = contents.getProcessId();
         let submitOk = document.getElementById("ok");
-        console.log(submitOk.innerText);
-        for (let i = 0; i < 2 /*views.lenght*/ ; i++) {
-            submitOk.insertAdjacentHTML(
-                "beforebegin",
-                `<label for="radio${i}"><input id="radio${i}" type="radio" name="view" /><span>BrowserView ${i}</span></label>`
-            );
+        let all = document.getElementById('all');
+        ipcRenderer.send("AMCH-Request", "GetAllViews");
+        ipcRenderer.once("AMCH-Response", (e, name, ids) => {
+            if (name !== "GetAllViews") {
+                console.log('出错了');
+                return;
+            }
+
+            // console.log("共有BrowserView: " + viewCnt);
+            for (let i = 0; i < ids.length; i++) {
+                submitOk.insertAdjacentHTML(
+                    "beforebegin",
+                    `<label for="radio${i}"><input id="radio${i}" type="radio" name="view" value="${ids[i]}" /><span>BrowserView ${ids[i]}</span></label>`
+                );
+            }
+
+            disableRadio(all.checked);
+
+            let view = BrowserView.fromWebContents(contents);
+            let ckradio = 'radio';
+            if (view) {
+                let id = ids.indexOf(view.id);
+                if (id < 0) {
+                    console.log("获得view id时出错了");
+                    ckradio += '0';
+                    return;
+                }
+                ckradio = ckradio + id;
+            } else {
+                ckradio += '0';
+            }
+            document.getElementById(ckradio).checked = true;
+        });
+
+        function disableRadio(checked) {
+            let radios = document.getElementsByName('view');
+
+            for (let i = 0; i < radios.length; i++) {
+                radios[i].disabled = checked;
+            }
         }
+
+        submitOk.onclick = () => {
+            let radios = document.getElementsByName('view');
+            var select = 0;
+            for (; select < radios.length; select++) {
+                if (radios[select].checked) {
+                    ipcRenderer.send("AMCH-Request", 'ChangeBrowserView', radios[select].value);
+                    break;
+                }
+            }
+        };
+
+        all.onclick = () => {
+            disableRadio(all.checked);
+        };
     </script>
 </body>
 

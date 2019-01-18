@@ -269,6 +269,20 @@ ipcMain.on('AMCH-Request', (e, name, msg) => {
         case 'NewBrowserView':
             result = newBrowserView(msg);
             break;
+
+        case 'ChangeBrowserView':
+            result = changeBrowserView(msg);
+            break;
+
+        case 'GetAllViews':
+            let views = BrowserView.getAllViews();
+            // console.log('(main process)共有BrowserView: ' + result.length);
+            let arrIds = [];
+            for (let i = 0; i < views.length; i++) {
+                arrIds.push(views[i].id);
+            }
+            e.sender.send('AMCH-Response', name, arrIds);
+            return;
     }
 
     e.sender.send('AMCH-Response', name, result ? 'Success' : 'Failed');
@@ -318,4 +332,20 @@ function onTestAddon(msg) {
     require('./hello.js')();
     return true;
     // e.sender.send('AMCH-Response-TestAddon', 'TestAddon OK');
+}
+
+function changeBrowserView(select) {
+    let id = parseInt(select);
+    if (win.getBrowserView().id === id) return true;
+
+    let view = BrowserView.fromId(id);
+    if (view) {
+        if (id !== 1) // first is the index.html
+            view.webContents.reload();
+        win.setBrowserView(view);
+
+        return true;
+    }
+
+    return false;
 }
