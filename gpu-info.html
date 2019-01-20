@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Welcome</title>
+        <style>
+            body {
+                color: white;
+                background: black url("./images/bot-day-background-700x600.jpg")
+                    no-repeat fixed center;
+                background-size: cover;
+            }
+
+            li {
+                list-style-type: none;
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 1em;
+                padding: 4px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h2>GPU Feature Status</h2>
+        <ul id="feature"></ul>
+        <h2>GPU Info</h2>
+        <ul id="info"></ul>
+        <script>
+            const { app, ipcRenderer } = parent.require("electron").remote;
+            let features =
+                "<li>" +
+                JSON.stringify(app.getGPUFeatureStatus(), null, "</li><li>") +
+                "</li>";
+            features = features.replace(/\{\n?<\/li>/g, "{</li><ul>");
+            features = features.replace(/\}\n?<\/li>/g, "</li></ul><li>}</li>");
+
+            document.getElementById("feature").innerHTML = features;
+            console.log(features);
+            app.getGPUInfo("complete")
+                .then(result => {
+                    let info =
+                        "<li>" +
+                        JSON.stringify(result, null, "</li><li>") +
+                        "</li>";
+                    info = info.replace(/\{\n?<\/li>/g, "{</li><ul>");
+                    info = info.replace(
+                        /\},\n?<\/li>/g,
+                        "</li></ul><li>},</li>"
+                    );
+                    info = info.replace(/\}\n?<\/li>/g, "</li></ul><li>}</li>");
+                    document.getElementById("info").innerHTML = info;
+                    console.log(info);
+                })
+                .catch(e => {
+                    console.log(e.msg);
+                });
+        </script>
+    </body>
+</html>

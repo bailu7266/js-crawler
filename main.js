@@ -174,13 +174,19 @@ function createWindow() {
             });
 
             template[1].submenu = [{
-                    role: 'minimize'
-                },
-                {
                     role: 'close'
                 },
                 {
+                    role: 'minimize'
+                },
+                {
                     role: 'zoom'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'front'
                 },
                 {
                     type: 'separator'

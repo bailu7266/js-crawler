@@ -412,7 +412,7 @@ button {
 
 #main-view {
     flex: 2 1 auto;
-    background-color: seagreen;
+    background-color: lightgray;
 }
 
 #console {
