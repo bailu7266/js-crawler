@@ -31,12 +31,19 @@ body {
     -webkit-app-region: drag;
 }
 
+a,
+img {
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+}
+
 :focus {
     outline: none;
 }
 
 button {
     -webkit-app-region: no-drag;
+    -webkit-user-drag: none;
 }
 
 #window-container {
@@ -60,6 +67,7 @@ button {
 
 .toolbar {
     -webkit-user-select: none;
+    -webkit-user-drag: none;
     -webkit-app-region: no-drag;
     background-color: var(--toolbar-bg-color);
 }
@@ -146,6 +154,7 @@ button {
 
 #titlebar {
     -webkit-user-select: none;
+    -webkit-user-drag: none;
     -webkit-app-region: drag;
     display: flex;
     flex-flow: row nowrap;
@@ -471,5 +480,5 @@ button {
 
 #main-view>iframe {
     flex: 1 1 auto;
-    border: 1px solid royalblue;
+    border: none;
 }

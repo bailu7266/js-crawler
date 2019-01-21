@@ -231,6 +231,8 @@ function createWindow() {
             devMI.checked = false;
         }
     });
+
+    tray.on('click', () => { win.isVisible() ? win.hide() : win.show(); });
 }
 
 app.on('ready', createWindow);
