@@ -6,9 +6,9 @@
     --min-res-col-width: 8em;
     --titlebar-height: 2em;
     --titlebar-padding: 0.5em;
-    --titlebar-bg-color: #c5c5c5;
-    --titlebar-hover-color: #fbfbfb;
-    --toolbar-bg-color: #fbfbfb;
+    --titlebar-bg-color: whitesmoke;
+    --titlebar-hover-color: lightgray;
+    --toolbar-bg-color: lightgray;
     --close-btn-hover-color: #e81123;
     --menu-content-bg-color: whitesmoke;
     --menu-item-width: 20em;
@@ -166,6 +166,7 @@ button {
 }
 
 #head-title {
+    -webkit-app-region: drag;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 1em;
     font-weight: bold;
@@ -426,7 +427,7 @@ button {
 
 #console {
     flex: 1 2 auto;
-    background-color: dodgerblue;
+    background-color: #232323;
 }
 
 #title-panel {
@@ -481,4 +482,45 @@ button {
 #main-view>iframe {
     flex: 1 1 auto;
     border: none;
+}
+
+.resizer {
+    flex: 0 1 auto;
+    position: relative;
+}
+
+.resizer-horizontal {
+    width: 0px;
+}
+
+.resizer-vertical {
+    height: 0px;
+    width: 100%;
+}
+
+.resizer-vertical::after,
+.resizer-horizontal::after {
+    content: "";
+    position: absolute;
+    display: block;
+    z-index: 1;
+    background-color: transparent;
+}
+
+.resizer-horizontal::after {
+    width: 5px;
+    height: 100%;
+}
+
+.resizer-vertical::after {
+    height: 5px;
+    width: 100%;
+}
+
+.resizer-horizontal:hover {
+    cursor: crosshair;
+}
+
+.resizer-vertical:hover {
+    cursor: crosshair;
 }
