@@ -7,6 +7,7 @@ const {
     BrowserWindow
 } = remote;
 const Menubar = require('./css-menu.js');
+const { VResizer, HResizer } = require('./resizer.js');
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 let contents = remote.getCurrentWebContents();
@@ -87,8 +88,19 @@ window.addEventListener('load', () => {
         document.getElementById('devtools').checked = contents.isDevToolsOpened();
     }
 
+    new HResizer(document.getElementById('res-column'));
+    new VResizer(document.getElementById('main-view'));
+
+    layout();
+
     routeInit();
 });
+
+function layout() {
+    // 主要分配flex item的width/height的比例;
+    document.getElementById('res-column').style.width = '50%';
+    return;
+}
 
 function routeInit() {
     let keys = Object.keys(routes);

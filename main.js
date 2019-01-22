@@ -101,7 +101,7 @@ function createWindow() {
     tray.setContextMenu(contextMenu);
     tray.setToolTip('学习 electron & Javascript');
 
-    // view.webContents.openDevTools();
+    view.webContents.openDevTools();
 
     view.webContents.loadURL(url);
 

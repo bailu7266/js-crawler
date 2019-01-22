@@ -411,22 +411,24 @@ button {
 }
 
 #res-column {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     background-color: #3f3f3f;
     min-width: var(--min-res-col-width);
+    width: 30%;
 }
 
 #main-column {
-    flex: 3 1 auto;
+    flex: 1 1 auto;
 }
 
 #main-view {
-    flex: 2 1 auto;
+    flex: 0 1 auto;
     background-color: lightgray;
+    height: 60%;
 }
 
 #console {
-    flex: 1 2 auto;
+    flex: 1 1 auto;
     background-color: #232323;
 }
 
@@ -518,9 +520,9 @@ button {
 }
 
 .resizer-horizontal:hover {
-    cursor: crosshair;
+    cursor: ew-resize;
 }
 
 .resizer-vertical:hover {
-    cursor: crosshair;
+    cursor: ns-resize;
 }
