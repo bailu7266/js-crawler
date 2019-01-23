@@ -20,6 +20,7 @@ class Resizer {
         let elt = document.createElement('DIV');
         this.ego = elt;
         this.dragging = false;
+        this.normalCursors = { body: null, iframes: [], self: null };
         elt.id = this.id;
         // elt.draggable = true;
         elt.classList.add('resizer');
@@ -31,7 +32,21 @@ class Resizer {
 
         prev.insertAdjacentElement('afterend', elt);
 
-        // 记录mouse的位置（offsetX, offsetY)
+        // 记录全部的iframe,以便处理mouse event丢失问题
+        this.iframes = document.getElementsByTagName('iframe');
+        this.saveCursors();
+
+        console.log('offsetLeft: ' + prev.offsetLeft, 'parent.offsetLeft: ' + prev.parentElement.offsetLeft);
+        console.log('parent.parent.offsetLeft: ' + prev.parentElement.parentElement.offsetLeft);
+        console.log('offsetTop: ' + prev.offsetTop, 'parent.offsetTop: ' + prev.parentElement.offsetTop);
+        console.log('parent.parent.offsetTop: ' + prev.parentElement.parentElement.offsetTop);
+        let op = prev.offsetParent;
+        while (op) {
+            console.log('offsetParent: ' + op.tagName);
+            console.log('op offsetLef: ' + op.offsetLeft + 'op offsetTop: ' + op.offsetTop);
+            op = op.offsetParent;
+        }
+
         // elt.addEventListener('mousemove', this.onMouseMove, true);
         let onMouseMove = (e) => {
             // 此处this是一个object，没有binding任何自定义的对象，所有不能访问
@@ -51,7 +66,12 @@ class Resizer {
                 window.removeEventListener('mousemove', onMouseMove);
                 // elt.removeEventListener('mouseleave', onMouseLeave);
                 window.removeEventListener('mouseup', onMouseUp);
-                this.restoreCursor();
+                // remove所有iframe挂上的mouseup/leave handler
+                for (let i = 0; i < this.iframes.length; i++) {
+                    this.iframes[i].contentWindow.removeEventListener('mousemove', onMouseMove);
+                    this.iframes[i].contentWindow.removeEventListener('mouseup', onMouseUp);
+                }
+                this.restoreCursors();
             }
         };
         /*
@@ -72,7 +92,12 @@ class Resizer {
                 window.addEventListener('mousemove', onMouseMove, false);
                 window.addEventListener('mouseup', onMouseUp, false);
                 // elt.addEventListener('mouseleave', onMouseLeave, false);
-                return this.changeCursor();
+                // 给所有iframe挂上mouseup/leave handler
+                for (let i = 0; i < this.iframes.length; i++) {
+                    this.iframes[i].contentWindow.addEventListener('mousemove', onMouseMove, false);
+                    this.iframes[i].contentWindow.addEventListener('mouseup', onMouseUp, false);
+                }
+                return this.changeCursors();
             }
         });
     }
@@ -85,55 +110,81 @@ class Resizer {
 
 // 来自网络（https://esdiscuss.org/topic/better-way-to-maintain-this-reference-on-event-listener-functions）
 // 这个定义太高深了，还没有看懂, 好像也不适合这种针对具体事件handler的add/remove处理
-function handlerEvent(e) {
+/* function handlerEvent(e) {
     this['on' + e.type](e);
-}
+} */
 
 class HResizer extends Resizer {
     constructor(prev) {
         super(prev, 'Horizontal');
+        // 目前只支持一个cursor（dragging），应该定义多个
+        this.cursor = 'col-resize';
     }
 }
 
-HResizer.prototype.changeCursor = function () {
-    this.ego.style.cursor = 'col-resize';
+Resizer.prototype.saveCursors = function() {
+    this.normalCursors.self = this.ego.style.cursor;
+    this.normalCursors.body = document.body.style.cursor;
+    for (let i = 0; i < this.iframes.length; i++) {
+        this.normalCursors.iframes[i] = this.iframes[i].contentWindow.document.body.style.cursor;
+    }
 };
 
-HResizer.prototype.restoreCursor = function () {
-    this.ego.style.cursor = 'normal';
+Resizer.prototype.changeCursors = function() {
+    this.ego.style.cursor = this.cursor;
+    document.body.style.cursor = this.cursor;
+    for (let i = 0; i < this.iframes.length; i++) {
+        this.iframes[i].contentWindow.document.body.style.cursor = this.cursor;
+    }
 };
+
+Resizer.prototype.restoreCursors = function() {
+    this.ego.style.cursor = this.normalCursors.self;
+    document.body.style.cursor = this.normalCursors.body;
+    for (let i = 0; i < this.iframes.length; i++) {
+        this.iframes[i].contentWindow.document.body.style.cursor = this.normalCursors.iframes[i];
+    }
+};
+
+function getScreenLeft(elt) {
+    let left = 0;
+    while (elt) {
+        /* 来自网络，感觉是错的，有点莫名其妙
+        if (elt.tagName == 'BODY') {
+            left += elt.offsetLeft + elt.clientLeft - (elt.scrollLeft || document.documentElement.scrollLeft);
+        } else {
+            left += elt.offsetLeft + elt.clientLeft - elt.scrollLeft;
+        } */
+        left += elt.offsetLeft;
+        elt = elt.offsetParent;
+    }
+    return window.screenX + left;
+}
 
 // 用%比定义的width，在window resize的时候，可以按比例分配空间
-HResizer.prototype.resizing = function (event) {
+HResizer.prototype.resizing = function(event) {
     // set prev's new position
-    // let dx = event.movementX; //event.screenX - this.x;
-    // console.log(dx);
-    // 直接px数值是无效的（好像只对absolute/fixed的管用），对应flex的item
-    // 最有效的办法应该是calc(n%)了，另外好像应该取消flex中的份额设置
     // 由于采用flex布局，应该只需要调整prev的参数就可以了。
-    let percent =
+    /*let percent =
         (100 * (event.movementX + this.prev.offsetWidth)) /
         this.ego.parentElement.offsetWidth;
     // console.log('Item ' + this.prev.id + ' 占据整个列空间的 ' + percent);
-    this.prev.style.width = percent + '%';
+    this.prev.style.width = percent + '%';*/
+    // console.log('offsetLet: ' + this.prev.offsetLeft + ' pageX: ' + event.pageX);
+    // 使用screenX vs pageX：pageX是相对于document的，如果包含由iframe，pageX将在发生变化
+    // 导致无法准确定位，用screenX就没有这个问题
+    this.prev.style.width = (event.screenX - getScreenLeft(this.prev)) + 'px';
 };
 
 class VResizer extends Resizer {
     constructor(prev) {
         super(prev, 'Vertical');
+        this.cursor = 'row-resize';
     }
 }
 
-VResizer.prototype.changeCursor = function () {
-    this.ego.style.cursor = 'row-resize';
-};
-
-VResizer.prototype.restoreCursor = function () {
-    this.ego.style.cursor = 'normal';
-};
-
 // 这是用固定数值赋值的height，在window resize后，可以保证固定height
-VResizer.prototype.resizing = function (event) {
+VResizer.prototype.resizing = function(event) {
     // set prev's new position
     let dy = event.movementY; // event.screenY - this.y;
     // console.log(dy);
