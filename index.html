@@ -57,56 +57,39 @@
                     -->
             </div>
         </div>
-        <div id="tool-panel">
-            <div class="flex-row toolbar" style="float:left">
-                <a id="link-home" href="./layout.html" class="tooltip">
-                    <img src="./images/home.png" alt="Home" />
-                    <span class="tooltiptext">这是我老家</span>
-                </a>
-                <a id="link-tools" href="./test.html" target="c-view" class="tooltip">
-                    <img src="./images/design-tools.png" alt="Design Tools" />
-                    <span class="tooltiptext">在iframe c-view 中显示一个新的页面</span>
-                </a>
-                <a id="link-test" class="tooltip">
-                    <img src="./images/research_256.png" alt="Research" />
-                    <span class="tooltiptext">Test Native Addon</span>
-                </a>
-                <a id="new-view" class="tooltip">
-                    <img src="./images/Gear_icon-72a7cf.svg.png" alt="NewView" />
-                    <span class="tooltiptext">新增一个BrowerView</span>
-                </a>
-                <a id="gpu-info" href="./gpu-info.html" target="c-view" class="tooltip">
-                    <img src="./images/camera.png" alt="Camera" />
-                    <span class="tooltiptext">显示GPU信息</span>
-                </a>
-                <a id="link-contacts"> <img src="./images/contacts.png" alt="Contacts" /> </a>
-            </div>
-            <div class="flex-row toolbar" style="float:right">
-                <a id="link-signup"> <img src="./images/sign-up-icon.png" alt="Sign Up" /> </a>
-            </div>
-        </div>
         <div id="content-row" class="flex-row">
-            <div id="side-panel">
-                <div class="toolbar flex-col">
-                    <a> <img src="./images/home.png" alt="Home" /> </a>
-                    <a>
+            <div id="tool-panel">
+                <div class="flex-col toolbar" style="float:left">
+                    <a id="link-home" href="./layout.html" class="tooltip">
+                        <img src="./images/home.png" alt="Home" />
+                        <span class="tooltiptext">这是我老家</span>
+                    </a>
+                    <a id="link-tools" href="./test.html" target="c-view" class="tooltip">
                         <img src="./images/design-tools.png" alt="Design Tools" />
+                        <span class="tooltiptext">在iframe c-view 中显示一个新的页面</span>
                     </a>
-                    <a>
-                        <img src="./images/Gear_icon-72a7cf.svg.png" alt="Settings" />
+                    <a id="link-test" class="tooltip">
+                        <img src="./images/research_256.png" alt="Research" />
+                        <span class="tooltiptext">Test Native Addon</span>
                     </a>
-                    <a class="disabled">
-                        <img src="./images/notebook.png" alt="Note Book" />
+                    <a id="new-view" class="tooltip">
+                        <img src="./images/Gear_icon-72a7cf.svg.png" alt="NewView" />
+                        <span class="tooltiptext">新增一个BrowerView</span>
                     </a>
+                    <a id="gpu-info" href="./gpu-info.html" target="c-view" class="tooltip">
+                        <img src="./images/camera.png" alt="Camera" />
+                        <span class="tooltiptext">显示GPU信息</span>
+                    </a>
+                    <a id="link-contacts"> <img src="./images/contacts.png" alt="Contacts" /> </a>
                 </div>
-                <div class="toolbar flex-col" style="position: absolute; bottom: 0">
-                    <a><img src="./images/search.png" alt="Search" /></a>
+                <div class="flex-col toolbar" style="position: absolute;bottom:0">
+                    <a id="link-signup"> <img src="./images/sign-up-icon.png" alt="Sign Up" /> </a>
                 </div>
             </div>
-            <div id="res-column" class="flex-col"></div>
+            <div id="res-column" class="flex-col resizable"></div>
             <!--<div id="gh-1" class="resizer resizer-horizontal"></div>-->
             <div id="main-column" class="flex-col">
-                <div id="main-view" class="flex-col">
+                <div id="main-view" class="flex-col resizable">
                     <div id="title-panel">
                         <div id="view-tabs">
                             <div class="title-tab" id="tab-1">

@@ -36,19 +36,8 @@ class Resizer {
         this.iframes = document.getElementsByTagName('iframe');
         this.saveCursors();
 
-        console.log('offsetLeft: ' + prev.offsetLeft, 'parent.offsetLeft: ' + prev.parentElement.offsetLeft);
-        console.log('parent.parent.offsetLeft: ' + prev.parentElement.parentElement.offsetLeft);
-        console.log('offsetTop: ' + prev.offsetTop, 'parent.offsetTop: ' + prev.parentElement.offsetTop);
-        console.log('parent.parent.offsetTop: ' + prev.parentElement.parentElement.offsetTop);
-        let op = prev.offsetParent;
-        while (op) {
-            console.log('offsetParent: ' + op.tagName);
-            console.log('op offsetLef: ' + op.offsetLeft + 'op offsetTop: ' + op.offsetTop);
-            op = op.offsetParent;
-        }
-
         // elt.addEventListener('mousemove', this.onMouseMove, true);
-        let onMouseMove = (e) => {
+        let onMouseMove = e => {
             // 此处this是一个object，没有binding任何自定义的对象，所有不能访问
             // Resizer以及子类的方法。必须先设法通过id bindingResizer对象
             // 如果使用=>定义的话，this将会自动变成上级函数的this，这个问题是不是就解决了？
@@ -59,8 +48,8 @@ class Resizer {
 
         // 把mouseup和mousmove注册到windows可以解决mouse出界导致无法收到up/move事件
         // 但还是无法进入iframe区域的mouse事件（需要想办法）
-        let onMouseUp = (e) => {
-            if (this.dragging && (e.which === 1)) {
+        let onMouseUp = e => {
+            if (this.dragging && e.which === 1) {
                 this.dragging = false;
                 // console.log('mousemove released');
                 window.removeEventListener('mousemove', onMouseMove);
@@ -68,8 +57,14 @@ class Resizer {
                 window.removeEventListener('mouseup', onMouseUp);
                 // remove所有iframe挂上的mouseup/leave handler
                 for (let i = 0; i < this.iframes.length; i++) {
-                    this.iframes[i].contentWindow.removeEventListener('mousemove', onMouseMove);
-                    this.iframes[i].contentWindow.removeEventListener('mouseup', onMouseUp);
+                    this.iframes[i].contentWindow.removeEventListener(
+                        'mousemove',
+                        onMouseMove
+                    );
+                    this.iframes[i].contentWindow.removeEventListener(
+                        'mouseup',
+                        onMouseUp
+                    );
                 }
                 this.restoreCursors();
             }
@@ -94,8 +89,16 @@ class Resizer {
                 // elt.addEventListener('mouseleave', onMouseLeave, false);
                 // 给所有iframe挂上mouseup/leave handler
                 for (let i = 0; i < this.iframes.length; i++) {
-                    this.iframes[i].contentWindow.addEventListener('mousemove', onMouseMove, false);
-                    this.iframes[i].contentWindow.addEventListener('mouseup', onMouseUp, false);
+                    this.iframes[i].contentWindow.addEventListener(
+                        'mousemove',
+                        onMouseMove,
+                        false
+                    );
+                    this.iframes[i].contentWindow.addEventListener(
+                        'mouseup',
+                        onMouseUp,
+                        false
+                    );
                 }
                 return this.changeCursors();
             }
@@ -105,7 +108,6 @@ class Resizer {
     static createId() {
         return '__RID_' + (_seq++).toString();
     }
-
 }
 
 // 来自网络（https://esdiscuss.org/topic/better-way-to-maintain-this-reference-on-event-listener-functions）
@@ -126,7 +128,9 @@ Resizer.prototype.saveCursors = function() {
     this.normalCursors.self = this.ego.style.cursor;
     this.normalCursors.body = document.body.style.cursor;
     for (let i = 0; i < this.iframes.length; i++) {
-        this.normalCursors.iframes[i] = this.iframes[i].contentWindow.document.body.style.cursor;
+        this.normalCursors.iframes[i] = this.iframes[
+            i
+        ].contentWindow.document.body.style.cursor;
     }
 };
 
@@ -142,7 +146,11 @@ Resizer.prototype.restoreCursors = function() {
     this.ego.style.cursor = this.normalCursors.self;
     document.body.style.cursor = this.normalCursors.body;
     for (let i = 0; i < this.iframes.length; i++) {
-        this.iframes[i].contentWindow.document.body.style.cursor = this.normalCursors.iframes[i];
+        this.iframes[
+            i
+        ].contentWindow.document.body.style.cursor = this.normalCursors.iframes[
+            i
+        ];
     }
 };
 
@@ -173,7 +181,7 @@ HResizer.prototype.resizing = function(event) {
     // console.log('offsetLet: ' + this.prev.offsetLeft + ' pageX: ' + event.pageX);
     // 使用screenX vs pageX：pageX是相对于document的，如果包含由iframe，pageX将在发生变化
     // 导致无法准确定位，用screenX就没有这个问题
-    this.prev.style.width = (event.screenX - getScreenLeft(this.prev)) + 'px';
+    this.prev.style.width = event.screenX - getScreenLeft(this.prev) + 'px';
 };
 
 class VResizer extends Resizer {
@@ -183,13 +191,23 @@ class VResizer extends Resizer {
     }
 }
 
+function getScreenTop(elt) {
+    let top = 0;
+    while (elt) {
+        top += elt.offsetTop;
+        elt = elt.offsetParent;
+    }
+    return window.screenY + top;
+}
+
 // 这是用固定数值赋值的height，在window resize后，可以保证固定height
 VResizer.prototype.resizing = function(event) {
     // set prev's new position
-    let dy = event.movementY; // event.screenY - this.y;
+    // let dy = event.movementY; // event.screenY - this.y;
     // console.log(dy);
-    let height = this.prev.offsetHeight;
-    this.prev.style.height = (dy + height).toString() + 'px';
+    // let height = this.prev.offsetHeight;
+    // this.prev.style.height = (dy + height).toString() + 'px';
+    this.prev.style.height = event.screenY - getScreenTop(this.prev) + 'px';
 };
 
 module.exports = {

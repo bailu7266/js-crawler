@@ -124,8 +124,8 @@ button {
     text-align: center;
     border-radius: 6px;
     padding: 0.5em;
-    top: 120%;
-    left: 50%;
+    top: -10%;
+    left: 280%;
     margin-left: -5em;
     opacity: 0;
     transition: opacity 1.2s;
@@ -134,12 +134,12 @@ button {
 .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
-    bottom: 100%;
-    left: 50%;
+    top: 50%;
+    right: 100%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent transparent var(--tooltip-bg-color) transparent;
+    border-color: transparent var(--tooltip-bg-color) transparent transparent;
 }
 
 .tooltip:hover .tooltiptext {

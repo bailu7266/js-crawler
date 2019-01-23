@@ -81,6 +81,12 @@ const routes = {
 };
 
 window.addEventListener('load', () => {
+    layout();
+
+    routeInit();
+});
+
+function layout() {
     if (platform == 'darwin') {
         document.getElementById('titlebar').style.justifyContent = 'center';
         document.getElementById('menubar').style.display = 'none';
@@ -91,18 +97,19 @@ window.addEventListener('load', () => {
         document.getElementById('devtools').checked = contents.isDevToolsOpened();
     }
 
-    new HResizer(document.getElementById('res-column'));
-    new VResizer(document.getElementById('main-view'));
-
-    layout();
-
-    routeInit();
-});
-
-function layout() {
     // 主要分配flex item的width/height的比例;
     // document.getElementById('res-column').style.width = '50%';
-    return;
+    let resizables = document.querySelectorAll('.resizable');
+    for (let i = 0; i < resizables.length; i++) {
+        let elt = resizables[i];
+        if ((elt.parentElement.style.flexDirection == 'column') ||
+            (elt.parentElement.classList.contains('flex-col'))) {
+            new VResizer(elt);
+        } else if ((elt.parentElement.style.flexDirection == 'row') ||
+            (elt.parentElement.classList.contains('flex-row'))) {
+            new HResizer(elt);
+        }
+    }
 }
 
 function routeInit() {
