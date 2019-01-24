@@ -14,6 +14,7 @@
     --menu-item-width: 20em;
     --menu-font-size: 1em;
     --tooltip-bg-color: lightyellow;
+    --tooltiptext-width: 10em;
 }
 
 @font-face {
@@ -124,22 +125,73 @@ button {
     text-align: center;
     border-radius: 6px;
     padding: 0.5em;
-    top: -10%;
-    left: 280%;
-    margin-left: -5em;
+    /* margin-left: 5em; */
     opacity: 0;
-    transition: opacity 1.2s;
+    transition: opacity 0.5s ease-in 1s;
 }
 
-.tooltip .tooltiptext::after {
+.tooltip .left {
+    top: -10%;
+    right: 110%;
+}
+
+.tooltip .left::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent var(--tooltip-bg-color);
+}
+
+.tooltip .right {
+    top: -10%;
+    left: 110%;
+}
+
+.tooltip .right::after {
     content: "";
     position: absolute;
     top: 50%;
     right: 100%;
-    margin-left: -5px;
+    margin-top: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: transparent var(--tooltip-bg-color) transparent transparent;
+}
+
+.tooltip .top {
+    bottom: 110%;
+    left: calc(50% - 0.5*var(--tooltiptext-width));
+}
+
+.tooltip .top::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--tooltip-bg-color) transparent transparent transparent;
+}
+
+.tooltip .bottom {
+    top: 110%;
+    left: calc(50% - 0.5*var(--tooltiptext-width));
+}
+
+.tooltip .bottom::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent var(--tooltip-bg-color) transparent;
 }
 
 .tooltip:hover .tooltiptext {
@@ -511,12 +563,14 @@ button {
 
 .resizer-horizontal::after {
     width: 5px;
-    height: 100%;
+    top: 5%;
+    height: 90%;
 }
 
 .resizer-vertical::after {
     height: 5px;
-    width: 100%;
+    left: 5%;
+    width: 90%;
 }
 
 .resizer-horizontal:hover {

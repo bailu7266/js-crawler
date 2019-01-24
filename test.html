@@ -4,11 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./node_modules/angular/angular.js"></script>
     <title>Test</title>
     <style>
         @font-face {
             font-family: MDL2;
             src: local("Segoe MDL2 Assets"), url(./fonts/segmdl2.ttf);
+        }
+        
+         :root {
+            --tooltip-bg-color: darkgray;
+            --tooltiptext-width: 10em;
         }
         
         body {
@@ -40,6 +46,100 @@
             left: 1em;
             /* transform: translate(-2em, 0.2em); */
         }
+        
+        li {
+            padding: 1em 2em;
+            list-style-type: none;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            position: absolute;
+            z-index: 1;
+            width: var(--tooltiptext-width);
+            background-color: var(--tooltip-bg-color);
+            color: whitesmoke;
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5em;
+            /* margin-left: 5em; */
+            opacity: 0;
+            transition: opacity 0.5s ease-in 1s;
+        }
+        
+        .tooltip .left {
+            top: -10%;
+            right: 110%;
+        }
+        
+        .tooltip .left::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent var(--tooltip-bg-color);
+        }
+        
+        .tooltip .right {
+            top: -10%;
+            left: 110%;
+        }
+        
+        .tooltip .right::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 100%;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent var(--tooltip-bg-color) transparent transparent;
+        }
+        
+        .tooltip .top {
+            bottom: 110%;
+            left: calc(50% - 0.5*var(--tooltiptext-width));
+        }
+        
+        .tooltip .top::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--tooltip-bg-color) transparent transparent transparent;
+        }
+        
+        .tooltip .bottom {
+            top: 110%;
+            left: calc(50% - 0.5*var(--tooltiptext-width));
+        }
+        
+        .tooltip .bottom::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent var(--tooltip-bg-color) transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -58,22 +158,65 @@
             <input id="radio1" type="radio" name="view" />
             <span>BrowserView 1</span>
         </label>
+        <label for="radio2">
+                <input id="radio1" type="radio" name="view" />
+                <span>BrowserView 2</span>
+            </label>
         <input id="ok" type="submit" value="submit" />
     </form>
 
-    <ul>
-        <li>offsetParent: <input id='l1' />
-        </li>
-        <li>Toppest offsetParent: <span id="l2"></span></li>
-    </ul>
-    <p id='p1'></p>
-    <p id='p2'></p>
+    <div ng-app="app1" ng-controller="ctrl1">
+        <ul>
+            <li>offsetParent: <input id='l1' />
+            </li>
+            <li>Toppest offsetParent: <span id="l2"></span></li>
+        </ul>
+        <table>
+            <tr>
+                <th>type</th>
+                <th>top</th>
+                <th>left</th>
+            </tr>
+            <tr ng-repeat="x in pos">
+                <td>{{x.type}}</td>
+                <td>{{x.top}}</td>
+                <td>{{x.left}}</td>
+            </tr>
+        </table>
+
+        <p id='p1'></p>
+        <p id='p2'></p>
+    </div>
 
     <script>
         let op = document.getElementById('f1').offsetParent;
         let f1 = document.getElementById('f1');
         let rect = op.getBoundingClientRect();
+        let app = angular.module('app1', []);
         op.scrollTop = '120px';
+        app.controller('ctrl1', ($scope) => {
+            $scope.pos = [{
+                type: 'Client',
+                top: op.clientTop,
+                left: op.clientLeft
+            }, {
+                type: 'Offset',
+                top: op.offsetTop,
+                left: op.offsetLeft
+            }, {
+                type: 'Scroll',
+                top: op.scrollTop,
+                left: op.scrollLeft
+            }, {
+                type: 'Bounds',
+                top: rect.top,
+                left: rect.left
+            }, {
+                type: 'Screen',
+                top: window.screenY,
+                left: window.screenX
+            }];
+        });
         document.getElementById('l1').value = f1.offsetParent.tagName;
         document.getElementById('l2').innerText = op.offsetParent === null;
         document.getElementById('p1').innerText = `clientX: ${op.clientLeft}, clientY: ${op.clientTop}
