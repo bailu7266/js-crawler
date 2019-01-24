@@ -93,7 +93,7 @@ button {
     padding: var(--item-h-padding);
 }
 
-.toolbar a>img {
+.toolbar a > img {
     display: block;
     height: var(--item-size);
     border: none;
@@ -112,7 +112,7 @@ button {
 }
 
 .tooltip {
-    position: relative
+    position: relative;
 }
 
 .tooltip .tooltiptext {
@@ -125,7 +125,6 @@ button {
     text-align: center;
     border-radius: 6px;
     padding: 0.5em;
-    /* margin-left: 5em; */
     opacity: 0;
     transition: opacity 0.5s ease-in 1s;
 }
@@ -164,7 +163,7 @@ button {
 
 .tooltip .top {
     bottom: 110%;
-    left: calc(50% - 0.5*var(--tooltiptext-width));
+    left: calc(50% - 0.5 * var(--tooltiptext-width));
 }
 
 .tooltip .top::after {
@@ -180,7 +179,7 @@ button {
 
 .tooltip .bottom {
     top: 110%;
-    left: calc(50% - 0.5*var(--tooltiptext-width));
+    left: calc(50% - 0.5 * var(--tooltiptext-width));
 }
 
 .tooltip .bottom::after {
@@ -307,7 +306,7 @@ button {
     flex: 0 1 100%;
 }
 
-#menubar .submenu>.itembtn:after {
+#menubar .submenu > .itembtn:after {
     content: ">";
     text-align: center;
 }
@@ -321,7 +320,7 @@ button {
     margin: 0.5em;
 }
 
-#menubar .submenu>.menu-list {
+#menubar .submenu > .menu-list {
     /* top: auto; */
     left: 100%;
     transform: translateY(-0.5em);
@@ -339,42 +338,30 @@ button {
     outline: 2px solid var(--close-btn-hover-color);
 }
 
-
-/*
-#menubar .button:focus {
-    color: whitesmoke;
-    background-color: rebeccapurple;
-    font-weight: bold;
-}
-*/
-
-
-/*#menubar[data-open="true"] .menu>.button[data-focused="true"]+.menu-list,*/
-
-#menubar[data-open="true"] .menu>.button:focus+.menu-list,
-#menubar[data-open="true"] .menu:hover>.menu-list {
+#menubar[data-open="true"] .menu > .button:focus + .menu-list,
+#menubar[data-open="true"] .menu:hover > .menu-list {
     visibility: visible;
     -webkit-transition-delay: 0ms;
     transition-delay: 0ms;
 }
 
-#menubar .menu-list div[data-select="true"]>.itembtn,
+#menubar .menu-list div[data-select="true"] > .itembtn,
 #menubar .menu-list a[data-select="true"],
 #menubar .menu-list label[data-select="true"],
 #menubar .menu-list a:hover,
 #menubar .menu-list label:hover,
-#menubar .submenu:hover>.itembtn {
+#menubar .submenu:hover > .itembtn {
     color: white;
     background-color: dodgerblue;
 }
 
-#menubar .submenu[data-open="true"]>.menu-list,
-#menubar .submenu:hover>.menu-list {
+#menubar .submenu[data-open="true"] > .menu-list,
+#menubar .submenu:hover > .menu-list {
     visibility: visible;
 }
 
-#menubar .submenu[data-open="true"]>.itembtn::after,
-#menubar .submenu:hover>.itembtn::after {
+#menubar .submenu[data-open="true"] > .itembtn::after,
+#menubar .submenu:hover > .itembtn::after {
     content: "<";
     text-align: center;
 }
@@ -383,7 +370,7 @@ button {
     display: none;
 }
 
-.menu-list input[type="checkbox"]+.checkmark {
+.menu-list input[type="checkbox"] + .checkmark {
     position: absolute;
     display: none;
     height: 2em;
@@ -392,7 +379,7 @@ button {
     padding: 0.5em;
 }
 
-.menu-list input[type="checkbox"]:checked+.checkmark {
+.menu-list input[type="checkbox"]:checked + .checkmark {
     display: block;
 }
 
@@ -446,7 +433,7 @@ button {
     background-color: var(--close-btn-hover-color);
 }
 
-#window-ctrls a>img {
+#window-ctrls a > img {
     height: 1em;
     padding: 0.1em;
     border: none;
@@ -489,51 +476,52 @@ button {
     background-color: #3c3c3c;
 }
 
-#view-tabs {
-    float: left;
-}
-
 .title-tab {
+    position: relative;
     float: left;
     display: inline-flex;
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
-    width: 10em;
+    /*width: 10em;*/
     padding: 0.5em;
     border-right: 1px solid #1f1f1f;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 0.8em;
-    font-style: italic;
+    font-size: 1em;
     color: var(--titlebar-bg-color);
 }
 
-.title-tab>img {
+.title-tab > img {
     flex: 0 1 auto;
     display: block;
     height: 1em;
     border: none;
 }
 
-
-/*
-.title-tab>span {
-    display: inline-block;
-    font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
-    font-size: 0.8em;
-    font-style: italic;
-    color: var(--titlebar-bg-color);
-}
-*/
-
-.title-tab:hover {
-    font-weight: bold;
-    font-style: normal;
-    color: black;
-    background-color: var(--titlebar-bg-color);
+.title-tab > .status {
+    visibility: hidden;
 }
 
-#main-view>iframe {
+.title-tab > span:first-of-type {
+    padding: 0 1em;
+}
+
+.title-tab:focus {
+    color: white;
+    background-color: #0f0f0f;
+}
+
+.title-tab > .tab-close {
+    visibility: hidden;
+    position: absolute;
+    right: 0.5em;
+}
+
+.title-tab:hover > .tab-close {
+    visibility: visible;
+}
+
+#main-view > iframe {
     flex: 1 1 auto;
     border: none;
 }
