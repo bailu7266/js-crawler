@@ -192,9 +192,10 @@
         </style>
     </head>
 
-    <body ng-app="appTest" ng-controller="tabCtrl">
-        <ng-tab></ng-tab>
-        <p>{{ button }} pressed</p>
+    <body ng-app="appTest">
+        <div class="tab-bar" ng-controller="tabCtrl">
+            <ng-tab></ng-tab>
+            <!--<p>{{ button }} pressed</p>
         <div class="tab-bar">
             <button id="tab-home" class="tab active" ng-click="onClick()">
                 首页
@@ -205,6 +206,7 @@
             <button id="tab-coord" class="tab" ng-click="onClick()">
                 显示element coordinate
             </button>
+        </div>-->
         </div>
         <div id="content-home" class="tab-content"><p>Just for test</p></div>
         <div id="content-bv" class="tab-content">
@@ -251,27 +253,44 @@
         </div>
 
         <script>
+            const TAB_ID = 0;
+            const TAB_LABEL = 1;
+            const TAB_ON_CLICK = 2;
+            const TAB_CONTENT_ID = 3;
             const tabs = [
-                { label: "首页" },
-                { label: "Select BrowserView" },
-                { label: "Display Coordinate" }
+                ["tab-home", "首页", onClick, "content-home"],
+                ["tab-bv", "Select BrowserView", onClick, "content-bv"],
+                ["tab-coord", "Display Coordinate", onClick, "content-coord"]
             ];
             let ngApp = angular.module("appTest", []);
             ngApp.directive("ngTab", () => {
-                let str = '<div class="tab-bar" ng-controller="tabCtrl">';
+                let str = "";
                 for (let i = 0; i < tabs.length; i++) {
                     str +=
-                        '<button class="tab" ng-click="onClick()">' +
-                        tabs[i].label +
+                        '<button id="' +
+                        tabs[i][TAB_ID] +
+                        '" class="tab">' +
+                        tabs[i][TAB_LABEL] +
                         "</button>";
                 }
 
                 return {
-                    template: str + "</div>"
+                    template: str
                 };
             });
 
             ngApp.controller("tabCtrl", $scope => {
+                for (let i = 0; i < tabs.length; i++) {
+                    document
+                        .getElementById(tabs[i][TAB_ID])
+                        .addEventListener("click", tabs[i][TAB_ON_CLICK]);
+                }
+                document
+                    .getElementById(tabs[0][TAB_ID])
+                    .classList.add("active");
+                document.getElementById(tabs[0][TAB_CONTENT_ID]).style.display =
+                    "block";
+
                 $scope.onClick = function() {
                     $scope.button = this;
                     // console.log("Angular ctrl" + this);
@@ -314,23 +333,35 @@
                 }
             });
 
-            let tabElts = document.querySelectorAll(".tab");
-            for (let i = 0; i < tabElts.length; i++) {
-                let elt = tabElts[i];
-                elt.addEventListener("click", e => {
-                    if (elt.classList.contains(".active")) return;
+            function onClick(e) {
+                if (this.classList.contains(".active")) return;
 
-                    let activeTab = elt.parentElement.querySelector(".active");
+                let activeTab = this.parentElement.querySelector(".active");
+                if (activeTab) {
                     activeTab.classList.remove("active");
-                    elt.classList.add("active");
                     document.getElementById(
-                        getTabContentId(activeTab.id)
+                        tabs[
+                            tabs.findIndex(elt => {
+                                return elt[TAB_ID] == activeTab.id;
+                            })
+                        ][TAB_CONTENT_ID]
                     ).style.display = "none";
-                    document.getElementById(
-                        getTabContentId(elt.id)
-                    ).style.display = "block";
-                });
+                }
+                this.classList.add("active");
+                document.getElementById(
+                    tabs[
+                        tabs.findIndex(elt => {
+                            return elt[TAB_ID] == this.id;
+                        })
+                    ][TAB_CONTENT_ID]
+                ).style.display = "block";
             }
+
+            /*let tabElts = document.querySelectorAll(".tab");
+                for (let i = 0; i < tabElts.length; i++) {
+                    let elt = tabElts[i];
+                    elt.addEventListener("click", onClick);
+                }*/
 
             let f1 = document.getElementById("f1");
             let op = getOffsetParent(f1);
@@ -365,13 +396,15 @@
                 document.getElementById("p1").innerText = `clientX: ${
                     op.clientLeft
                 }, clientY: ${op.clientTop}
-        offsetLeft: ${op.offsetLeft}, offsetTop: ${op.offsetTop}
-        scrollLeft: ${op.scrollLeft}, scrollTop: ${op.scrollTop}
-        bounds.left: ${rect.left}, bounds.top: ${rect.top}`;
+            offsetLeft: ${op.offsetLeft}, offsetTop: ${op.offsetTop}
+            scrollLeft: ${op.scrollLeft}, scrollTop: ${op.scrollTop}
+            bounds.left: ${rect.left}, bounds.top: ${rect.top}`;
                 document.getElementById("p2").innerText = `screenX: ${
                     window.screenX
                 }, screenY: ${window.screenY}
-        f1 offsetLeft: ${f1.offsetLeft}, f1 screenLeft: ${getScreenLeft(f1)}`;
+            f1 offsetLeft: ${f1.offsetLeft}, f1 screenLeft: ${getScreenLeft(
+                    f1
+                )}`;
             }
 
             function getTabContentId(tabId) {
