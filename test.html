@@ -194,8 +194,17 @@
 
     <body ng-app="appTest">
         <div class="tab-bar" ng-controller="tabCtrl">
-            <ng-tab></ng-tab>
-            <!--<p>{{ button }} pressed</p>
+            <button
+                ng-repeat="x in tabs"
+                id="{{ x[TAB_ID] }}"
+                class="tab"
+                ng-click="onClick($event)"
+            >
+                {{ x[TAB_LABEL] }}
+            </button>
+        </div>
+        <!--<ng-tab></ng-tab>
+            <p>{{ button }} pressed</p>
         <div class="tab-bar">
             <button id="tab-home" class="tab active" ng-click="onClick()">
                 首页
@@ -207,7 +216,6 @@
                 显示element coordinate
             </button>
         </div>-->
-        </div>
         <div id="content-home" class="tab-content"><p>Just for test</p></div>
         <div id="content-bv" class="tab-content">
             <form id="f1">
@@ -253,15 +261,6 @@
         </div>
 
         <script>
-            const TAB_ID = 0;
-            const TAB_LABEL = 1;
-            const TAB_ON_CLICK = 2;
-            const TAB_CONTENT_ID = 3;
-            const tabs = [
-                ["tab-home", "首页", onClick, "content-home"],
-                ["tab-bv", "Select BrowserView", onClick, "content-bv"],
-                ["tab-coord", "Display Coordinate", onClick, "content-coord"]
-            ];
             let ngApp = angular.module("appTest", []);
             ngApp.directive("ngTab", () => {
                 let str = "";
@@ -280,20 +279,70 @@
             });
 
             ngApp.controller("tabCtrl", $scope => {
-                for (let i = 0; i < tabs.length; i++) {
+                $scope.TAB_ID = 0;
+                $scope.TAB_LABEL = 1;
+                $scope.TAB_ON_CLICK = 2;
+                $scope.TAB_CONTENT_ID = 3;
+                $scope.tabs = [
+                    ["tab-home", "首页", $scope.onClick, "content-home"],
+                    [
+                        "tab-bv",
+                        "Select BrowserView",
+                        $scope.onClick,
+                        "content-bv"
+                    ],
+                    [
+                        "tab-coord",
+                        "Display Coordinate",
+                        $scope.onClick,
+                        "content-coord"
+                    ]
+                ];
+
+                /*for (let i = 0; i < $scope.tabs.length; i++) {
                     document
-                        .getElementById(tabs[i][TAB_ID])
-                        .addEventListener("click", tabs[i][TAB_ON_CLICK]);
+                        .getElementById($scope.tabs[i][$scope.TAB_ID])
+                        .addEventListener(
+                            "click",
+                            $scope.tabs[i][$scope.TAB_ON_CLICK]
+                        );
                 }
                 document
-                    .getElementById(tabs[0][TAB_ID])
+                    .getElementById($scope.tabs[0][$scope.TAB_ID])
                     .classList.add("active");
-                document.getElementById(tabs[0][TAB_CONTENT_ID]).style.display =
-                    "block";
+                document.getElementById(
+                    $scope.tabs[0][$scope.TAB_CONTENT_ID]
+                ).style.display = "block";*/
 
-                $scope.onClick = function() {
-                    $scope.button = this;
-                    // console.log("Angular ctrl" + this);
+                $scope.onClick = function(e) {
+                    let _this = e.target;
+                    if (!_this) {
+                        console.log("不明消息来源");
+                        return;
+                    }
+                    if (_this.classList.contains(".active")) return;
+
+                    let activeTab = _this.parentElement.querySelector(
+                        ".active"
+                    );
+                    if (activeTab) {
+                        activeTab.classList.remove("active");
+                        document.getElementById(
+                            $scope.tabs[
+                                $scope.tabs.findIndex(elt => {
+                                    return elt[$scope.TAB_ID] == activeTab.id;
+                                })
+                            ][$scope.TAB_CONTENT_ID]
+                        ).style.display = "none";
+                    }
+                    _this.classList.add("active");
+                    document.getElementById(
+                        $scope.tabs[
+                            $scope.tabs.findIndex(elt => {
+                                return elt[$scope.TAB_ID] == _this.id;
+                            })
+                        ][$scope.TAB_CONTENT_ID]
+                    ).style.display = "block";
                 };
             });
 
@@ -332,30 +381,6 @@
                     ];
                 }
             });
-
-            function onClick(e) {
-                if (this.classList.contains(".active")) return;
-
-                let activeTab = this.parentElement.querySelector(".active");
-                if (activeTab) {
-                    activeTab.classList.remove("active");
-                    document.getElementById(
-                        tabs[
-                            tabs.findIndex(elt => {
-                                return elt[TAB_ID] == activeTab.id;
-                            })
-                        ][TAB_CONTENT_ID]
-                    ).style.display = "none";
-                }
-                this.classList.add("active");
-                document.getElementById(
-                    tabs[
-                        tabs.findIndex(elt => {
-                            return elt[TAB_ID] == this.id;
-                        })
-                    ][TAB_CONTENT_ID]
-                ).style.display = "block";
-            }
 
             /*let tabElts = document.querySelectorAll(".tab");
                 for (let i = 0; i < tabElts.length; i++) {
