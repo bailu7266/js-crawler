@@ -468,7 +468,10 @@ button {
 
 #console {
     flex: 1 1 auto;
-    background-color: #232323;
+    display: flex;
+    flex-flow: column nowrap;
+    color: whitesmoke;
+    background-color: #222222;
 }
 
 #title-panel {
@@ -567,4 +570,46 @@ button {
 
 .resizer-vertical:hover {
     cursor: ns-resize;
+}
+
+.tab-bar {
+    flex: 0 1 auto;
+    position: relative;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    height: 2em;
+    color: lightgrey;
+    background-color: #1f1f1f;
+}
+
+.tab-bar button.tab {
+    float: left;
+    border: none;
+    text-decoration: none;
+    background: none;
+    color: grey;
+    text-align: center;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1em;
+    padding: 0 1em;
+    line-height: 2em;
+    margin: 0;
+    -webkit-appearance: none;
+}
+
+.tab-bar .tab.active,
+.tab-bar .tab:hover {
+    color: white;
+}
+
+.tab-bar .tab.active {
+    border-bottom: 1px solid grey;
+}
+
+.tab-bar ~ .tab-content {
+    flex: 1 1 auto;
+    display: none;
+    padding: 1em 2em;
+    line-height: 1.2em;
 }

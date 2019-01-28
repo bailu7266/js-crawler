@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div id="window-container" class="flex-col">
+    <div id="window-container" class="flex-col" ng-app="tsApp">
         <div id="titlebar">
             <div id="menubar" data-open="false">
                 <img id="app-icon" src="./images/app-icon.png" />
@@ -112,8 +112,12 @@
                         iframe is not supported in this system
                     </iframe>
                 </div>
-                <div id="console">
-                    <div class="title-tab"></div>
+                <div id="console" ng-controller="tabCtrl">
+                    <div id="tabb" class="tab-bar">
+                        <button ng-repeat="x in tabs" id={{x[TAB_ID]}} class="tab" ng-click="onClick($event)">{{x[TAB_LABEL]}}</button>
+                    </div>
+                    <div ng-repeat="x in tabs" id={{x[TAB_CONTENT_ID]}} class="tab-content">
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,6 +132,7 @@
 
     <script>
         require('./index.js');
+        require('./tab-ctrl.js')
     </script>
 </body>
 

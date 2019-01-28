@@ -232,7 +232,9 @@ function createWindow() {
         }
     });
 
-    tray.on('click', () => { win.isVisible() ? win.hide() : win.show(); });
+    tray.on('click', () => {
+        win.isVisible() ? win.hide() : win.show();
+    });
 }
 
 app.on('ready', createWindow);
@@ -283,13 +285,15 @@ ipcMain.on('AMCH-Request', (e, name, msg) => {
             break;
 
         case 'GetAllViews':
-            let views = BrowserView.getAllViews();
-            // console.log('(main process)共有BrowserView: ' + result.length);
-            let arrIds = [];
-            for (let i = 0; i < views.length; i++) {
-                arrIds.push(views[i].id);
+            {
+                let views = BrowserView.getAllViews();
+                // console.log('(main process)共有BrowserView: ' + result.length);
+                let arrIds = [];
+                for (let i = 0; i < views.length; i++) {
+                    arrIds.push(views[i].id);
+                }
+                e.sender.send('AMCH-Response', name, arrIds);
             }
-            e.sender.send('AMCH-Response', name, arrIds);
             return;
 
         case 'ShowAllViews':

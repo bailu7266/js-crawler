@@ -11,6 +11,7 @@ const {
     VResizer,
     HResizer
 } = require('./resizer.js');
+const dbgLog = require('./dbg-log.js');
 let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 let contents = remote.getCurrentWebContents();
@@ -155,5 +156,5 @@ function newView() {
 }
 
 ipcRenderer.on('AMCH-Response', (e, name, msg) => {
-    console.log(name + ': ' + msg);
+    dbgLog(name + ': ' + msg);
 });
