@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Layout</title>
     <link rel="stylesheet" type="text/css" href="./css/layout.css" />
+    <script src="./node_modules/angular/angular.js"></script>
 </head>
 
 <body>
@@ -132,7 +133,26 @@
 
     <script>
         require('./index.js');
-        require('./tab-ctrl.js')
+        const tabs = [
+            ['tab-log', 'Debug Log', 'content-log', null],
+            [
+                'tab-info',
+                '信息',
+                'content-info'
+            ],
+            [
+                'tab-term',
+                '终端',
+                'content-term'
+            ]
+        ];
+        const tabCtrl = require('./tab-ctrl.js')(tabs);
+        const app = angular.module('tsApp', []);
+        app.controller('tabCtrl', tabCtrl);
+
+        window.addEventListener('load', () => {
+            angular.element(document.getElementById('tabb')).scope().setActive();
+        });
     </script>
 </body>
 

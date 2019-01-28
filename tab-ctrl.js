@@ -1,23 +1,9 @@
-const angular = require('angular');
-let ngApp = angular.module('tsApp', []);
-ngApp.controller('tabCtrl', $scope => {
+module.exports = ($scope, tabs) => {
     $scope.TAB_ID = 0;
     $scope.TAB_LABEL = 1;
     $scope.TAB_CONTENT_ID = 2;
     $scope.TAB_ON_CLICK = 3;
-    $scope.tabs = [
-        ['tab-log', 'Debug Log', 'content-log', null],
-        [
-            'tab-info',
-            '信息',
-            'content-info'
-        ],
-        [
-            'tab-term',
-            '终端',
-            'content-term'
-        ]
-    ];
+    $scope.tabs = tabs;
 
     /*for (let i = 0; i < $scope.tabs.length; i++) {
         document
@@ -66,8 +52,4 @@ ngApp.controller('tabCtrl', $scope => {
             ][$scope.TAB_CONTENT_ID]
         ).style.display = 'block';
     };
-});
-
-window.addEventListener('load', () => {
-    angular.element(document.getElementById('tabb')).scope().setActive();
-});
+};
