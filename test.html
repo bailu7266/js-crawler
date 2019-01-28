@@ -1,459 +1,466 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script src="./node_modules/angular/angular.js"></script>
-        <title>Test</title>
-        <style>
-            @font-face {
-                font-family: MDL2;
-                src: local("Segoe MDL2 Assets"), url(./fonts/segmdl2.ttf);
-            }
 
-            :root {
-                --tooltip-bg-color: darkgray;
-                --tooltiptext-width: 10em;
-            }
-
-            * {
-                box-sizing: border-box;
-            }
-
-            /*body {
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./node_modules/angular/angular.js"></script>
+    <title>Test</title>
+    <style>
+        @font-face {
+            font-family: MDL2;
+            src: local("Segoe MDL2 Assets"), url(./fonts/segmdl2.ttf);
+        }
+        
+         :root {
+            --tooltip-bg-color: darkgray;
+            --tooltiptext-width: 10em;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        /*body {
             margin: 20px;
             padding: 40px;
             border: 4px solid red;
         }*/
+        
+        label {
+            position: relative;
+        }
+        
+        input[type="radio"] {
+            -webkit-appearance: none;
+            display: none;
+        }
+        
+        input[type="radio"]+span {
+            display: block;
+            padding: 0.5em 2em;
+        }
+        
+        input[type="radio"]:checked+span::before {
+            font-family: MDL2;
+            font-size: 1em;
+            content: "\e73e";
+            color: red;
+            position: absolute;
+            left: 1em;
+            /* transform: translate(-2em, 0.2em); */
+        }
+        
+        li {
+            padding: 1em 2em;
+            list-style-type: none;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            position: absolute;
+            z-index: 1;
+            width: var(--tooltiptext-width);
+            background-color: var(--tooltip-bg-color);
+            color: whitesmoke;
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5em;
+            /* margin-left: 5em; */
+            opacity: 0;
+            transition: opacity 0.5s ease-in 1s;
+        }
+        
+        .tooltip .left {
+            top: -10%;
+            right: 110%;
+        }
+        
+        .tooltip .left::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent var(--tooltip-bg-color);
+        }
+        
+        .tooltip .right {
+            top: -10%;
+            left: 110%;
+        }
+        
+        .tooltip .right::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 100%;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent var(--tooltip-bg-color) transparent transparent;
+        }
+        
+        .tooltip .top {
+            bottom: 110%;
+            left: calc(50% - 0.5 * var(--tooltiptext-width));
+        }
+        
+        .tooltip .top::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--tooltip-bg-color) transparent transparent transparent;
+        }
+        
+        .tooltip .bottom {
+            top: 110%;
+            left: calc(50% - 0.5 * var(--tooltiptext-width));
+        }
+        
+        .tooltip .bottom::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent var(--tooltip-bg-color) transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        table {
+            border: none;
+            border-collapse: collapse;
+        }
+        
+        th,
+        td {
+            width: 10em;
+            text-align: center;
+            vertical-align: middle;
+            border: none;
+        }
+        
+        th {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:last-child {
+            border-bottom: 2px solid #3f3f3f;
+        }
+        
+        .tab-bar {
+            position: relative;
+            display: block;
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+            height: 2em;
+            color: lightgrey;
+            background-color: #1f1f1f;
+        }
+        
+        .tab-bar button.tab {
+            float: left;
+            border: none;
+            text-decoration: none;
+            background: none;
+            color: lightgrey;
+            text-align: center;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1em;
+            padding: 0 1em;
+            line-height: 2em;
+            margin: 0;
+            -webkit-appearance: none;
+        }
+        
+        .tab-bar .tab.focus,
+        .tab-bar .tab.active,
+        .tab-bar .tab:hover {
+            background-color: royalblue;
+            color: whitesmoke;
+        }
+        
+        .tab-bar~.tab-content {
+            position: relative;
+            display: none;
+        }
+        
+        .tab-bar~.tab-content[data-ng-show="true"] {
+            display: block;
+        }
+    </style>
+</head>
 
-            label {
-                position: relative;
-            }
-
-            input[type="radio"] {
-                -webkit-appearance: none;
-                display: none;
-            }
-
-            input[type="radio"] + span {
-                display: block;
-                padding: 0.5em 2em;
-            }
-
-            input[type="radio"]:checked + span::before {
-                font-family: MDL2;
-                font-size: 1em;
-                content: "\e73e";
-                color: red;
-                position: absolute;
-                left: 1em;
-                /* transform: translate(-2em, 0.2em); */
-            }
-
-            li {
-                padding: 1em 2em;
-                list-style-type: none;
-            }
-
-            .tooltip {
-                position: relative;
-                display: inline-block;
-            }
-
-            .tooltip .tooltiptext {
-                visibility: hidden;
-                position: absolute;
-                z-index: 1;
-                width: var(--tooltiptext-width);
-                background-color: var(--tooltip-bg-color);
-                color: whitesmoke;
-                text-align: center;
-                border-radius: 6px;
-                padding: 0.5em;
-                /* margin-left: 5em; */
-                opacity: 0;
-                transition: opacity 0.5s ease-in 1s;
-            }
-
-            .tooltip .left {
-                top: -10%;
-                right: 110%;
-            }
-
-            .tooltip .left::after {
-                content: "";
-                position: absolute;
-                top: 50%;
-                left: 100%;
-                margin-top: -5px;
-                border-width: 5px;
-                border-style: solid;
-                border-color: transparent transparent transparent
-                    var(--tooltip-bg-color);
-            }
-
-            .tooltip .right {
-                top: -10%;
-                left: 110%;
-            }
-
-            .tooltip .right::after {
-                content: "";
-                position: absolute;
-                top: 50%;
-                right: 100%;
-                margin-top: -5px;
-                border-width: 5px;
-                border-style: solid;
-                border-color: transparent var(--tooltip-bg-color) transparent
-                    transparent;
-            }
-
-            .tooltip .top {
-                bottom: 110%;
-                left: calc(50% - 0.5 * var(--tooltiptext-width));
-            }
-
-            .tooltip .top::after {
-                content: "";
-                position: absolute;
-                top: 100%;
-                left: 50%;
-                margin-left: -5px;
-                border-width: 5px;
-                border-style: solid;
-                border-color: var(--tooltip-bg-color) transparent transparent
-                    transparent;
-            }
-
-            .tooltip .bottom {
-                top: 110%;
-                left: calc(50% - 0.5 * var(--tooltiptext-width));
-            }
-
-            .tooltip .bottom::after {
-                content: "";
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                margin-left: -5px;
-                border-width: 5px;
-                border-style: solid;
-                border-color: transparent transparent var(--tooltip-bg-color)
-                    transparent;
-            }
-
-            .tooltip:hover .tooltiptext {
-                visibility: visible;
-                opacity: 1;
-            }
-
-            .tab-bar {
-                position: relative;
-                display: block;
-                box-sizing: border-box;
-                padding: 0;
-                margin: 0;
-                height: 2em;
-                color: lightgrey;
-                background-color: #1f1f1f;
-            }
-
-            .tab-bar button.tab {
-                float: left;
-                border: none;
-                text-decoration: none;
-                background: none;
-                color: lightgrey;
-                text-align: center;
-                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-                font-size: 1em;
-                padding: 0 1em;
-                line-height: 2em;
-                margin: 0;
-                -webkit-appearance: none;
-            }
-
-            .tab-bar .tab.focus,
-            .tab-bar .tab.active,
-            .tab-bar .tab:hover {
-                background-color: royalblue;
-                color: whitesmoke;
-            }
-
-            .tab-bar ~ .tab-content {
-                position: relative;
-                display: none;
-            }
-
-            .tab-bar ~ .tab-content[data-ng-show="true"] {
-                display: block;
-            }
-        </style>
-    </head>
-
-    <body ng-app="appTest">
-        <div class="tab-bar" ng-controller="tabCtrl">
-            <button
-                ng-repeat="x in tabs"
-                id="{{ x[TAB_ID] }}"
-                class="tab"
-                ng-click="onClick($event)"
-            >
+<body ng-app="appTest">
+    <div id="bar-1" class="tab-bar" ng-controller="tabCtrl">
+        <button ng-repeat="x in tabs" id="{{ x[TAB_ID] }}" class="tab" ng-click="onClick($event)">
                 {{ x[TAB_LABEL] }}
             </button>
-        </div>
-        <!--<ng-tab></ng-tab>
-            <p>{{ button }} pressed</p>
-        <div class="tab-bar">
-            <button id="tab-home" class="tab active" ng-click="onClick()">
-                首页
-            </button>
-            <button id="tab-bv" class="tab" ng-click="onClick()">
-                选择BrowserView
-            </button>
-            <button id="tab-coord" class="tab" ng-click="onClick()">
-                显示element coordinate
-            </button>
-        </div>-->
-        <div id="content-home" class="tab-content"><p>Just for test</p></div>
-        <div id="content-bv" class="tab-content">
-            <form id="f1">
-                <label for="radio">
+    </div>
+    <div id="content-home" class="tab-content">
+        <p>Just for test</p>
+    </div>
+    <div id="content-bv" class="tab-content">
+        <form id="f1">
+            <label for="radio">
                     <input id="radio" name="view" type="radio" checked />
                     <span>自定义radio</span>
                 </label>
-                <label for="radio0">
+            <label for="radio0">
                     <input id="radio0" type="radio" name="view" />
                     <span>BrowserView 0</span>
                 </label>
-                <label for="radio1">
+            <label for="radio1">
                     <input id="radio1" type="radio" name="view" />
                     <span>BrowserView 1</span>
                 </label>
-                <label for="radio2">
+            <label for="radio2">
                     <input id="radio1" type="radio" name="view" />
                     <span>BrowserView 2</span>
                 </label>
-                <input id="ok" type="submit" value="submit" />
-            </form>
-        </div>
-        <div id="content-coord" class="tab-content" ng-controller="ctrl1">
-            <ul>
-                <li>offsetParent: <input id="l1" /></li>
-                <li>Toppest offsetParent: <span id="l2"></span></li>
-            </ul>
-            <table>
-                <tr>
-                    <th>type</th>
-                    <th>top</th>
-                    <th>left</th>
-                </tr>
-                <tr ng-repeat="x in pos">
-                    <td>{{ x.type }}</td>
-                    <td>{{ x.top }}</td>
-                    <td>{{ x.left }}</td>
-                </tr>
-            </table>
+            <input id="ok" type="submit" value="submit" />
+        </form>
+    </div>
+    <div id="content-coord" class="tab-content" ng-controller="ctrl1">
+        <ul>
+            <li>offsetParent: <input id="l1" /></li>
+            <li>Toppest offsetParent: <span id="l2"></span></li>
+        </ul>
+        <table>
+            <tr>
+                <th>type</th>
+                <th>top</th>
+                <th>left</th>
+            </tr>
+            <tr ng-repeat="x in pos">
+                <td>{{ x.type }}</td>
+                <td>{{ x.top }}</td>
+                <td>{{ x.left }}</td>
+            </tr>
+        </table>
 
-            <p id="p1"></p>
-            <p id="p2"></p>
-        </div>
+        <p id="p1"></p>
+        <p id="p2"></p>
+    </div>
 
-        <script>
-            let ngApp = angular.module("appTest", []);
-            ngApp.directive("ngTab", () => {
-                let str = "";
-                for (let i = 0; i < tabs.length; i++) {
-                    str +=
-                        '<button id="' +
-                        tabs[i][TAB_ID] +
-                        '" class="tab">' +
-                        tabs[i][TAB_LABEL] +
-                        "</button>";
-                }
+    <script>
+        let ngApp = angular.module("appTest", []);
+        ngApp.directive("ngTab", () => {
+            let str = "";
+            for (let i = 0; i < tabs.length; i++) {
+                str +=
+                    '<button id="' +
+                    tabs[i][TAB_ID] +
+                    '" class="tab">' +
+                    tabs[i][TAB_LABEL] +
+                    "</button>";
+            }
 
-                return {
-                    template: str
-                };
-            });
+            return {
+                template: str
+            };
+        });
 
-            ngApp.controller("tabCtrl", $scope => {
-                $scope.TAB_ID = 0;
-                $scope.TAB_LABEL = 1;
-                $scope.TAB_ON_CLICK = 2;
-                $scope.TAB_CONTENT_ID = 3;
-                $scope.tabs = [
-                    ["tab-home", "首页", $scope.onClick, "content-home"],
-                    [
-                        "tab-bv",
-                        "Select BrowserView",
-                        $scope.onClick,
-                        "content-bv"
-                    ],
-                    [
-                        "tab-coord",
-                        "Display Coordinate",
-                        $scope.onClick,
-                        "content-coord"
-                    ]
-                ];
+        ngApp.controller("tabCtrl", $scope => {
+            $scope.TAB_ID = 0;
+            $scope.TAB_LABEL = 1;
+            $scope.TAB_ON_CLICK = 2;
+            $scope.TAB_CONTENT_ID = 3;
+            $scope.tabs = [
+                ["tab-home", "首页", $scope.onClick, "content-home"],
+                [
+                    "tab-bv",
+                    "Select BrowserView",
+                    $scope.onClick,
+                    "content-bv"
+                ],
+                [
+                    "tab-coord",
+                    "Display Coordinate",
+                    $scope.onClick,
+                    "content-coord"
+                ]
+            ];
 
-                /*for (let i = 0; i < $scope.tabs.length; i++) {
-                    document
-                        .getElementById($scope.tabs[i][$scope.TAB_ID])
-                        .addEventListener(
-                            "click",
-                            $scope.tabs[i][$scope.TAB_ON_CLICK]
-                        );
-                }
+            /*for (let i = 0; i < $scope.tabs.length; i++) {
+                document
+                    .getElementById($scope.tabs[i][$scope.TAB_ID])
+                    .addEventListener(
+                        "click",
+                        $scope.tabs[i][$scope.TAB_ON_CLICK]
+                    );
+            }*/
+            $scope.setActive = () => {
                 document
                     .getElementById($scope.tabs[0][$scope.TAB_ID])
                     .classList.add("active");
                 document.getElementById(
                     $scope.tabs[0][$scope.TAB_CONTENT_ID]
-                ).style.display = "block";*/
+                ).style.display = "block";
+            };
 
-                $scope.onClick = function(e) {
-                    let _this = e.target;
-                    if (!_this) {
-                        console.log("不明消息来源");
-                        return;
-                    }
-                    if (_this.classList.contains(".active")) return;
+            $scope.onClick = function(e) {
+                let _this = e.target;
+                if (!_this) {
+                    console.log("不明消息来源");
+                    return;
+                }
+                if (_this.classList.contains(".active")) return;
 
-                    let activeTab = _this.parentElement.querySelector(
-                        ".active"
-                    );
-                    if (activeTab) {
-                        activeTab.classList.remove("active");
-                        document.getElementById(
-                            $scope.tabs[
-                                $scope.tabs.findIndex(elt => {
-                                    return elt[$scope.TAB_ID] == activeTab.id;
-                                })
-                            ][$scope.TAB_CONTENT_ID]
-                        ).style.display = "none";
-                    }
-                    _this.classList.add("active");
+                let activeTab = _this.parentElement.querySelector(
+                    ".active"
+                );
+                if (activeTab) {
+                    activeTab.classList.remove("active");
                     document.getElementById(
                         $scope.tabs[
                             $scope.tabs.findIndex(elt => {
-                                return elt[$scope.TAB_ID] == _this.id;
+                                return elt[$scope.TAB_ID] == activeTab.id;
                             })
                         ][$scope.TAB_CONTENT_ID]
-                    ).style.display = "block";
-                };
-            });
-
-            ngApp.controller("ctrl1", $scope => {
-                let elt = document.getElementById("f1");
-                let _op = getOffsetParent(elt);
-
-                if (_op) {
-                    let rect = _op.getBoundingClientRect();
-                    $scope.pos = [
-                        {
-                            type: "Client",
-                            top: _op.clientTop,
-                            left: _op.clientLeft
-                        },
-                        {
-                            type: "Offset",
-                            top: _op.offsetTop,
-                            left: _op.offsetLeft
-                        },
-                        {
-                            type: "Scroll",
-                            top: _op.scrollTop,
-                            left: _op.scrollLeft
-                        },
-                        {
-                            type: "Bounds",
-                            top: rect.top,
-                            left: rect.left
-                        },
-                        {
-                            type: "Screen",
-                            top: window.screenY,
-                            left: window.screenX
-                        }
-                    ];
+                    ).style.display = "none";
                 }
-            });
+                _this.classList.add("active");
+                document.getElementById(
+                    $scope.tabs[
+                        $scope.tabs.findIndex(elt => {
+                            return elt[$scope.TAB_ID] == _this.id;
+                        })
+                    ][$scope.TAB_CONTENT_ID]
+                ).style.display = "block";
+            };
+        });
 
-            /*let tabElts = document.querySelectorAll(".tab");
-                for (let i = 0; i < tabElts.length; i++) {
-                    let elt = tabElts[i];
-                    elt.addEventListener("click", onClick);
-                }*/
+        window.addEventListener('load', () => {
+            angular.element(document.getElementById('bar-1')).scope().setActive();
+        });
 
-            let f1 = document.getElementById("f1");
-            let op = getOffsetParent(f1);
-            Coordinate();
+        ngApp.controller("ctrl1", $scope => {
+            let elt = document.getElementById("f1");
+            let _op = getOffsetParent(elt);
 
-            function getOffsetParent(elt) {
-                var _op;
-                while (elt) {
-                    _op = elt.parentOffset;
-                    if (_op) return _op;
+            if (_op) {
+                let rect = _op.getBoundingClientRect();
+                $scope.pos = [{
+                    type: "Client",
+                    top: _op.clientTop,
+                    left: _op.clientLeft
+                }, {
+                    type: "Offset",
+                    top: _op.offsetTop,
+                    left: _op.offsetLeft
+                }, {
+                    type: "Scroll",
+                    top: _op.scrollTop,
+                    left: _op.scrollLeft
+                }, {
+                    type: "Bounds",
+                    top: rect.top,
+                    left: rect.left
+                }, {
+                    type: "Screen",
+                    top: window.screenY,
+                    left: window.screenX
+                }];
+            }
+        });
 
-                    if (elt.parentElement) {
-                        elt = elt.parentElement;
-                        if (elt.tagName == "BODY") {
-                            return elt;
-                        }
-                    } else {
+        /*let tabElts = document.querySelectorAll(".tab");
+            for (let i = 0; i < tabElts.length; i++) {
+                let elt = tabElts[i];
+                elt.addEventListener("click", onClick);
+            }*/
+
+        let f1 = document.getElementById("f1");
+        let op = getOffsetParent(f1);
+        Coordinate();
+
+        function getOffsetParent(elt) {
+            var _op;
+            while (elt) {
+                _op = elt.parentOffset;
+                if (_op) return _op;
+
+                if (elt.parentElement) {
+                    elt = elt.parentElement;
+                    if (elt.tagName == "BODY") {
                         return elt;
                     }
+                } else {
+                    return elt;
                 }
-                return null;
             }
+            return null;
+        }
 
-            function Coordinate() {
-                let rect = op.getBoundingClientRect();
-                op.scrollTop = "120px";
-                document.getElementById("l1").value = f1.offsetParent
-                    ? f1.offsetParent.tagName
-                    : "null";
-                document.getElementById("l2").innerText =
-                    op.offsetParent === null;
-                document.getElementById("p1").innerText = `clientX: ${
+        function Coordinate() {
+            let rect = op.getBoundingClientRect();
+            op.scrollTop = "120px";
+            document.getElementById("l1").value = f1.offsetParent ?
+                f1.offsetParent.tagName :
+                "null";
+            document.getElementById("l2").innerText =
+                op.offsetParent === null;
+            document.getElementById("p1").innerText = `clientX: ${
                     op.clientLeft
                 }, clientY: ${op.clientTop}
             offsetLeft: ${op.offsetLeft}, offsetTop: ${op.offsetTop}
             scrollLeft: ${op.scrollLeft}, scrollTop: ${op.scrollTop}
             bounds.left: ${rect.left}, bounds.top: ${rect.top}`;
-                document.getElementById("p2").innerText = `screenX: ${
+            document.getElementById("p2").innerText = `screenX: ${
                     window.screenX
                 }, screenY: ${window.screenY}
             f1 offsetLeft: ${f1.offsetLeft}, f1 screenLeft: ${getScreenLeft(
                     f1
                 )}`;
-            }
+        }
 
-            function getTabContentId(tabId) {
-                let i = tabId.indexOf("-");
-                return "content" + tabId.slice(i);
-            }
+        function getTabContentId(tabId) {
+            let i = tabId.indexOf("-");
+            return "content" + tabId.slice(i);
+        }
 
-            function getScreenLeft(elt) {
-                let left = 0;
-                while (elt) {
-                    if (elt.tagName == "BODY") {
-                        left +=
-                            elt.offsetLeft +
-                            elt.clientLeft -
-                            (elt.scrollLeft ||
-                                document.documentElement.scrollLeft);
-                    } else {
-                        left +=
-                            elt.offsetLeft + elt.clientLeft - elt.scrollLeft;
-                    }
-                    elt = elt.offsetParent;
+        function getScreenLeft(elt) {
+            let left = 0;
+            while (elt) {
+                if (elt.tagName == "BODY") {
+                    left +=
+                        elt.offsetLeft +
+                        elt.clientLeft -
+                        (elt.scrollLeft ||
+                            document.documentElement.scrollLeft);
+                } else {
+                    left +=
+                        elt.offsetLeft + elt.clientLeft - elt.scrollLeft;
                 }
-                return /*window.screenX + */ left;
+                elt = elt.offsetParent;
             }
-        </script>
-    </body>
+            return /*window.screenX + */ left;
+        }
+    </script>
+</body>
+
 </html>
