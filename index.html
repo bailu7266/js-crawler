@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Layout</title>
-        <link rel="stylesheet" type="text/css" href="./css/layout.css" />
-        <script src="./awesome/brands.js"></script>
-        <script src="./awesome/all.js"></script>
-        <script src="./awesome/fontawesome.js"></script>
-        <script src="./node_modules/angular/angular.js"></script>
-    </head>
 
-    <body>
-        <div id="window-container" class="flex-col" ng-app="tsApp">
-            <div id="titlebar">
-                <div id="menubar" data-open="false">
-                    <img id="app-icon" src="./images/app-icon.png" />
-                    <div class="menu">
-                        <div class="button" id="menu-file" data-focused="false">
-                            <span>文件</span>
-                        </div>
-                        <div class="menu-list">
-                            <a id="link-about"
-                                ><span>关于</span><span>Alt+A</span></a
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Layout</title>
+    <script src="./node_modules/angular/angular.js"></script>
+    <script src="./awesome/brands.js"></script>
+    <script src="./awesome/all.js"></script>
+    <script src="./awesome/fontawesome.js"></script>
+    <!--<link rel="stylesheet" type="text/css" href="./css/all.css" />-->
+    <link rel="stylesheet" type="text/css" href="./css/layout.css" />
+</head>
+
+<body>
+    <div id="window-container" class="flex-col" ng-app="tsApp">
+        <div id="titlebar">
+            <div id="menubar" data-open="false">
+                <!--<img id="app-icon" src="./images/app-icon.png" />-->
+                <div id="app-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="menu">
+                    <div class="button" id="menu-file" data-focused="false">
+                        <span>文件</span>
+                    </div>
+                    <div class="menu-list">
+                        <a id="link-about"><span>关于</span><span>Alt+A</span></a
                             >
                             <hr />
                             <div class="submenu">
@@ -31,13 +33,12 @@
                                 </div>
                                 <div class="menu-list">
                                     <a><span>文件1</span></a>
-                                    <a><span>文件2</span></a>
-                                    <a><span>文件3</span></a>
-                                </div>
-                            </div>
-                            <hr />
-                            <a id="link-quit"
-                                ><span>退出</span><span>Ctrl+X</span></a
+                        <a><span>文件2</span></a>
+                        <a><span>文件3</span></a>
+                    </div>
+                </div>
+                <hr />
+                <a id="link-quit"><span>退出</span><span>Ctrl+X</span></a
                             >
                         </div>
                     </div>
@@ -51,9 +52,9 @@
                         </div>
                         <div class="menu-list">
                             <a id="link-min"><span>Minimize</span></a>
-                            <a id="link-close"><span>Close</span></a>
-                            <hr />
-                            <label for="devtools">
+                <a id="link-close"><span>Close</span></a>
+                <hr />
+                <label for="devtools">
                                 <input
                                     id="devtools"
                                     type="checkbox"
@@ -65,176 +66,124 @@
                                 />
                                 Development Tools
                             </label>
-                        </div>
-                    </div>
-                </div>
-                <div id="head-title"><span>全新标题 - Wonderful</span></div>
-                <div id="window-ctrls">
-                    <div class="button" id="min-btn"><span>&#xE921;</span></div>
-                    <div class="button" id="max-btn"><span>&#xE922;</span></div>
-                    <div class="button" id="restore-btn">
-                        <span>&#xE923;</span>
-                    </div>
-                    <div class="button" id="close-btn">
-                        <span>&#xE8BB;</span>
-                    </div>
-                    <!--
+            </div>
+        </div>
+    </div>
+    <div id="head-title"><span>全新标题 - Wonderful</span></div>
+    <div id="window-ctrls">
+        <div class="button" id="min-btn"><span>&#xE921;</span></div>
+        <div class="button" id="max-btn"><span>&#xE922;</span></div>
+        <div class="button" id="restore-btn">
+            <span>&#xE923;</span>
+        </div>
+        <div class="button" id="close-btn">
+            <span>&#xE8BB;</span>
+        </div>
+        <!--
                     <a><img src="./images/sign-math-character-multiple-icon.png"></a>
                     <a><img src="./images/sign-character-minus-math-stop-icon.png"></a>
                     <a><img src="./images/character-sign-add-increase-plus-math-icon.png"></a>
                     -->
-                </div>
+    </div>
+    </div>
+    <div id="content-row" class="flex-row">
+        <div id="tool-panel">
+            <div class="flex-col toolbar" style="float:left">
+                <a id="link-home" href="./layout.html" class="tooltip">
+                    <img src="./images/home.png" alt="Home" />
+                    <span class="tooltiptext right">这是我老家</span>
+                </a>
+                <a id="link-tools" href="./test.html" target="c-view" class="tooltip">
+                    <img src="./images/design-tools.png" alt="Design Tools" />
+                    <span class="tooltiptext right">在iframe c-view 中显示一个新的页面</span>
+                </a>
+                <a id="link-test" class="tooltip">
+                    <img src="./images/research_256.png" alt="Research" />
+                    <span class="tooltiptext right">Test Native Addon</span>
+                </a>
+                <a id="new-view" class="tooltip">
+                    <img src="./images/Gear_icon-72a7cf.svg.png" alt="NewView" />
+                    <span class="tooltiptext right">新增一个BrowerView</span>
+                </a>
+                <a id="gpu-info" href="./gpu-info.html" target="c-view" class="tooltip">
+                    <img src="./images/camera.png" alt="Camera" />
+                    <span class="tooltiptext right">显示GPU信息</span>
+                </a>
+                <a id="link-contacts">
+                    <img src="./images/contacts.png" alt="Contacts" />
+                </a>
+                <a id="link-awesome" class="tooltip">
+                    <i class="fas fa-university"></i>
+                    <span class="tooltiptext right">试用fontawesome Icons</span>
+                </a>
             </div>
-            <div id="content-row" class="flex-row">
-                <div id="tool-panel">
-                    <div class="flex-col toolbar" style="float:left">
-                        <a id="link-home" href="./layout.html" class="tooltip">
-                            <img src="./images/home.png" alt="Home" />
-                            <span class="tooltiptext right">这是我老家</span>
-                        </a>
-                        <a
-                            id="link-tools"
-                            href="./test.html"
-                            target="c-view"
-                            class="tooltip"
-                        >
-                            <img
-                                src="./images/design-tools.png"
-                                alt="Design Tools"
-                            />
-                            <span class="tooltiptext right"
-                                >在iframe c-view 中显示一个新的页面</span
-                            >
-                        </a>
-                        <a id="link-test" class="tooltip">
-                            <img
-                                src="./images/research_256.png"
-                                alt="Research"
-                            />
-                            <span class="tooltiptext right"
-                                >Test Native Addon</span
-                            >
-                        </a>
-                        <a id="new-view" class="tooltip">
-                            <img
-                                src="./images/Gear_icon-72a7cf.svg.png"
-                                alt="NewView"
-                            />
-                            <span class="tooltiptext right"
-                                >新增一个BrowerView</span
-                            >
-                        </a>
-                        <a
-                            id="gpu-info"
-                            href="./gpu-info.html"
-                            target="c-view"
-                            class="tooltip"
-                        >
-                            <img src="./images/camera.png" alt="Camera" />
-                            <span class="tooltiptext right">显示GPU信息</span>
-                        </a>
-                        <a id="link-contacts">
-                            <img src="./images/contacts.png" alt="Contacts" />
-                        </a>
-                        <a id="link-awesome">
-                            <span class="fas fa-igloo"></span>
-                        </a>
-                    </div>
-                    <div
-                        class="flex-col toolbar"
-                        style="position: absolute;bottom:0"
-                    >
-                        <a id="link-signup">
-                            <img
-                                src="./images/sign-up-icon.png"
-                                alt="Sign Up"
-                            />
-                        </a>
-                    </div>
-                </div>
-                <div id="res-column" class="flex-col resizable"></div>
-                <div id="main-column" class="flex-col">
-                    <div id="main-view" class="flex-col resizable">
-                        <div id="title-panel">
-                            <div id="view-tabs">
-                                <div class="title-tab" id="tab-1">
-                                    <img
-                                        src="./images/white-running-sports.png"
-                                    />
-                                    <span>这是测试</span>
-                                    <img
-                                        class="status"
-                                        src="./images/icon-arrow-down-b-128.png"
-                                    />
-                                    <span class="tab-close">&#x2715;</span>
-                                </div>
-                                <div class="title-tab" id="tab-2">
-                                    <img
-                                        src="./images/white-running-sports.png"
-                                    />
-                                    <span>随随便便</span>
-                                    <img
-                                        class="status"
-                                        src="./images/icon-arrow-down-b-128.png"
-                                    />
-                                    <span class="tab-close">&#x2715;</span>
-                                </div>
-                            </div>
-                            <div class="flex-row toolbar"></div>
-                        </div>
-                        <iframe
-                            id="content-view"
-                            src="./welcome.html"
-                            name="c-view"
-                        >
-                            iframe is not supported in this system
-                        </iframe>
-                    </div>
-                    <div id="console" ng-controller="tabCtrl">
-                        <div id="tabb" class="tab-bar">
-                            <button
-                                ng-repeat="x in tabs"
-                                id="{{ x[TAB_ID] }}"
-                                class="tab"
-                                ng-click="onClick($event)"
-                            >
-                                {{ x[TAB_LABEL] }}
-                            </button>
-                        </div>
-                        <div
-                            ng-repeat="x in tabs"
-                            id="{{ x[TAB_CONTENT_ID] }}"
-                            class="tab-content"
-                        ></div>
-                    </div>
-                </div>
+            <div class="flex-col toolbar" style="position: absolute;bottom:0">
+                <a id="link-signup">
+                    <img src="./images/sign-up-icon.png" alt="Sign Up" />
+                </a>
             </div>
         </div>
+        <div id="res-column" class="flex-col resizable"></div>
+        <div id="main-column" class="flex-col">
+            <div id="main-view" class="flex-col resizable">
+                <div id="title-panel">
+                    <div id="view-tabs">
+                        <div class="title-tab" id="tab-1">
+                            <img src="./images/white-running-sports.png" />
+                            <span>这是测试</span>
+                            <img class="status" src="./images/icon-arrow-down-b-128.png" />
+                            <span class="tab-close">&#x2715;</span>
+                        </div>
+                        <div class="title-tab" id="tab-2">
+                            <img src="./images/white-running-sports.png" />
+                            <span>随随便便</span>
+                            <img class="status" src="./images/icon-arrow-down-b-128.png" />
+                            <span class="tab-close">&#x2715;</span>
+                        </div>
+                    </div>
+                    <div class="flex-row toolbar"></div>
+                </div>
+                <iframe id="content-view" src="./welcome.html" name="c-view">
+                            iframe is not supported in this system
+                        </iframe>
+            </div>
+            <div id="console" ng-controller="tabCtrl">
+                <div id="tabb" class="tab-bar">
+                    <button ng-repeat="x in tabs" id="{{ x[TAB_ID] }}" class="tab" ng-click="onClick($event)">
+                                {{ x[TAB_LABEL] }}
+                            </button>
+                </div>
+                <div ng-repeat="x in tabs" id="{{ x[TAB_CONTENT_ID] }}" class="tab-content"></div>
+            </div>
+        </div>
+    </div>
+    </div>
 
-        <script>
-            if (typeof module === "object") {
-                window.module = module;
-                module = undefined;
-            }
-        </script>
+    <script>
+        if (typeof module === "object") {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
 
-        <script>
-            require("./index.js");
-            const tabs = [
-                ["tab-log", "Debug Log", "content-log", null],
-                ["tab-info", "信息", "content-info"],
-                ["tab-term", "终端", "content-term"]
-            ];
-            const tabCtrl = require("./tab-ctrl.js")(tabs);
-            const app = angular.module("tsApp", []);
-            app.controller("tabCtrl", tabCtrl);
+    <script>
+        require("./index.js");
+        const tabs = [
+            ["tab-log", "Debug Log", "content-log", null],
+            ["tab-info", "信息", "content-info"],
+            ["tab-term", "终端", "content-term"]
+        ];
+        const tabCtrl = require("./tab-ctrl.js")(tabs);
+        const app = angular.module("tsApp", []);
+        app.controller("tabCtrl", tabCtrl);
 
-            window.addEventListener("load", () => {
-                angular
-                    .element(document.getElementById("tabb"))
-                    .scope()
-                    .setActive();
-            });
-        </script>
-    </body>
+        window.addEventListener("load", () => {
+            angular
+                .element(document.getElementById("tabb"))
+                .scope()
+                .setActive();
+        });
+    </script>
+</body>
+
 </html>

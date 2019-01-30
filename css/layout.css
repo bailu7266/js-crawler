@@ -93,18 +93,21 @@ button {
     padding: var(--item-h-padding);
 }
 
-.toolbar a>i,
 .toolbar a>img {
     display: block;
     height: var(--item-size);
     border: none;
 }
 
-.toolbar a>span {
+.toolbar a>svg,
+.toolbar a>.fas,
+.toolbar a>.fab {
     display: block;
-    font-size: 2em;
+    font-size: var(--item-size);
+    color: firebrick;
+    /* width: var(--item-size);
+    height: var(--item-size); */
     text-align: center;
-    line-height: var(--item-size);
 }
 
 .toolbar a:hover {
@@ -131,6 +134,8 @@ button {
     background-color: var(--tooltip-bg-color);
     color: #0f0f0f;
     text-align: center;
+    /*font-size: 1em;
+    line-height: 1.4em;*/
     border-radius: 6px;
     padding: 0.5em;
     opacity: 0;
@@ -246,8 +251,14 @@ button {
     border: none;
     flex: 0 1 var(--titlebar-height);
     width: var(--titlebar-height);
-    height: 100%;
-    padding: 4px;
+    height: var(--titlebar-height);
+    padding: 0.25em;
+}
+
+#app-icon>i,
+#app-icon>svg {
+    font-size: 1.5em;
+    color: rebeccapurple;
 }
 
 #menubar .menu {
