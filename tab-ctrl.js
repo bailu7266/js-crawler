@@ -1,4 +1,8 @@
-module.exports = (tabs = () => { alert('没有定义tab项目'); }) => {
+function required() {
+    throw new Error('没有定义tab项目');
+}
+
+module.exports = (tabs = required) => {
     return ($scope) => {
         $scope.TAB_ID = 0;
         $scope.TAB_LABEL = 1;
@@ -23,7 +27,7 @@ module.exports = (tabs = () => { alert('没有定义tab项目'); }) => {
             ).style.display = 'block';
         };
 
-        $scope.onClick = function(e) {
+        $scope.onClick = function (e) {
             let _this = e.target;
             if (!_this) {
                 console.log('不明消息来源');
