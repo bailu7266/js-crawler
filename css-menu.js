@@ -66,7 +66,7 @@ function buildMenuContent(content) {
                 // mi.href = '#';
                 html = '<span>' + cmi.label + '</span>';
                 if (cmi.shortcut)
-                    html += '<span>' + cmi.shortcut + '</span>';
+                    html += '<span class="acc">' + cmi.shortcut + '</span>';
                 mi.insertAdjacentHTML('afterbegin', html);
                 if (cmi.click) mi.addEventListener('click', cmi.click);
                 break;

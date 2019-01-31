@@ -261,30 +261,35 @@ button {
 
 #menubar {
     flex: 0 1 auto;
-    display: flex;
+}
+
+.menubar {
+    /* display: flex;
     flex-flow: row nowrap;
     justify-content: flex-start;
-    align-items: center;
+    align-items: center; */
     height: 100%;
 }
 
-#menubar .menu {
-    flex: 0 0 auto;
-    display: block;
+.menubar .menu {
+    /* flex: 0 0 auto;
+    display: block; */
+    float: left;
     /* flex-flow: column nowrap; */
     height: 100%;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: var(--menu-font-size);
 }
 
-#menubar .button {
+.menu .button {
     -webkit-app-region: no-drag;
-    flex: 0 1 auto;
+    /* flex: 0 1 auto;
     display: flex;
     justify-content: flex-start;
-    align-items: center;
+    align-items: center; */
     height: 100%;
     border: none;
+    line-height: var(--titlebar-height);
     padding-left: 0.5em;
     padding-right: 0.5em;
     /* font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
@@ -293,7 +298,7 @@ button {
     background-color: var(--titlebar-bg-color);
 }
 
-#menubar .menu-list {
+.menu .menu-list {
     visibility: hidden;
     -webkit-transition-property: visibility;
     -webkit-transition-delay: 100ms;
@@ -308,38 +313,53 @@ button {
     z-index: 1;
 }
 
-#menubar .menu-list a,
-#menubar .menu-list label,
-#menubar .menu-list .submenu,
-#menubar .menu-list .itembtn {
-    display: flex;
+.menu .menu-list a,
+.menu .menu-list label,
+.menu .menu-list .submenu,
+.menu .menu-list .itembtn {
+    /* display: flex;
     flex-flow: row;
-    justify-content: space-between;
+    justify-content: space-between; */
+    display: block;
+    position: relative;
+    width: 100%;
+    line-height: 1.5em;
 }
 
-#menubar .menu-list a,
-#menubar .menu-list label,
-#menubar .submenu .itembtn {
-    align-items: center;
-    padding: 0.5em 2em;
+.menu .menu-list a,
+.menu .menu-list label,
+.menu .submenu .itembtn {
+    /* align-items: center; */
+    padding: 0.25em 2em;
     text-decoration: none;
     color: var(--menu-color);
 }
 
-#menubar .menu-list .submenu {
-    align-items: flex-start;
+.menu .menu-list a>span {
+    display: inline-block;
+    float: left;
 }
 
-#menubar .submenu .itembtn {
+.menu .menu-list a>span.acc {
+    display: inline-block;
+    float: right;
+}
+
+.menu .menu-list .submenu {
+    /* align-items: flex-start; */
+    /* float: left; */
+}
+
+.menu .submenu .itembtn {
     flex: 0 1 100%;
 }
 
-#menubar .submenu>.itembtn:after {
+.menu .submenu>.itembtn:after {
     content: ">";
     text-align: center;
 }
 
-#menubar .menu-list hr {
+.menu .menu-list hr {
     display: block;
     color: var(--menu-color);
     height: 1px;
@@ -348,48 +368,48 @@ button {
     margin: 0.5em;
 }
 
-#menubar .submenu>.menu-list {
+.menu .submenu>.menu-list {
     /* top: auto; */
     left: 100%;
     transform: translateY(-0.5em);
 }
 
-#menubar .button:focus,
-#menubar .menu:hover .button {
+.menu .button:focus,
+.menu:hover .button {
     color: black;
     background-color: var(--titlebar-hover-color);
     font-weight: bold;
     box-shadow: none;
 }
 
-#menubar .button:focus {
+.menu .button:focus {
     outline: 2px solid var(--close-btn-hover-color);
 }
 
-#menubar[data-open="true"] .menu>.button:focus+.menu-list,
-#menubar[data-open="true"] .menu:hover>.menu-list {
+.menubar[data-open="true"] .menu>.button:focus+.menu-list,
+.menubar[data-open="true"] .menu:hover>.menu-list {
     visibility: visible;
     -webkit-transition-delay: 0ms;
     transition-delay: 0ms;
 }
 
-#menubar .menu-list div[data-select="true"]>.itembtn,
-#menubar .menu-list a[data-select="true"],
-#menubar .menu-list label[data-select="true"],
-#menubar .menu-list a:hover,
-#menubar .menu-list label:hover,
-#menubar .submenu:hover>.itembtn {
+.menu .menu-list div[data-select="true"]>.itembtn,
+.menu .menu-list a[data-select="true"],
+.menu .menu-list label[data-select="true"],
+.menu .menu-list a:hover,
+.menu .menu-list label:hover,
+.menu .submenu:hover>.itembtn {
     color: white;
     background-color: dodgerblue;
 }
 
-#menubar .submenu[data-open="true"]>.menu-list,
-#menubar .submenu:hover>.menu-list {
+.menu .submenu[data-open="true"]>.menu-list,
+.menu .submenu:hover>.menu-list {
     visibility: visible;
 }
 
-#menubar .submenu[data-open="true"]>.itembtn::after,
-#menubar .submenu:hover>.itembtn::after {
+.menu .submenu[data-open="true"]>.itembtn::after,
+.menu .submenu:hover>.itembtn::after {
     content: "<";
     text-align: center;
 }
