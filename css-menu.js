@@ -7,13 +7,84 @@ function KeyCodes() {
     this.down = 40;
 }
 
-function Menubar(menuId) {
+function buildMenu(menubar, mItems) {
+    for (let i = 0; i < mItems.length; i++) {
+        let menu = buildMenuItem(mItems[i]);
+        menubar.appendChild(menu);
+    }
+}
+
+function buildMenuItem(mItem) {
+    let menu = document.createElement('div');
+    menu.classList.add('menu');
+    let mi = document.createElement('div');
+    mi.classList.add('button');
+    mi.id = mItem.id;
+    mi.dataFocused = 'false';
+    mi.insertAdjacentHTML('afterbegin', '<span>' + mItem.label + '</span>');
+    menu.appendChild(mi);
+
+    let content = buildMenuContent(mItem.content);
+    menu.appendChild(content);
+
+    return menu;
+}
+
+function buildMenuContent(content) {
+    let ce = document.createElement('div');
+    ce.classList.add('menu-list');
+    for (let i = 0; i < content.length; i++) {
+        var mi, html;
+        let cmi = content[i];
+        let type = cmi.type ? cmi.type : 'default';
+        switch (type.toUpperCase()) {
+            case 'SEPARATOR':
+                mi = document.createElement('hr');
+                break;
+            case 'CHECKBOX':
+                mi = document.createElement('label');
+                mi.htmlFor = cmi.id;
+                mi.insertAdjacentHTML('afterbegin', '<input id=' + cmi.id + ' type="checkbox" checked=false>' +
+                    '<img class="checkmark" src="./images/checkmark-solid.png" />' + cmi.label);
+                if (cmi.click) mi.querySelector('input[type=checkbox]').addEventListener('click', cmi.click);
+                break;
+
+            case 'SUBMENU':
+                mi = document.createElement('div');
+                mi.classList.add('submenu'); {
+                    let btn = document.createElement('div');
+                    btn.classList.add('itembtn');
+                    btn.insertAdjacentHTML('afterbegin', '<span>' + cmi.label + '</span>');
+                    mi.appendChild(btn);
+                    mi.appendChild(buildMenuContent(cmi.content));
+                }
+                break;
+
+            default:
+                mi = document.createElement('a');
+                mi.id = cmi.id;
+                // mi.href = '#';
+                html = '<span>' + cmi.label + '</span>';
+                if (cmi.shortcut)
+                    html += '<span>' + cmi.shortcut + '</span>';
+                mi.insertAdjacentHTML('afterbegin', html);
+                if (cmi.click) mi.addEventListener('click', cmi.click);
+                break;
+        }
+        ce.appendChild(mi);
+    }
+
+    return ce;
+}
+
+function Menubar(menuId, menuItems) {
     let self = this;
     self.id = '#' + menuId;
     self.timer = null;
     // 定义方向键、控制键
     // self.keys = new KeyCodes();
     self.menubar = document.getElementById(menuId);
+    buildMenu(self.menubar, menuItems);
     /* self.menubar.onmousedown = function(e) {
         e.preventDefault();
         console.log('on-mousedown ' + this.id);
@@ -374,8 +445,8 @@ Menubar.prototype.onKeyDown = function(btn, e) {
         case 'Esc':
         case 'Escape':
             /* if (this.menubar.getAttribute('data-open') === 'true') {
-                    this.menubar.setAttribute('data-open', 'false');
-                } */
+                        this.menubar.setAttribute('data-open', 'false');
+                    } */
             btn.blur();
             break;
 

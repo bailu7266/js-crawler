@@ -16,11 +16,64 @@ let platform = remote.getGlobal('process').platform;
 let win = remote.getCurrentWindow();
 let contents = remote.getCurrentWebContents();
 
+const menu = [{
+    id: 'menu-file',
+    label: '文件',
+    content: [{
+        id: 'm-about',
+        label: 'About',
+        shortcut: 'Alt+a',
+        click: about
+    }, {
+        type: 'separator'
+    }, {
+        type: 'submenu',
+        label: '最近打开的文件',
+        content: [{
+            id: 'm-file-1',
+            label: '文件1'
+        }, {
+            id: 'm-file-2',
+            label: '文件2'
+        }, {
+            id: 'm-file-3',
+            label: '文件3'
+        }]
+    }, {
+        type: 'separator'
+    }, {
+        id: 'm-quit',
+        label: '退出',
+        shortcut: 'Ctrl+x',
+        click: () => { app.quit(); }
+    }]
+}, {
+    id: 'menu-window',
+    label: 'window',
+    content: [{
+        id: 'm-min',
+        label: 'Minimize',
+        click: () => { win.minimize(); }
+    }, {
+        id: 'm-max',
+        label: 'Maximize',
+        click: () => { win.maximize(); }
+    }, {
+        id: 'm-close',
+        label: 'Close',
+        click: () => { win.close(); }
+    }, {
+        type: 'separator'
+    }, {
+        type: 'checkbox',
+        id: 'm-devtools',
+        label: 'Development Tools',
+        click: clickDevTools
+    }]
+}];
+
 const routes = {
     'min-btn': () => {
-        win.minimize();
-    },
-    'link-min': () => {
         win.minimize();
     },
     'max-btn': maxBrowerWindow,
@@ -35,50 +88,12 @@ const routes = {
     'close-btn': () => {
         win.close();
     },
-    'link-close': () => {
-        win.close();
-    },
     'link-home': onHome,
     'link-tools': onTools,
     'link-test': onTest,
     'link-contacts': nothing,
     'link-signup': nothing,
     'new-view': newView,
-    'devtools': clickDevTools,
-    'link-about': () => {
-        let options = {
-            parent: win,
-            modal: true,
-            show: false,
-            frame: false,
-            // useContentSize: true,
-            resizable: false,
-            minimizable: false,
-            maximizable: false,
-            center: true,
-            // y: 100,
-            width: 380,
-            height: 200,
-            webPreferences: {
-                devTools: false
-            }
-        };
-        if (platform === 'darwin') {
-            // options.titleBarStyle = 'hiddenInset';
-            options.modal = false;
-            options.frame = true;
-        }
-
-        let winAbout = new BrowserWindow(options);
-        winAbout.loadFile('./about.html');
-        winAbout.once('ready-to-show', () => {
-            winAbout.show();
-        });
-    },
-    'link-quit': () => {
-        console.log('link-quit clicked');
-        app.quit();
-    }
 };
 
 window.addEventListener('load', () => {
@@ -87,6 +102,37 @@ window.addEventListener('load', () => {
     routeInit();
 });
 
+function about() {
+    let options = {
+        parent: win,
+        modal: true,
+        show: false,
+        frame: false,
+        // useContentSize: true,
+        resizable: false,
+        minimizable: false,
+        maximizable: false,
+        center: true,
+        // y: 100,
+        width: 380,
+        height: 200,
+        webPreferences: {
+            devTools: false
+        }
+    };
+    if (platform === 'darwin') {
+        // options.titleBarStyle = 'hiddenInset';
+        options.modal = false;
+        options.frame = true;
+    }
+
+    let winAbout = new BrowserWindow(options);
+    winAbout.loadFile('./about.html');
+    winAbout.once('ready-to-show', () => {
+        winAbout.show();
+    });
+}
+
 function layout() {
     if (platform == 'darwin') {
         document.getElementById('titlebar').style.justifyContent = 'center';
@@ -94,8 +140,8 @@ function layout() {
         document.getElementById('window-ctrls').style.display = 'none';
     } else {
         // buildCustomMenu();
-        new Menubar('menubar');
-        document.getElementById('devtools').checked = contents.isDevToolsOpened();
+        new Menubar('menubar', menu);
+        document.getElementById('m-devtools').checked = contents.isDevToolsOpened();
     }
 
     // 主要分配flex item的width/height的比例;

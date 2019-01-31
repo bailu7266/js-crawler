@@ -10,6 +10,7 @@
     --titlebar-hover-color: lightgray;
     --toolbar-bg-color: lightgray;
     --close-btn-hover-color: #e81123;
+    --menu-color: #1f1f1f;
     --menu-content-bg-color: whitesmoke;
     --menu-item-width: 20em;
     --menu-font-size: 1em;
@@ -122,6 +123,11 @@ button {
     opacity: 0.5;
 }
 
+.toolbar.bottom {
+    position: absolute;
+    bottom: 0;
+}
+
 .tooltip {
     position: relative;
 }
@@ -231,19 +237,11 @@ button {
 
 #head-title {
     -webkit-app-region: drag;
+    flex: 1 1 auto;
     font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 1em;
     font-weight: bold;
     text-align: center;
-}
-
-#menubar {
-    flex: 0 0 auto;
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
-    align-items: center;
-    height: 100%;
 }
 
 #app-icon {
@@ -259,6 +257,15 @@ button {
 #app-icon>svg {
     font-size: 1.5em;
     color: rebeccapurple;
+}
+
+#menubar {
+    flex: 0 1 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
 }
 
 #menubar .menu {
@@ -282,7 +289,7 @@ button {
     padding-right: 0.5em;
     /* font-family: "微软雅黑", Verdana, Geneva, Tahoma, sans-serif;
     font-size: 1em; */
-    color: #1f1f1f;
+    color: var(--menu-color);
     background-color: var(--titlebar-bg-color);
 }
 
@@ -315,6 +322,8 @@ button {
 #menubar .submenu .itembtn {
     align-items: center;
     padding: 0.5em 2em;
+    text-decoration: none;
+    color: var(--menu-color);
 }
 
 #menubar .menu-list .submenu {
@@ -332,9 +341,9 @@ button {
 
 #menubar .menu-list hr {
     display: block;
-    /*color: #3c3c3c;*/
-    border-width: 1px;
-    border-style: solid;
+    color: var(--menu-color);
+    height: 1px;
+    border-top: 1px solid var(--menu-color);
     overflow: hidden;
     margin: 0.5em;
 }
