@@ -22,7 +22,7 @@ function createWindow() {
         // titleBarStyle: 'customButtonsOnHover',
         // frame: false,
         webPreferences: {
-            nodeIntegration: false,
+            nodeIntegration: true
         }
     };
 
@@ -39,7 +39,7 @@ function createWindow() {
 
     win = new BrowserWindow(options);
 
-    let view = new BrowserView();
+    let view = new BrowserView({webPreferences: {nodeIntegration: true}});
     win.setBrowserView(view);
 
     let bounds = win.getContentBounds();
@@ -313,7 +313,7 @@ ipcMain.on('SMCH-Request', (e, name, msg) => {
 });
 
 function newBrowserView(url) {
-    let nv = new BrowserView();
+    let nv = new BrowserView({webPreferences: {nodeIntegration: true}});
     win.setBrowserView(nv);
 
     let bounds = win.getContentBounds();

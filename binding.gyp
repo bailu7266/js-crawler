@@ -22,7 +22,7 @@
                     }
                 }],
                 ['OS=="darwin"', {
-                    'include_dirs': ['/Volumes/Data/Users/luke/workspace/boost_1_69_0']
+                    # 'include_dirs': ['/Volumes/Data/Users/luke/workspace/boost_1_69_0']
                 }],
                 ['OS=="linux"', {
                     'include_dirs': ['/home/luke/workspace/boost_1_69_0']

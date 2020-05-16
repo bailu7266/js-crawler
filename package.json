@@ -14,15 +14,17 @@
         "start": "electron ."
     },
     "dependencies": {
-        "angular": "^1.7.6",
+        "angular": "^1.7.9",
         "cheerio": "^0.22.0",
-        "jquery": "^3.3.1",
-        "lunr": "1.x",
-        "mongodb": "^3.1.10",
-        "qs": "^6.5.2",
-        "request": "^2.6.5",
-        "request-promise": "^4.2.2",
-        "url-parse": "^1.4.4"
+        "jquery": "^3.5.1",
+        "lunr": "2.x",
+        "mongodb": "^3.5.7",
+        "qs": "^6.9.4",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.5",
+        "url-parse": "^1.4.7"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "electron": "^8.3.0"
+    }
 }
