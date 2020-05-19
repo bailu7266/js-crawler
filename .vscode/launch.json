@@ -16,8 +16,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Electron Main",
-            "runtimeExecutable": "electron",
+            "name": "Debug Electron Main",
+            "cwd": "${workspaceFolder}",
+            "osx": {
+                "runtimeExecutable": "${workspaceFolder}/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron",
+            },
             "windows": {
                 "runtimeExecutable": "C:/Users/bai_l/AppData/Roaming/npm/electron"
             },

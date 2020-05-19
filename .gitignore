@@ -12,9 +12,10 @@ tmp
 .vscode
 !.vscode/launch.json
 *.log
+*.node
 
 # build immediate file
-build
+node_addons/build
 
 # scripts just for test, excercise, validation etc.
 test*.js

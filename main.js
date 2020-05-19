@@ -258,6 +258,10 @@ app.on('activate', () => {
 
 ipcMain.on('SMCH-NewBrowerView', (event, url) => {
     console.log('准备新增一个 BrowserView: ' + url);
+    console.log('frameId = ' + event.frameId + '\tsender = ' + event.sender);
+    console.log(event.sender);
+    let bwin =  BrowserWindow.fromBrowserView(BrowserView.fromWebContents(event.sender));
+    console.log("是否发自同一个BrowserWindow: " + (bwin == win));
 
     dialog.showMessageBox({
         type: 'info',
@@ -314,9 +318,11 @@ ipcMain.on('SMCH-Request', (e, name, msg) => {
 
 function newBrowserView(url) {
     let nv = new BrowserView({webPreferences: {nodeIntegration: true}});
-    win.setBrowserView(nv);
+    // win.setBrowserView(nv);
+    win.addBrowserView(nv);
+    nv.webContents.loadURL(url);
 
-    let bounds = win.getContentBounds();
+    /*let bounds = win.getContentBounds();
     nv.setBounds({
         x: 0,
         y: 0,
@@ -329,7 +335,8 @@ function newBrowserView(url) {
     });
     let views = BrowserView.getAllViews();
     let vwCnt = views.length; // 包含了新增view
-    /* vwBounds.width = bounds.width / vwCnt;
+    let vwBounds = {x: 0, y: 0, height: bounds.height};
+    vwBounds.width = bounds.width / vwCnt;
     for (let idx = 0; idx < vwCnt - 1; idx++) {
         vwBounds.x = bounds.width * idx / vwCnt;
         views[idx].setBounds(vwBounds);
@@ -338,9 +345,11 @@ function newBrowserView(url) {
     // e.sender.send('AMCH-Response', 'NewBrowerView', 'OK');
     // e.returnValue = 'NewBrowserView is OK';
 
-    nv.webContents.openDevTools();
-    nv.webContents.loadURL(url);
+    // nv.webContents.openDevTools();
+    // nv.webContents.loadURL(url);
 
+    showAllViews();
+    
     return true;
 }
 
@@ -381,19 +390,22 @@ function showAllViews() {
     let views = BrowserView.getAllViews();
     let vwCnt = views.length; // 包含了新增view
     let bounds = win.getContentBounds();
+    console.log(bounds);
     let vwBounds = {
-        x: 0,
-        y: 0,
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width / vwCnt,
         height: bounds.height
     };
-    for (let idx = 0; idx < vwCnt - 1; idx++) {
+    for (let idx = 0; idx < vwCnt; idx++) {
         let view = views[idx];
-        vwBounds.x = bounds.width * idx / vwCnt;
         view.setAutoResize({
-            width: false,
+            y: false,
             height: false
         });
         view.setBounds(vwBounds);
-        view.show();
+
+        vwBounds.x += vwBounds.width;
+        // view.show();
     }
 }

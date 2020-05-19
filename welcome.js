@@ -7,7 +7,7 @@ var $ = require('jquery');
 var mp = remote.getGlobal('process');
 var winMain = remote.getCurrentWindow();
 let iframe = document.getElementById('content-view');
-// 在iframe中，contentWindow就想到于browser中的window，
+// 在iframe中，contentWindow就相当于browser中的window，
 // contentWindow.document自然就是一般意义上的document了呃
 var iDoc = iframe.contentWindow.document;
 // var $ = require('jquery').load(iDoc);
